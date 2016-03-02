@@ -21,12 +21,12 @@ under the License.
 -->
 <script>
   (function() {
-    var cx = '000888944958067045520:z90hn2izm0k';
+    var cx = '004371916725812049959:18aaxupgvhw';
     var gcse = document.createElement('script');
     gcse.type = 'text/javascript';
     gcse.async = true;
     gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
-        '//www.google.com/cse/cse.js?cx=' + cx;
+        '//cse.google.com/cse.js?cx=' + cx;
     var s = document.getElementsByTagName('script')[0];
     s.parentNode.insertBefore(gcse, s);
   })();

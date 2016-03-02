@@ -23,7 +23,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-This page covers how to build Flink {{ site.version }} from sources.
+本文主要介绍如何如何从源代码构建 Flink {{site.version}}。
 
 * This will be replaced by the TOC
 {:toc}

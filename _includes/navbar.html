@@ -39,11 +39,11 @@ under the License.
         <!-- The navigation links. -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
-            <li class="hidden-sm {% if page.url == '/' %}active{% endif %}"><a href="{{ site.baseurl}}/">Documentation {{ site.version_short }}</a></li>
+            <li class="hidden-sm {% if page.url == '/' %}active{% endif %}"><a href="{{ site.baseurl}}/">中文文档 {{ site.version_short }}</a></li>
 
             <!-- Quickstart -->
             <li class="dropdown{% if page.url contains '/quickstart/' %} active{% endif %}">
-              <a href="{{ quickstart }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Quickstart <span class="caret"></span></a>
+              <a href="{{ quickstart }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">快速起步<span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
                 {% assign quickstart_group = (site.pages | where: "top-nav-group" , "quickstart" | sort: "top-nav-pos") %}
                 {% for quickstart_page in quickstart_group %}
@@ -54,7 +54,7 @@ under the License.
 
             <!-- Setup -->
             <li class="dropdown{% if page.url contains '/setup/' %} active{% endif %}">
-              <a href="{{ setup }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Setup <span class="caret"></span></a>
+              <a href="{{ setup }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">安装 <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
                 {% assign setup_group = (site.pages | where: "top-nav-group" , "setup" | sort: "top-nav-pos") %}
                 {% for setup_group_page in setup_group %}
@@ -62,7 +62,7 @@ under the License.
                 {% endfor %}
 
                 <li class="divider"></li>
-                <li role="presentation" class="dropdown-header"><strong>Deployment</strong></li>
+                <li role="presentation" class="dropdown-header"><strong>部署</strong></li>
                 {% assign deployment_group = (site.pages | where: "top-nav-group" , "deployment" | sort: "top-nav-pos") %}
                 {% for deployment_group_page in deployment_group %}
                 <li class="{% if page.url contains deployment_group_page.url %}active{% endif %}"><a href="{{ site.baseurl }}{{ deployment_group_page.url }}">{% if deployment_group_page.top-nav-title %}{{ deployment_group_page.top-nav-title }}{% else %}{{ deployment_group_page.title }}{% endif %}</a></li>
@@ -72,7 +72,7 @@ under the License.
 
             <!-- Programming Guides -->
             <li class="dropdown{% unless page.url contains '/libs/' %}{% if page.url contains '/apis/' %} active{% endif %}{% endunless %}">
-              <a href="{{ apis }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Programming Guides <span class="caret"></span></a>
+              <a href="{{ apis }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">编程指南 <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
                 {% assign apis_group = (site.pages | where: "top-nav-group" , "apis" | sort: "top-nav-pos") %}
                 {% for apis_group_page in apis_group %}
@@ -83,7 +83,7 @@ under the License.
 
             <!-- Libraries -->
             <li class="dropdown{% if page.url contains '/libs/' %} active{% endif %}">
-              <a href="{{ libs }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Libraries <span class="caret"></span></a>
+              <a href="{{ libs }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">库 <span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu">
                   {% assign libs_group = (site.pages | where: "top-nav-group" , "libs" | sort: "top-nav-pos") %}
                   {% for libs_page in libs_group %}
@@ -94,7 +94,7 @@ under the License.
 
             <!-- Internals -->
             <li class="dropdown{% if page.url contains '/internals/' %} active{% endif %}">
-              <a href="{{ internals }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Internals <span class="caret"></span></a>
+              <a href="{{ internals }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">内部 <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
                 <li role="presentation" class="dropdown-header"><strong>Contribute</strong></li>
                 <li><a href="http://flink.apache.org/how-to-contribute.html"><small><span class="glyphicon glyphicon-new-window"></span></small> How to Contribute</a></li>

@@ -72,4 +72,4 @@ kramdown:
 host: 0.0.0.0
 
 # please use a protocol relative URL here
-baseurl: //ci.apache.org/projects/flink/flink-docs-master
+baseurl: //doc.flink-china.org
