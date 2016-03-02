@@ -1,5 +1,5 @@
 ---
-title: "Overview"
+title: "概览"
 ---
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
@@ -20,20 +20,15 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-This documentation is for Apache Flink version {{ site.version }}, which is the
-current development version of the next upcoming major release of Apache Flink.
+本文档是针对 Apache Flink {{ site.version }} 版本的，当前还是开发版本，这也是 Apache Flink 下一个即将到来的主版本。
 
-Apache Flink is an open source platform for distributed stream and batch data processing. Flink’s core is
-a streaming dataflow engine that provides data distribution, communication, and fault tolerance for distributed
-computations over data streams. Flink also builds batch processing on top of the streaming engine, overlaying
-native iteration support, managed memory, and program optimization.
+Apache Flink 是一个开源的分布式流处理和批处理系统。不过 Flink 核心是一个流处理引擎，提供了分布式，高可用， 具备容错性的流处理平台。同时，Flink 在流处理引擎上构建了批处理引擎，原生支持了迭代计算、内存管理和程序优化。
 
-If you want to write your first program, look at one of the available quickstarts, and refer to the
-[DataSet API guide](apis/batch/index.html) or the [DataStream API guide](apis/streaming/index.html).
+如果你想要开始编写自己的第一个程序，请前往快速起步，然后查阅 [DataSet API 指南](apis/batch/index.html) 或是 [DataStream API 指南](apis/streaming/index.html)。
 
-## Stack
+## 栈
 
-This is an overview of Flink's stack. Click on any component to go to the respective documentation page.
+这是 Flink 技术栈的一个总览。点击任意一个组件可以查看相应的文档页面。
 
 <img src="fig/overview-stack-0.9.png" width="893" height="450" alt="Stack" usemap="#overview-stack">
 
