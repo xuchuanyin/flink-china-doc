@@ -1,5 +1,5 @@
 ---
-title:  "Search Results"
+title:  "搜索结果"
 ---
 <!--
 Licensed to the Apache Software Foundation (ASF) under one

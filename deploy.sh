@@ -28,5 +28,5 @@ DATE="$(date +'%Y-%m-%d %H:%M')"
 git init
 git add -A
 git commit -m "Site updated: $DATE"
-git push -u git@github.com:wuchong/flink-china-doc.git HEAD:gh-pages --force
+git push -u git@github.com:flink-china/flink-china-doc.git HEAD:gh-pages --force
 echo "Deploy successfully!"

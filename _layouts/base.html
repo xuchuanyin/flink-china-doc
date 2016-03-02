@@ -28,7 +28,7 @@ under the License.
     <link rel="icon" href="{{ site.baseurl }}/page/favicon.ico" type="image/x-icon">
 
     <!-- Bootstrap -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link href="//cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ site.baseurl }}/page/css/flink.css">
     <link rel="stylesheet" href="{{ site.baseurl }}/page/css/syntax.css">
     <link rel="stylesheet" href="{{ site.baseurl }}/page/css/codetabs.css">
@@ -41,9 +41,10 @@ under the License.
           equationNumbers: { autoNumber: "AMS" } }
         });
     </script>
-    <script type="text/javascript"
+    <!--script type="text/javascript"
             src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-    </script>
+    </script-->
+    <script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js"></script>
     {% endif %}
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -70,9 +71,9 @@ under the License.
     </div><!-- /.container -->
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="//cdn.bootcss.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="{{ site.baseurl }}/page/js/codetabs.js"></script>
 
     <!-- Google Analytics -->
