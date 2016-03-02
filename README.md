@@ -36,7 +36,7 @@ cd flink-china-doc/docker
 
 # 翻译
 
-我们非常欢迎有兴趣的同学参与一起翻译和优化中文文档。欢迎**译者**与**校对**的加入。我们会在[感谢页面](http://doc.flink-china.org/about.html#thanks)感谢所有参与了贡献的人。
+我们非常欢迎有兴趣的同学参与一起翻译和优化中文文档。欢迎**译者**与**校对**的加入。我们会在[感谢页面](http://doc.flink-china.org/about/#thanks)感谢所有参与了贡献的人。
 
 如果你想要翻译一篇文章，可以在[Flink中文文档](http://doc.flink-china.org)的具体文档页面的最下方找到"在 Github 上编辑此页！"的链接，你可以点击链接，并修改错误或者提交翻译结果。
 
@@ -64,5 +64,5 @@ DataSet, DataStream
 
 # 写作指南
 
-关于 Flink 文档的写作指南，请参考 [English README](README_EN.md#contribution)
+关于 Flink 文档的写作指南，请参考 [English README](https://github.com/flink-china/flink-china-doc/blob/master/README_EN.md#contribute)
 
