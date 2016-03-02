@@ -58,9 +58,12 @@ The plain layout with a sub navigation.
     <a href="#top"></a>
 
     <!-- Artifact name change warning. Remove for the 1.0 release. -->
+    {% if page.url contains '/about/' %} 
+    {% else %}
     <div class="panel panel-default">
       <div class="panel-body"><strong>重要</strong>: 依赖于Scala的maven artifacts现在会添加一个Scala主版本的后缀，例如 "2.10" 或 "2.11". 请查阅<a href="https://cwiki.apache.org/confluence/display/FLINK/Maven+artifact+names+suffixed+with+Scala+version">迁移指南</a>.</div>
     </div>
+    {% endif %}
 
     <!-- Breadcrumbs above the main heading -->
     <ol class="breadcrumb">
@@ -109,9 +112,12 @@ The plain layout without a sub navigation (only text).
 {% endcomment %}  
   <div class="col-md-8 col-md-offset-2 text">
     <!-- Artifact name change warning. Remove for the 1.0 release. -->
+    {% if page.url contains '/about/' %} 
+    {% else %}
     <div class="panel panel-default">
       <div class="panel-body"><strong>重要</strong>: 依赖于Scala的maven artifacts现在会添加一个Scala主版本的后缀，例如 "2.10" 或 "2.11". 请查阅<a href="https://cwiki.apache.org/confluence/display/FLINK/Maven+artifact+names+suffixed+with+Scala+version">迁移指南</a>.</div>
     </div>
+    {% endif %}
 
     <h1>{{ page.title }}{% if page.is_beta %} <span class="beta">Beta</span>{% endif %}</h1>
 {{ content }}

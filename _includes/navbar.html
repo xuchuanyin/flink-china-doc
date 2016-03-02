@@ -105,6 +105,9 @@ under the License.
                 {% endfor %}
               </ul>
             </li>
+
+            <li class="hidden-sm {% if page.url contains '/about/' %} active{% endif %}"><a href="{{ site.baseurl}}/about/">关于本站</a></li>
+
           </ul>
           <form class="navbar-form navbar-right hidden-sm hidden-md" role="search" action="{{site.baseurl}}/search-results.html">
             <div class="form-group">
