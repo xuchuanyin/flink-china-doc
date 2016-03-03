@@ -42,12 +42,13 @@ sudo apt-get install ssh
 sudo apt-get install openjdk-7-jre
 ```
 
+<a id="passwordless_ssh"></a>
 
-### SSH免密码登录
+### SSH 免密码登录
 
-*译注：安装过Hadoop、Spark集群的用户应该对这段很熟悉，如果已经了解，可跳过。**
+*译注：安装过 Hadoop、Spark 集群的用户应该对这段很熟悉，如果已经了解，可跳过。*
 
-为了能够启动/停止远程主机上的进程，master节点需要能免密登录所有worker节点。最方便的方式就是使用ssh的公钥验证了。要安装公钥验证，首先以最终会运行Flink的用户登录master节点。**所有的worker节点上也必须要有同样的用户（例如：使用相同用户名的用户）**。本文会以 flink 用户为例。非常不建议使用 root 账户，这会有很多的安全问题。
+为了能够启动/停止远程主机上的进程，master 节点需要能免密登录所有 worker 节点。最方便的方式就是使用ssh的公钥验证了。要安装公钥验证，首先以最终会运行 Flink 的用户登录 master 节点。**所有的 worker 节点上也必须要有同样的用户（例如：使用相同用户名的用户）**。本文会以 `flink` 用户为例。非常不建议使用 `root` 账户，这会有很多的安全问题。
 
 当你用需要的用户登录了master节点，你就可以生成一对新的公钥/私钥。下面这段命令会在 ~/.ssh 目录下生成一对新的公钥/私钥。
 
@@ -129,7 +130,7 @@ cd flink-*
 192.168.0.150
 ```
 
-*译注：conf/master文件是用来做[JobManager HA](setup/jobmanager_high_availability.html)的，在这里不需要配置*
+*译注：conf/master文件是用来做 [JobManager HA](setup/jobmanager_high_availability.html) 的，在这里不需要配置*
 
 每一个worker节点上的 Flink 路径必须一致。你可以使用共享的 NSF 目录，或者拷贝整个 Flink 目录到各个worker节点。
 

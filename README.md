@@ -38,9 +38,12 @@ cd flink-china-doc/docker
 
 我们非常欢迎有兴趣的同学参与一起翻译和优化中文文档。欢迎**译者**与**校对**的加入。我们会在[感谢页面](http://doc.flink-china.org/about/#thanks)感谢所有参与了贡献的人。
 
-如果你想要翻译一篇文章，可以在[Flink中文文档](http://doc.flink-china.org)的具体文档页面的最下方找到"在 Github 上编辑此页！"的链接，你可以点击链接，并修改错误或者提交翻译结果。
+**如果你想要翻译一篇文章，请先在 [issue](https://github.com/flink-china/flink-china-doc/issues) 页面中查看是否已经有人在翻译这篇文档。如果没有，你可以发布一个issue或者回复某个模块的issue，说明你要认领的文档。**
 
-我们建议你先在本地将英文文档按照原格式翻译成中文，直接在原英文文档上编辑翻译，注意保留文档原有的LISENCE，front matter等内容。并在本地测试验证后，通过提交[Pull Request](https://help.github.com/articles/using-pull-requests/)的方式提交你的翻译结果。
+我们建议你先在本地将英文文档按照原格式翻译成中文，直接在原英文文档基础上编辑翻译，注意保留文档原有的LISENCE，front matter等内容。并在本地测试验证后，提交你的翻译成果。提交翻译成果有两种方式：
+
+1. 可以在[Flink中文文档](http://doc.flink-china.org)的具体文档页面的最下方找到"在 Github 上编辑此页！"的链接，你可以点击链接，并修改错误或者提交翻译结果。
+2. 通过提交[Pull Request](https://help.github.com/articles/using-pull-requests/)的方式提交你的翻译结果。
 
 
 ## 翻译要求
