@@ -129,11 +129,11 @@ The plain layout without a sub navigation (only text).
     </div>
   </div>
 {% endif %}
-  {% comment %}
+  {% if page.comment == true %}
   Removed until Robert complains... ;)
   <div class="col-sm-8 col-sm-offset-2">
     <!-- Disqus thread and some vertical offset -->
-    <div style="margin-top: 75px; margin-bottom: 50px" id="disqus_thread"></div>
+    <div style="margin-top: 50px; margin-bottom: 50px" id="disqus_thread"></div>
   </div>
-  {% endcomment %}
+  {% endif %}
 </div>

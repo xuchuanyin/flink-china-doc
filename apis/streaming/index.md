@@ -230,7 +230,7 @@ dataStream.keyBy(0) // Key by the first element of a Tuple
             <p>A "rolling" reduce on a keyed data stream. Combines the current element with the last reduced value and
             emits the new value.
                     <br/>
-            	<br/>
+              <br/>
             A reduce function that creates a stream of partial sums:</p>
             {% highlight java %}
 keyedStream.reduce(new ReduceFunction<Integer>() {
@@ -270,8 +270,8 @@ DataStream<String> result =
           <td><strong>Aggregations</strong><br>KeyedStream &rarr; DataStream</td>
           <td>
             <p>Rolling aggregations on a keyed data stream. The difference between min
-	    and minBy is that min returns the minimun value, whereas minBy returns
-	    the element that has the minimum value in this field (same for max and maxBy).</p>
+      and minBy is that min returns the minimun value, whereas minBy returns
+      the element that has the minimum value in this field (same for max and maxBy).</p>
     {% highlight java %}
 keyedStream.sum(0);
 keyedStream.sum("key");
@@ -377,8 +377,8 @@ windowedStream.fold("start-", new FoldFunction<Integer, String>() {
           <td><strong>Aggregations on windows</strong><br>WindowedStream &rarr; DataStream</td>
           <td>
             <p>Aggregates the contents of a window. The difference between min
-	    and minBy is that min returns the minimun value, whereas minBy returns
-	    the element that has the minimum value in this field (same for max and maxBy).</p>
+      and minBy is that min returns the minimun value, whereas minBy returns
+      the element that has the minimum value in this field (same for max and maxBy).</p>
     {% highlight java %}
 windowedStream.sum(0);
 windowedStream.sum("key");
@@ -517,9 +517,9 @@ DataStream<Integer> all = split.select("even","odd");
                 Creates a "feedback" loop in the flow, by redirecting the output of one operator
                 to some previous operator. This is especially useful for defining algorithms that
                 continuously update a model. The following code starts with a stream and applies
-		the iteration body continuously. Elements that are greater than 0 are sent back
-		to the feedback channel, and the rest of the elements are forwarded downstream.
-		See <a href="#iterations">iterations</a> for a complete description.
+    the iteration body continuously. Elements that are greater than 0 are sent back
+    to the feedback channel, and the rest of the elements are forwarded downstream.
+    See <a href="#iterations">iterations</a> for a complete description.
                 {% highlight java %}
 IterativeStream<Long> iteration = initialStream.iterate();
 DataStream<Long> iterationBody = iteration.map (/*do something*/);
@@ -617,7 +617,7 @@ dataStream.keyBy(0) // Key by the first element of a Tuple
             <p>A "rolling" reduce on a keyed data stream. Combines the current element with the last reduced value and
             emits the new value.
                     <br/>
-            	<br/>
+              <br/>
             A reduce function that creates a stream of partial sums:</p>
             {% highlight scala %}
 keyedStream.reduce { _ + _ }
@@ -646,8 +646,8 @@ val result: DataStream[String] =
           <td><strong>Aggregations</strong><br>KeyedStream &rarr; DataStream</td>
           <td>
             <p>Rolling aggregations on a keyed data stream. The difference between min
-	    and minBy is that min returns the minimun value, whereas minBy returns
-	    the element that has the minimum value in this field (same for max and maxBy).</p>
+      and minBy is that min returns the minimun value, whereas minBy returns
+      the element that has the minimum value in this field (same for max and maxBy).</p>
     {% highlight scala %}
 keyedStream.sum(0)
 keyedStream.sum("key")
@@ -721,13 +721,13 @@ val result: DataStream[String] =
     windowedStream.fold("start", (str, i) => { str + "-" + i })
           {% endhighlight %}
           </td>
-	</tr>
+  </tr>
         <tr>
           <td><strong>Aggregations on windows</strong><br>WindowedStream &rarr; DataStream</td>
           <td>
             <p>Aggregates the contents of a window. The difference between min
-	    and minBy is that min returns the minimun value, whereas minBy returns
-	    the element that has the minimum value in this field (same for max and maxBy).</p>
+      and minBy is that min returns the minimun value, whereas minBy returns
+      the element that has the minimum value in this field (same for max and maxBy).</p>
     {% highlight scala %}
 windowedStream.sum(0)
 windowedStream.sum("key")
@@ -843,20 +843,16 @@ val all = split.select("even","odd")
                 Creates a "feedback" loop in the flow, by redirecting the output of one operator
                 to some previous operator. This is especially useful for defining algorithms that
                 continuously update a model. The following code starts with a stream and applies
-		the iteration body continuously. Elements that are greater than 0 are sent back
-		to the feedback channel, and the rest of the elements are forwarded downstream.
-		See <a href="#iterations">iterations</a> for a complete description.
+    the iteration body continuously. Elements that are greater than 0 are sent back
+    to the feedback channel, and the rest of the elements are forwarded downstream.
+    See <a href="#iterations">iterations</a> for a complete description.
                 {% highlight java %}
-initialStream. iterate {
+initialStream.iterate {
   iteration => {
     val iterationBody = iteration.map {/*do something*/}
     (iterationBody.filter(_ > 0), iterationBody.filter(_ <= 0))
   }
 }
-IterativeStream<Long> iteration = initialStream.iterate();
-DataStream<Long> iterationBody = iteration.map (/*do something*/);
-DataStream<Long> feedback = iterationBody.filter ( _ > 0);
-iteration.closeWith(feedback);
                 {% endhighlight %}
             </p>
           </td>
@@ -1198,8 +1194,8 @@ manually isolate operators in separate slots if desired.
       <td>Start new chain</td>
       <td>
         <p>Begin a new chain, starting with this operator. The two
-	mappers will be chained, and filter will not be chained to
-	the first mapper.
+  mappers will be chained, and filter will not be chained to
+  the first mapper.
 {% highlight java %}
 someStream.filter(...).map(...).startNewChain().map(...);
 {% endhighlight %}
@@ -1257,8 +1253,8 @@ someStream.map(...).isolateResources();
       <td>Start new chain</td>
       <td>
         <p>Begin a new chain, starting with this operator. The two
-	mappers will be chained, and filter will not be chained to
-	the first mapper.
+  mappers will be chained, and filter will not be chained to
+  the first mapper.
 {% highlight scala %}
 someStream.filter(...).map(...).startNewChain().map(...)
 {% endhighlight %}
