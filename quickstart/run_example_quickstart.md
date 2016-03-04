@@ -1,9 +1,9 @@
 ---
-title: "Quick Start: Run K-Means Example"
+title: "快速启动: 运行 K-Means 实例"
 # Top navigation
 top-nav-group: quickstart
 top-nav-pos: 2
-top-nav-title: Run Example
+top-nav-title: 运行实例
 ---
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
@@ -26,83 +26,84 @@ under the License.
 
 * This will be replaced by the TOC
 {:toc}
+本文主要介绍在flink上运行实例([K-Means clustering](http://en.wikipedia.org/wiki/K-means_clustering))需要操作的一系列步骤。另一方面，你能观察实例运行过程中的可
+视化界面、优化策略以及跟踪实例执行进度。
 
-This guide walks you through the steps of executing an example program ([K-Means clustering](http://en.wikipedia.org/wiki/K-means_clustering)) on Flink. 
-On the way, you will see the a visualization of the program, the optimized execution plan, and track the progress of its execution.
 
-## Setup Flink
-Follow the [instructions](setup_quickstart.html) to setup Flink and enter the root directory of your Flink setup.
+## 安装 Flink
+请查看 [快速安装](setup_quickstart.html) 来安装flink，并进入flink安装的根目录。
 
-## Generate Input Data
-Flink contains a data generator for K-Means.
+
+## 生成输入数据
+Flink 为 K-Means 封装了数据生产器
 
 ~~~bash
-# Assuming you are in the root directory of your Flink setup
+# 假设你已经位于flink的安装根目录
 mkdir kmeans
 cd kmeans
-# Run data generator
+# 运行数据生成器
 java -cp ../examples/batch/KMeans.jar:../lib/flink-dist-{{ site.version }}.jar \
   org.apache.flink.examples.java.clustering.util.KMeansDataGenerator \
   -points 500 -k 10 -stddev 0.08 -output `pwd`
 ~~~
 
-The generator has the following arguments (arguments in `[]` are optional):
+生成器需要以下参数（位于`[]`的参数是可选项）：
 
 ~~~bash
 -points <num> -k <num clusters> [-output <output-path>] [-stddev <relative stddev>] [-range <centroid range>] [-seed <seed>]
 ~~~
 
-The _relative standard deviation_ is an interesting tuning parameter. It determines the closeness of the points to randomly generated centers.
+-stddev 是一个有趣的调整参数，它决定了随机生成的数据点于中心的接近程度。
 
-The `kmeans/` directory should now contain two files: `centers` and `points`. The `points` file contains the points to cluster and the `centers` file contains initial cluster centers.
+`kmeans/` 目录下包含两个文件: `centers` 和 `points`. `points` 包含了集群上所有的数据点， `centers` 包含了集群初始化后的所有中心。
 
 
-## Inspect the Input Data
-Use the `plotPoints.py` tool to review the generated data points. [Download Python Script](plotPoints.py)
+## 检测数据
+使用 `plotPoints.py` 工具来检查之前产生的数据。 [Download Python Script](plotPoints.py)
 
 ~~~ bash
 python plotPoints.py points ./points input
 ~~~ 
 
-Note: You might have to install [matplotlib](http://matplotlib.org/) (`python-matplotlib` package on Ubuntu) to use the Python script.
+备注: 你可能需要安装 [matplotlib](http://matplotlib.org/) (在Ubuntn系统上是`python-matplotlib`) 来跑Python脚本.
 
-You can review the input data stored in the `input-plot.pdf`, for example with Evince (`evince input-plot.pdf`).
+你可以打开 `input-plot.pdf` 来查看输入数据, 比如Evince相关的数据就存放在 (`evince input-plot.pdf`)文件上.
 
-The following overview presents the impact of the different standard deviations on the input data.
+以下是对 -stddev 设置不同值情况下输入数据点分布图的展示。
 
 |relative stddev = 0.03|relative stddev = 0.08|relative stddev = 0.15|
 |:--------------------:|:--------------------:|:--------------------:|
 |<img src="{{ site.baseurl }}/page/img/quickstart-example/kmeans003.png" alt="example1" style="width: 275px;"/>|<img src="{{ site.baseurl }}/page/img/quickstart-example/kmeans008.png" alt="example2" style="width: 275px;"/>|<img src="{{ site.baseurl }}/page/img/quickstart-example/kmeans015.png" alt="example3" style="width: 275px;"/>|
 
 
-## Start Flink
-Start Flink and the web job submission client on your local machine.
+## 启动 Flink
+在你本机上启动 Flink 和 web端任务提交客户端。
 
 ~~~ bash
-# return to the Flink root directory
+# 返回到 Flink 的根目录
 cd ..
-# start Flink
+# 启动 Flink
 ./bin/start-local.sh
 ~~~
 
-## Inspect and Run the K-Means Example Program
-The Flink web interface allows to submit Flink programs using a graphical user interface.
+## 运行 K-Means 实例
+Flink web 界面上允许用户交互去提交Flink任务。
 
 <div class="row" style="padding-top:15px">
 	<div class="col-md-6">
 		<a data-lightbox="compiler" href="{{ site.baseurl }}/page/img/quickstart-example/jobmanager_kmeans_submit.png" data-lightbox="example-1"><img class="img-responsive" src="{{ site.baseurl }}/page/img/quickstart-example/jobmanager_kmeans_submit.png" /></a>
 	</div>
 	<div class="col-md-6">
-		1. Open web interface on <a href="http://localhost:8081">localhost:8081</a> <br>
-		2. Select the "Submit new Job" page in the menu <br>
-		3. Upload the <code>KMeans.jar</code> from <code>examples/batch</code> by clicking the "Add New" button, and then the "Upload" button. <br>
-		4. Select the <code>KMeans.jar</code> form the list of jobs <br>
-		5. Enter the arguments and options in the lower box: <br>
-		    Leave the <i>Entry Class</i> and <i>Parallelism</i> form empty<br>
-		    Enter the following program arguments: <br>
-		    (KMeans expects the following args: <code>--points &lt;path&gt; --centroids &lt;path&gt; --output &lt;path&gt; --iterations &lt;n&gt;</code>
+		1. 打开web界面 <a href="http://localhost:8081">localhost:8081</a> <br>
+		2. 在菜单上选择 "Submit new Job"  <br>
+		3. 通过点击"Add New"， 选择<code>examples/batch</code> 目录下的 <code>KMeans.jar</code>，之后点击 "Upload"。 <br>
+		4. 在一列任务中选择 <code>KMeans.jar</code> <br>
+		5. 在弹出框中输入参数及配置: <br>
+		    维持 <i>Entry Class</i> 和 <i>Parallelism</i> 表格不变<br>
+		    为该实例输入以下参数: <br>
+		    (KMeans 期望的输入参数是: <code>--points &lt;path&gt; --centroids &lt;path&gt; --output &lt;path&gt; --iterations &lt;n&gt;</code>
 			{% highlight bash %}--points /tmp/kmeans/points --centroids /tmp/kmeans/centers --output /tmp/kmeans/result --iterations 10{% endhighlight %}<br>
-		6. Press <b>Submit</b> to start the job
+		6. 点击 <b>Submit</b> 来启动任务
 	</div>
 </div>
 <hr>
@@ -112,28 +113,28 @@ The Flink web interface allows to submit Flink programs using a graphical user i
 	</div>
 
 	<div class="col-md-6">
-		Watch the job executing.
+		查看任务执行过程。
 	</div>
 </div>
 
 
-## Shutdown Flink
-Stop Flink when you are done.
+## 停止 Flink
+停止 Flink命令.
 
 ~~~ bash
-# stop Flink
+# 停止 Flink
 ./bin/stop-local.sh
 ~~~
 
-## Analyze the Result
-Use the [Python Script](plotPoints.py) again to visualize the result.
+## 分析结果
+可以再次运行 [Python Script](plotPoints.py) 脚本来可视化展示结果.
 
 ~~~bash
 cd kmeans
 python plotPoints.py result ./result clusters
 ~~~
 
-The following three pictures show the results for the sample input above. Play around with the parameters (number of iterations, number of clusters) to see how they affect the result.
+以下三幅图展示了对之前输入数据点集采样统计的结果。你可以多次调整参数（迭代次数、集群数量）来查看这些参数如何影响数据点的分布。
 
 
 |relative stddev = 0.03|relative stddev = 0.08|relative stddev = 0.15|
