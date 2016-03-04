@@ -226,6 +226,10 @@ td {
 	padding: 5px;
 }
 
+/*=============================================================================
+                                    Custom
+=============================================================================*/
+
 .footer {
   color: #7f8c8d;
   margin-top: 4em;
@@ -234,6 +238,6 @@ td {
   font-size: .9em;
 }
 
-.flink-table.table>tbody>tr>td {
+.user-table.table>tbody>tr>td {
 	vertical-align: middle;
 }

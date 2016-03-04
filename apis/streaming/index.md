@@ -1,14 +1,14 @@
 ---
-title: "Flink DataStream API Programming Guide"
+title: "Flink DataStream API 编程指南"
 
 # Top-level navigation
 top-nav-group: apis
 top-nav-pos: 2
-top-nav-title: <strong>Streaming Guide</strong> (DataStream API)
+top-nav-title: <strong>Streaming 指南</strong> (DataStream API)
 
 # Sub-level navigation
 sub-nav-group: streaming
-sub-nav-group-title: Streaming Guide
+sub-nav-group-title: Streaming 指南
 sub-nav-pos: 1
 sub-nav-title: DataStream API
 ---
@@ -31,12 +31,8 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-DataStream programs in Flink are regular programs that implement transformations on data streams
-(e.g., filtering, updating state, defining windows, aggregating). The data streams are initially created from various
-sources (e.g., message queues, socket streams, files). Results are returned via sinks, which may for
-example write the data to files, or to standard output (for example the command line
-terminal). Flink programs run in a variety of contexts, standalone, or embedded in other programs.
-The execution can happen in a local JVM, or on clusters of many machines.
+
+Flink 中的 DataStream API 是对数据流进行转换操作（例如，过滤、更新状态、定义窗口、聚合）常用的方式。数据流可以从各种源（例如，消息队列、socket流、文件）创建而来。结果通过 sinks 操作返回，例如可能是将数据写入到文件，或者到标准输出（如命令行窗口）。Flink 程序可以运行在多样的环境下，standalone集群，或者嵌入其他程序中。执行过程可以发生在本地，也可以是由许多机器构成的集群上。
 
 Please see [basic concepts]({{ site.baseurl }}/apis/common/index.html) for an introduction
 to the basic concepts of the Flink API.
@@ -47,16 +43,20 @@ and gradually add your own
 [transformations](#datastream-transformations). The remaining sections act as references for additional
 operations and advanced features.
 
+请先阅读[基本概念]({{ site.baseurl }}/apis/common/index.html)了解下 Flink API 的基本概念。
+
+为了创建你的第一个 Flink DataStream 程序，我们鼓励你从 [剖析 Flink 程序]({{ site.baseurl }}/apis/common/index.html#anatomy-of-a-flink-program) 开始，然后逐步地增加你的 [转换操作](#datastream-transformations)。而剩余的章节主要作为额外操作(operations)和高级特性的一个参考。
+
 
 * This will be replaced by the TOC
 {:toc}
 
 
-Example Program
+样例程序
 ---------------
 
-The following program is a complete, working example of streaming window word count application, that counts the
-words coming from a web socket in 5 second windows. You can copy &amp; paste the code to run it locally.
+下面这段程序是一个完整的，可运行的，基于流和窗口的 word count 应用样例。从一个网络socket中以5秒的窗口统计单词数量。你可以复制 &amp; 粘贴这段代码，然后在本地跑一跑。
+
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -129,45 +129,40 @@ object WindowWordCount {
 
 </div>
 
-To run the example program, start the input stream with netcat first from a terminal:
+要在本地运行本样例程序，需要先从终端启动 netcat 作为输入流：
 
 ~~~bash
 nc -lk 9999
 ~~~
 
-Just type some words hitting return for a new word. These will be the input to the
-word count program. If you want to see counts greater than 1, type the same word again and again within
-5 seconds (increase the window size from 5 seconds if you cannot type that fast &#9786;).
+
+然后在终端中敲一些单词进去，这些会作为 word count 程序的输入。如果你想要看到统计值大于1的，在5秒内不断地敲入一样的单词（如果你手速没这么快，可以将5秒的窗口调大&#9786;）。
 
 {% top %}
 
-DataStream Transformations
+DataStream 转换（Transformations）
 --------------------------
 
-Data transformations transform one or more DataStreams into a new DataStream. Programs can combine
-multiple transformations into sophisticated topologies.
+数据的转换操作可以讲一个或多个 DataStream 转换成一个新的 DataStream。程序可以合并多个转换操作为复杂的拓扑结构。
 
-This section gives a description of all the available transformations.
-
+本节对所有可用的转换操作做了个简单描述。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
 
-<br />
-
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th class="text-left" style="width: 25%">Transformation</th>
-      <th class="text-center">Description</th>
+      <th class="text-left" style="width: 25%">转换</th>
+      <th class="text-center">描述</th>
     </tr>
   </thead>
   <tbody>
     <tr>
           <td><strong>Map</strong><br>DataStream &rarr; DataStream</td>
           <td>
-            <p>Takes one element and produces one element. A map function that doubles the values of the input stream:</p>
-    {% highlight java %}
+            <p>输入一个元素，生成另一个元素，元素类型不变。一个将输入流中的值双倍返回的 map 函数：</p>
+{% highlight java %}
 DataStream<Integer> dataStream = //...
 dataStream.map(new MapFunction<Integer, Integer>() {
     @Override
@@ -175,15 +170,15 @@ dataStream.map(new MapFunction<Integer, Integer>() {
         return 2 * value;
     }
 });
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
 
         <tr>
           <td><strong>FlatMap</strong><br>DataStream &rarr; DataStream</td>
           <td>
-            <p>Takes one element and produces zero, one, or more elements. A flatmap function that splits sentences to words:</p>
-    {% highlight java %}
+            <p>输入一个元素，生成零个、一个或者多个元素。一个将句子切分成多个单词的 flatmap 函数：</p>
+{% highlight java %}
 dataStream.flatMap(new FlatMapFunction<String, String>() {
     @Override
     public void flatMap(String value, Collector<String> out)
@@ -193,46 +188,40 @@ dataStream.flatMap(new FlatMapFunction<String, String>() {
         }
     }
 });
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>Filter</strong><br>DataStream &rarr; DataStream</td>
           <td>
-            <p>Evaluates a boolean function for each element and retains those for which the function returns true.
-            A filter that filters out zero values:
-            </p>
-    {% highlight java %}
+            <p>对每个元素执行一个布尔函数，只保留返回 true 的元素。一个过滤掉零值的 filter 函数：</p>
+{% highlight java %}
 dataStream.filter(new FilterFunction<Integer>() {
     @Override
     public boolean filter(Integer value) throws Exception {
         return value != 0;
     }
 });
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>KeyBy</strong><br>DataStream &rarr; KeyedStream</td>
           <td>
-            <p>Logically partitions a stream into disjoint partitions, each partition containing elements of the same key.
-            Internally, this is implemented with hash partitioning. See <a href="#specifying-keys">keys</a> on how to specify keys.
-            This transformation returns a KeyedDataStream.</p>
-    {% highlight java %}
+            <p>将流逻辑分区成不相交的分区，每个分区包含相同 key 的元素。内部是用 hash 分区来实现的。查阅 <a href="#specifying-keys">keys</a> 了解如何指定 keys。这个转换返回了一个 KeyedDataStream。</p>
+{% highlight java %}
 dataStream.keyBy("someKey") // Key by field "someKey"
 dataStream.keyBy(0) // Key by the first element of a Tuple
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>Reduce</strong><br>KeyedStream &rarr; DataStream</td>
           <td>
-            <p>A "rolling" reduce on a keyed data stream. Combines the current element with the last reduced value and
-            emits the new value.
-                    <br/>
-              <br/>
-            A reduce function that creates a stream of partial sums:</p>
-            {% highlight java %}
+            <p>在一个 KeyedStream 上“滚动” reduce 。合并当前元素与上一个被 reduce 的值，然后输出新的值。注意三者的类型是一致的。
+              <br/><br/>
+              一个构造局部求和流的 reduce 函数：</p>
+{% highlight java %}
 keyedStream.reduce(new ReduceFunction<Integer>() {
     @Override
     public Integer reduce(Integer value1, Integer value2)
@@ -240,21 +229,18 @@ keyedStream.reduce(new ReduceFunction<Integer>() {
         return value1 + value2;
     }
 });
-            {% endhighlight %}
+{% endhighlight %}
             </p>
           </td>
         </tr>
         <tr>
           <td><strong>Fold</strong><br>KeyedStream &rarr; DataStream</td>
           <td>
-          <p>A "rolling" fold on a keyed data stream with an initial value.
-          Combines the current element with the last folded value and
-          emits the new value.
+          <p>在一个 KeyedStream 上基于一个初始值“滚动”折叠。合并当前元素和上一个被折叠的值，然后输出新值。注意 Fold 的输入值与返回值类型可以不一致。
           <br/>
           <br/>
-          <p>A fold function that, when applied on the sequence (1,2,3,4,5),
-          emits the sequence "start-1", "start-1-2", "start-1-2-3", ...</p>
-          {% highlight java %}
+          <p>需要将序列 (1,2,3,4,5) 转换成 "start-1", "start-1-2", "start-1-2-3", ... 的一个 fold 函数长这个样子：</p>
+{% highlight java %}
 DataStream<String> result =
   keyedStream.fold("start", new FoldFunction<Integer, String>() {
     @Override
@@ -262,17 +248,15 @@ DataStream<String> result =
         return current + "-" + value;
     }
   });
-          {% endhighlight %}
+{% endhighlight %}
           </p>
           </td>
         </tr>
         <tr>
           <td><strong>Aggregations</strong><br>KeyedStream &rarr; DataStream</td>
           <td>
-            <p>Rolling aggregations on a keyed data stream. The difference between min
-      and minBy is that min returns the minimun value, whereas minBy returns
-      the element that has the minimum value in this field (same for max and maxBy).</p>
-    {% highlight java %}
+            <p>在一个 KeyedStream 上滚动聚合。min 与 minBy 的区别是 min 返回了最小值，而 minBy 返回了在这个字段上是最小值的所有元素（max 和 maxBy 也是同样的）。</p>
+{% highlight java %}
 keyedStream.sum(0);
 keyedStream.sum("key");
 keyedStream.min(0);
@@ -283,40 +267,36 @@ keyedStream.minBy(0);
 keyedStream.minBy("key");
 keyedStream.maxBy(0);
 keyedStream.maxBy("key");
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>Window</strong><br>KeyedStream &rarr; WindowedStream</td>
           <td>
-            <p>Windows can be defined on already partitioned KeyedStreams. Windows group the data in each
-            key according to some characteristic (e.g., the data that arrived within the last 5 seconds).
-            See <a href="windows.html">windows</a> for a complete description of windows.
-    {% highlight java %}
+            <p>窗口可以被定义在已经被分区的 KeyedStreams 上。窗口会对数据的每一个 key 根据一些特征（例如，在最近 5 秒中内到达的数据）进行分组。查阅<a href="windows.html">窗口</a>了解关于窗口的完整描述。
+{% highlight java %}
 dataStream.keyBy(0).window(TumblingEventTimeWindows.of(Time.seconds(5))); // Last 5 seconds of data
-    {% endhighlight %}
+{% endhighlight %}
         </p>
           </td>
         </tr>
         <tr>
           <td><strong>WindowAll</strong><br>DataStream &rarr; AllWindowedStream</td>
           <td>
-              <p>Windows can be defined on regular DataStreams. Windows group all the stream events
-              according to some characteristic (e.g., the data that arrived within the last 5 seconds).
-              See <a href="windows.html">windows</a> for a complete description of windows.</p>
-              <p><strong>WARNING:</strong> This is in many cases a <strong>non-parallel</strong> transformation. All records will be
-               gathered in one task for the windowAll operator.</p>
-  {% highlight java %}
+              <p>窗口可以被定义在 DataStream 上。窗口会对所有数据流事件根据一些特征（例如，在最近 5 秒中内到达的数据）进行分组。查阅<a href="windows.html">窗口</a>了解关于窗口的完整描述。</p>
+              <p><strong>警告:</strong> 这在许多案例中这是一种<strong>非并行</strong>的转换。所有的记录都会被聚集到一个执行 WindowAll 操作的 task 中，这是非常影响性能的。</p>
+{% highlight java %}
 dataStream.windowAll(TumblingEventTimeWindows.of(Time.seconds(5))); // Last 5 seconds of data
-  {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>Window Apply</strong><br>WindowedStream &rarr; DataStream<br>AllWindowedStream &rarr; DataStream</td>
           <td>
-            <p>Applies a general function to the window as a whole. Below is a function that manually sums the elements of a window.</p>
-            <p><strong>Note:</strong> If you are using a windowAll transformation, you need to use an AllWindowFunction instead.</p>
-    {% highlight java %}
+            <p>应用一个一般的函数到窗口上，窗口中的数据会作为一个整体被计算。下面的函数手工地计算了一个窗口中的元素总和。
+            </p>
+            <p><strong>注意:</strong> 如果你正在使用一个 WindowAll 的转换，你需要用 AllWindowFunction 来替换。</p>
+{% highlight java %}
 windowedStream.apply (new WindowFunction<Tuple2<String,Integer>, Integer, Tuple, Window>() {
     public void apply (Tuple tuple,
             Window window,
@@ -342,44 +322,42 @@ allWindowedStream.apply (new AllWindowFunction<Tuple2<String,Integer>, Integer, 
         out.collect (new Integer(sum));
     }
 });
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>Window Reduce</strong><br>WindowedStream &rarr; DataStream</td>
           <td>
-            <p>Applies a functional reduce function to the window and returns the reduced value.</p>
-    {% highlight java %}
+            <p>应用一个 reduce 函数到窗口上，返回 reduce 后的值。</p>
+{% highlight java %}
 windowedStream.reduce (new ReduceFunction<Tuple2<String,Integer>() {
     public Tuple2<String, Integer> reduce(Tuple2<String, Integer> value1, Tuple2<String, Integer> value2) throws Exception {
         return new Tuple2<String,Integer>(value1.f0, value1.f1 + value2.f1);
     }
 };
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>Window Fold</strong><br>WindowedStream &rarr; DataStream</td>
           <td>
-            <p>Applies a functional fold function to the window and returns the folded value.
-               The example function, when applied on the sequence (1,2,3,4,5),
-               folds the sequence into the string "start-1-2-3-4-5":</p>
-    {% highlight java %}
+            <p>应用一个 fold 函数到窗口上，然后返回折叠后的值。
+            在窗口上将序列 (1,2,3,4,5) 转换成 "start-1", "start-1-2", "start-1-2-3", ... 的一个 fold 函数长这个样子：
+            </p>
+{% highlight java %}
 windowedStream.fold("start-", new FoldFunction<Integer, String>() {
     public String fold(String current, Integer value) {
         return current + "-" + value;
     }
 };
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>Aggregations on windows</strong><br>WindowedStream &rarr; DataStream</td>
           <td>
-            <p>Aggregates the contents of a window. The difference between min
-      and minBy is that min returns the minimun value, whereas minBy returns
-      the element that has the minimum value in this field (same for max and maxBy).</p>
-    {% highlight java %}
+            <p>聚合一个窗口中的内容。min 与 minBy 的区别是 min 返回了最小值，而 minBy 返回了在这个字段上是最小值的所有元素（max 和 maxBy 也是同样的）。</p>
+{% highlight java %}
 windowedStream.sum(0);
 windowedStream.sum("key");
 windowedStream.min(0);
@@ -390,61 +368,59 @@ windowedStream.minBy(0);
 windowedStream.minBy("key");
 windowedStream.maxBy(0);
 windowedStream.maxBy("key");
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>Union</strong><br>DataStream* &rarr; DataStream</td>
           <td>
-            <p>Union of two or more data streams creating a new stream containing all the elements from all the streams. Node: If you union a data stream
-            with itself you will get each element twice in the resulting stream.</p>
-    {% highlight java %}
+            <p>Union 两个或多个数据流，生成一个新的包含了来自所有流的所有数据的数据流。注意：如果你将一个数据流与其自身进行了合并，在结果流中对于每个元素你都会拿到两份。</p>
+{% highlight java %}
 dataStream.union(otherStream1, otherStream2, ...);
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>Window Join</strong><br>DataStream,DataStream &rarr; DataStream</td>
           <td>
-            <p>Join two data streams on a given key and a common window.</p>
-    {% highlight java %}
+            <p>在一个给定的 key 和窗口上 join 两个数据流。</p>
+{% highlight java %}
 dataStream.join(otherStream)
     .where(0).equalTo(1)
     .window(TumblingEventTimeWindows.of(Time.seconds(3)))
     .apply (new JoinFunction () {...});
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>Window CoGroup</strong><br>DataStream,DataStream &rarr; DataStream</td>
           <td>
-            <p>Cogroups two data streams on a given key and a common window.</p>
-    {% highlight java %}
+            <p>在一个给定的 key 和窗口上 co-group 两个数据流。</p>
+{% highlight java %}
 dataStream.coGroup(otherStream)
     .where(0).equalTo(1)
     .window(TumblingEventTimeWindows.of(Time.seconds(3)))
     .apply (new CoGroupFunction () {...});
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>Connect</strong><br>DataStream,DataStream &rarr; ConnectedStreams</td>
           <td>
-            <p>"Connects" two data streams retaining their types. Connect allowing for shared state between
-            the two streams.</p>
-    {% highlight java %}
+            <p>“连接”两个数据流并保持原先的类型。Connect 可以让两条流之间共享状态。</p>
+{% highlight java %}
 DataStream<Integer> someStream = //...
 DataStream<String> otherStream = //...
 
 ConnectedStreams<Integer, String> connectedStreams = someStream.connect(otherStream);
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>CoMap, CoFlatMap</strong><br>ConnectedStreams &rarr; DataStream</td>
           <td>
-            <p>Similar to map and flatMap on a connected data stream</p>
-    {% highlight java %}
+            <p>在一个 ConnectedStreams 上做类似 map 和 flatMap 的操作。</p>
+{% highlight java %}
 connectedStreams.map(new CoMapFunction<Integer, String, Boolean>() {
     @Override
     public Boolean map1(Integer value) {
@@ -470,15 +446,15 @@ connectedStreams.flatMap(new CoFlatMapFunction<Integer, String, String>() {
        }
    }
 });
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>Split</strong><br>DataStream &rarr; SplitStream</td>
           <td>
             <p>
-                Split the stream into two or more streams according to some criterion.
-                {% highlight java %}
+            根据具体的标准切分数据流成两个或多个流。
+{% highlight java %}
 SplitStream<Integer> split = someDataStream.split(new OutputSelector<Integer>() {
     @Override
     public Iterable<String> select(Integer value) {
@@ -492,7 +468,7 @@ SplitStream<Integer> split = someDataStream.split(new OutputSelector<Integer>() 
         return output;
     }
 });
-                {% endhighlight %}
+{% endhighlight %}
             </p>
           </td>
         </tr>
@@ -500,13 +476,13 @@ SplitStream<Integer> split = someDataStream.split(new OutputSelector<Integer>() 
           <td><strong>Select</strong><br>SplitStream &rarr; DataStream</td>
           <td>
             <p>
-                Select one or more streams from a split stream.
-                {% highlight java %}
+                从一个 SplitStream 中选出一个或多个流。
+{% highlight java %}
 SplitStream<Integer> split;
 DataStream<Integer> even = split.select("even");
 DataStream<Integer> odd = split.select("odd");
 DataStream<Integer> all = split.select("even","odd");
-                {% endhighlight %}
+{% endhighlight %}
             </p>
           </td>
         </tr>
@@ -514,13 +490,9 @@ DataStream<Integer> all = split.select("even","odd");
           <td><strong>Iterate</strong><br>DataStream &rarr; IterativeStream &rarr; DataStream</td>
           <td>
             <p>
-                Creates a "feedback" loop in the flow, by redirecting the output of one operator
-                to some previous operator. This is especially useful for defining algorithms that
-                continuously update a model. The following code starts with a stream and applies
-    the iteration body continuously. Elements that are greater than 0 are sent back
-    to the feedback channel, and the rest of the elements are forwarded downstream.
-    See <a href="#iterations">iterations</a> for a complete description.
-                {% highlight java %}
+                在流(flow)中创建一个带反馈的循环，通过重定向一个 operator 的输出到之前的 operator。这对于定义一些需要不断更新模型的算法是非常有帮助的。下面这段代码对一个流不断地应用迭代体。大于 0 的元素会被发送到反馈通道，剩余的元素会继续发往下游。查阅 <a href="#iterations">迭代</a> 了解完整的描述。
+
+{% highlight java %}
 IterativeStream<Long> iteration = initialStream.iterate();
 DataStream<Long> iterationBody = iteration.map (/*do something*/);
 DataStream<Long> feedback = iterationBody.filter(new FilterFunction<Long>(){
@@ -536,19 +508,19 @@ DataStream<Long> output = iterationBody.filter(new FilterFunction<Long>(){
         return value <= 0;
     }
 });
-                {% endhighlight %}
+{% endhighlight %}
             </p>
           </td>
         </tr>
         <tr>
-          <td><strong>Extract Timestamps</strong><br>DataStream &rarr; DataStream</td>
+          <td><strong>提取时间戳</strong><br>DataStream &rarr; DataStream</td>
           <td>
             <p>
-                Extracts timestamps from records in order to work with windows
-                that use event time semantics. See <a href="{{ site.baseurl }}/apis/streaming/time.html">working with time</a>.
-                {% highlight java %}
+                为了能够工作于使用 event time 语义的窗口，需要从记录中提取时间戳。查阅 <a href="{{ site.baseurl }}/apis/streaming/time.html">working with time</a> 了解更多。 
+                
+{% highlight java %}
 stream.assignTimestamps (new TimeStampExtractor() {...});
-                {% endhighlight %}
+{% endhighlight %}
             </p>
           </td>
         </tr>
@@ -559,96 +531,86 @@ stream.assignTimestamps (new TimeStampExtractor() {...});
 
 <div data-lang="scala" markdown="1">
 
-<br />
 
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th class="text-left" style="width: 25%">Transformation</th>
-      <th class="text-center">Description</th>
+      <th class="text-left" style="width: 25%">转换</th>
+      <th class="text-center">描述</th>
     </tr>
   </thead>
   <tbody>
     <tr>
           <td><strong>Map</strong><br>DataStream &rarr; DataStream</td>
           <td>
-            <p>Takes one element and produces one element. A map function that doubles the values of the input stream:</p>
-    {% highlight scala %}
+            <p>输入一个元素，生成另一个元素，元素类型不变。一个将输入流中的值双倍返回的 map 函数：</p>
+{% highlight scala %}
 dataStream.map { x => x * 2 }
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
 
         <tr>
           <td><strong>FlatMap</strong><br>DataStream &rarr; DataStream</td>
           <td>
-            <p>Takes one element and produces zero, one, or more elements. A flatmap function that splits sentences to words:</p>
-    {% highlight scala %}
+            <p>输入一个元素，生成零个、一个或者多个元素。一个将句子切分成多个单词的 flatmap 函数：</p>
+{% highlight scala %}
 dataStream.flatMap { str => str.split(" ") }
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>Filter</strong><br>DataStream &rarr; DataStream</td>
           <td>
-            <p>Evaluates a boolean function for each element and retains those for which the function returns true.
-            A filter that filters out zero values:
+            <p>对每个元素执行一个布尔函数，只保留返回 true 的元素。一个过滤掉零值的 filter 函数：
             </p>
-    {% highlight scala %}
+{% highlight scala %}
 dataStream.filter { _ != 0 }
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>KeyBy</strong><br>DataStream &rarr; KeyedStream</td>
           <td>
-            <p>Logically partitions a stream into disjoint partitions, each partition containing elements of the same key.
-            Internally, this is implemented with hash partitioning. See <a href="#specifying-keys">keys</a> on how to specify keys.
-            This transformation returns a KeyedDataStream.</p>
-    {% highlight scala %}
+            <p>将流逻辑分区成不相交的分区，每个分区包含相同 key 的元素。内部是用 hash 分区来实现的。查阅 <a href="#specifying-keys">keys</a> 了解如何指定 keys。这个转换返回了一个 KeyedDataStream。</p>
+{% highlight scala %}
 dataStream.keyBy("someKey") // Key by field "someKey"
 dataStream.keyBy(0) // Key by the first element of a Tuple
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>Reduce</strong><br>KeyedStream &rarr; DataStream</td>
           <td>
-            <p>A "rolling" reduce on a keyed data stream. Combines the current element with the last reduced value and
-            emits the new value.
+            <p>在一个 KeyedStream 上“滚动” reduce 。合并当前元素与上一个被 reduce 的值，然后输出新的值。注意三者的类型是一致的。 
                     <br/>
               <br/>
-            A reduce function that creates a stream of partial sums:</p>
-            {% highlight scala %}
+            一个构造局部求和流的 reduce 函数：</p>
+{% highlight scala %}
 keyedStream.reduce { _ + _ }
-            {% endhighlight %}
+{% endhighlight %}
             </p>
           </td>
         </tr>
         <tr>
           <td><strong>Fold</strong><br>KeyedStream &rarr; DataStream</td>
           <td>
-          <p>A "rolling" fold on a keyed data stream with an initial value.
-          Combines the current element with the last folded value and
-          emits the new value.
+          <p>在一个 KeyedStream 上基于一个初始值“滚动”折叠。合并当前元素和上一个被折叠的值，然后输出新值。注意 Fold 的输入值与返回值类型可以不一致。 
           <br/>
           <br/>
-          <p>A fold function that, when applied on the sequence (1,2,3,4,5),
-          emits the sequence "start-1", "start-1-2", "start-1-2-3", ...</p>
-          {% highlight scala %}
+          <p>需要将序列 (1,2,3,4,5) 转换成 "start-1", "start-1-2", "start-1-2-3", ... 的一个 fold 函数长这个样子：</p>
+{% highlight scala %}
 val result: DataStream[String] =
     keyedStream.fold("start", (str, i) => { str + "-" + i })
-          {% endhighlight %}
+{% endhighlight %}
           </p>
           </td>
         </tr>
         <tr>
           <td><strong>Aggregations</strong><br>KeyedStream &rarr; DataStream</td>
           <td>
-            <p>Rolling aggregations on a keyed data stream. The difference between min
-      and minBy is that min returns the minimun value, whereas minBy returns
-      the element that has the minimum value in this field (same for max and maxBy).</p>
-    {% highlight scala %}
+            <p>在一个 KeyedStream 上滚动聚合。min 与 minBy 的区别是 min 返回了最小值，而 minBy 返回了在这个字段上是最小值的所有元素（max 和 maxBy 也是同样的）。</p>
+{% highlight scala %}
 keyedStream.sum(0)
 keyedStream.sum("key")
 keyedStream.min(0)
@@ -659,76 +621,70 @@ keyedStream.minBy(0)
 keyedStream.minBy("key")
 keyedStream.maxBy(0)
 keyedStream.maxBy("key")
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>Window</strong><br>KeyedStream &rarr; WindowedStream</td>
           <td>
-            <p>Windows can be defined on already partitioned KeyedStreams. Windows group the data in each
-            key according to some characteristic (e.g., the data that arrived within the last 5 seconds).
-            See <a href="windows.html">windows</a> for a description of windows.
-    {% highlight scala %}
+            <p>窗口可以被定义在已经被分区的 KeyedStreams 上。窗口会对数据的每一个 key 根据一些特征（例如，在最近 5 秒中内到达的数据）进行分组。查阅<a href="windows.html">窗口</a>了解关于窗口的完整描述。
+            
+{% highlight scala %}
 dataStream.keyBy(0).window(TumblingEventTimeWindows.of(Time.seconds(5))) // Last 5 seconds of data
-    {% endhighlight %}
+{% endhighlight %}
         </p>
           </td>
         </tr>
         <tr>
           <td><strong>WindowAll</strong><br>DataStream &rarr; AllWindowedStream</td>
           <td>
-              <p>Windows can be defined on regular DataStreams. Windows group all the stream events
-              according to some characteristic (e.g., the data that arrived within the last 5 seconds).
-              See <a href="windows.html">windows</a> for a complete description of windows.</p>
-              <p><strong>WARNING:</strong> This is in many cases a <strong>non-parallel</strong> transformation. All records will be
-               gathered in one task for the windowAll operator.</p>
-  {% highlight scala %}
+              <p>窗口可以被定义在 DataStream 上。窗口会对所有数据流事件根据一些特征（例如，在最近 5 秒中内到达的数据）进行分组。查阅<a href="windows.html">窗口</a>了解关于窗口的完整描述。
+              </p>
+              <p><strong>警告:</strong> 这在许多案例中这是一种<strong>非并行</strong>的转换。所有的记录都会被聚集到一个执行 WindowAll 操作的 task 中，这是非常影响性能的。
+              </p>
+{% highlight scala %}
 dataStream.windowAll(TumblingEventTimeWindows.of(Time.seconds(5))) // Last 5 seconds of data
-  {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>Window Apply</strong><br>WindowedStream &rarr; DataStream<br>AllWindowedStream &rarr; DataStream</td>
           <td>
-            <p>Applies a general function to the window as a whole. Below is a function that manually sums the elements of a window.</p>
-            <p><strong>Note:</strong> If you are using a windowAll transformation, you need to use an AllWindowFunction instead.</p>
-    {% highlight scala %}
+            <p>应用一个一般的函数到窗口上，窗口中的数据会作为一个整体被计算。下面的函数手工地计算了一个窗口中的元素总和。</p>
+            <p><strong>注意:</strong> 如果你正在使用一个 WindowAll 的转换，你需要用 AllWindowFunction 来替换。</p>
+{% highlight scala %}
 windowedStream.apply { WindowFunction }
 
 // applying an AllWindowFunction on non-keyed window stream
 allWindowedStream.apply { AllWindowFunction }
 
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>Window Reduce</strong><br>WindowedStream &rarr; DataStream</td>
           <td>
-            <p>Applies a functional reduce function to the window and returns the reduced value.</p>
-    {% highlight scala %}
+            <p>应用一个 reduce 函数到窗口上，返回 reduce 后的值。</p>
+{% highlight scala %}
 windowedStream.reduce { _ + _ }
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>Window Fold</strong><br>WindowedStream &rarr; DataStream</td>
           <td>
-            <p>Applies a functional fold function to the window and returns the folded value.
-               The example function, when applied on the sequence (1,2,3,4,5),
-               folds the sequence into the string "start-1-2-3-4-5":</p>
-          {% highlight scala %}
+            <p>应用一个 fold 函数到窗口上，然后返回折叠后的值。 在窗口上将序列 (1,2,3,4,5) 转换成 "start-1", "start-1-2", "start-1-2-3", ... 的一个 fold 函数长这个样子：</p>
+{% highlight scala %}
 val result: DataStream[String] =
     windowedStream.fold("start", (str, i) => { str + "-" + i })
-          {% endhighlight %}
+{% endhighlight %}
           </td>
   </tr>
         <tr>
           <td><strong>Aggregations on windows</strong><br>WindowedStream &rarr; DataStream</td>
           <td>
-            <p>Aggregates the contents of a window. The difference between min
-      and minBy is that min returns the minimun value, whereas minBy returns
-      the element that has the minimum value in this field (same for max and maxBy).</p>
-    {% highlight scala %}
+            <p>聚合一个窗口中的内容。min 与 minBy 的区别是 min 返回了最小值，而 minBy 返回了在这个字段上是最小值的所有元素（max 和 maxBy 也是同样的）。</p>
+{% highlight scala %}
 windowedStream.sum(0)
 windowedStream.sum("key")
 windowedStream.min(0)
@@ -739,61 +695,59 @@ windowedStream.minBy(0)
 windowedStream.minBy("key")
 windowedStream.maxBy(0)
 windowedStream.maxBy("key")
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>Union</strong><br>DataStream* &rarr; DataStream</td>
           <td>
-            <p>Union of two or more data streams creating a new stream containing all the elements from all the streams. Node: If you union a data stream
-            with itself you will get each element twice in the resulting stream.</p>
-    {% highlight scala %}
+            <p>Union 两个或多个数据流，生成一个新的包含了来自所有流的所有数据的数据流。注意：如果你将一个数据流与其自身进行了合并，在结果流中对于每个元素你都会拿到两份。</p>
+{% highlight scala %}
 dataStream.union(otherStream1, otherStream2, ...)
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>Window Join</strong><br>DataStream,DataStream &rarr; DataStream</td>
           <td>
-            <p>Join two data streams on a given key and a common window.</p>
-    {% highlight scala %}
+            <p>在一个给定的 key 和窗口上 join 两个数据流。</p>
+{% highlight scala %}
 dataStream.join(otherStream)
     .where(0).equalTo(1)
     .window(TumblingEventTimeWindows.of(Time.seconds(3)))
     .apply { ... }
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>Window CoGroup</strong><br>DataStream,DataStream &rarr; DataStream</td>
           <td>
-            <p>Cogroups two data streams on a given key and a common window.</p>
-    {% highlight scala %}
+            <p>在一个给定的 key 和窗口上 co-group 两个数据流。</p>
+{% highlight scala %}
 dataStream.coGroup(otherStream)
     .where(0).equalTo(1)
     .window(TumblingEventTimeWindows.of(Time.seconds(3)))
     .apply {}
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>Connect</strong><br>DataStream,DataStream &rarr; ConnectedStreams</td>
           <td>
-            <p>"Connects" two data streams retaining their types, allowing for shared state between
-            the two streams.</p>
-    {% highlight scala %}
+            <p>“连接”两个数据流并保持原先的类型。Connect 可以让两条流之间共享状态。</p>
+{% highlight scala %}
 someStream : DataStream[Int] = ...
 otherStream : DataStream[String] = ...
 
 val connectedStreams = someStream.connect(otherStream)
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>CoMap, CoFlatMap</strong><br>ConnectedStreams &rarr; DataStream</td>
           <td>
-            <p>Similar to map and flatMap on a connected data stream</p>
-    {% highlight scala %}
+            <p>在一个 ConnectedStreams 上做类似 map 和 flatMap 的操作。</p>
+{% highlight scala %}
 connectedStreams.map(
     (_ : Int) => true,
     (_ : String) => false
@@ -802,15 +756,16 @@ connectedStreams.flatMap(
     (_ : Int) => true,
     (_ : String) => false
 )
-    {% endhighlight %}
+{% endhighlight %}
           </td>
         </tr>
         <tr>
           <td><strong>Split</strong><br>DataStream &rarr; SplitStream</td>
           <td>
             <p>
-                Split the stream into two or more streams according to some criterion.
-                {% highlight scala %}
+                根据具体的标准切分数据流成两个或多个流。
+
+{% highlight scala %}
 val split = someDataStream.split(
   (num: Int) =>
     (num % 2) match {
@@ -818,7 +773,7 @@ val split = someDataStream.split(
       case 1 => List("odd")
     }
 )
-                {% endhighlight %}
+{% endhighlight %}
             </p>
           </td>
         </tr>
@@ -826,13 +781,14 @@ val split = someDataStream.split(
           <td><strong>Select</strong><br>SplitStream &rarr; DataStream</td>
           <td>
             <p>
-                Select one or more streams from a split stream.
-                {% highlight scala %}
+                从一个 SplitStream 中选出一个或多个流。
+
+{% highlight scala %}
 
 val even = split select "even"
 val odd = split select "odd"
 val all = split.select("even","odd")
-                {% endhighlight %}
+{% endhighlight %}
             </p>
           </td>
         </tr>
@@ -840,33 +796,27 @@ val all = split.select("even","odd")
           <td><strong>Iterate</strong><br>DataStream &rarr; IterativeStream  &rarr; DataStream</td>
           <td>
             <p>
-                Creates a "feedback" loop in the flow, by redirecting the output of one operator
-                to some previous operator. This is especially useful for defining algorithms that
-                continuously update a model. The following code starts with a stream and applies
-    the iteration body continuously. Elements that are greater than 0 are sent back
-    to the feedback channel, and the rest of the elements are forwarded downstream.
-    See <a href="#iterations">iterations</a> for a complete description.
-                {% highlight java %}
+              在流(flow)中创建一个带反馈的循环，通过重定向一个 operator 的输出到之前的 operator。这对于定义一些需要不断更新模型的算法是非常有帮助的。下面这段代码对一个流不断地应用迭代体。大于 0 的元素会被发送到反馈通道，剩余的元素会继续发往下游。查阅 <a href="#iterations">迭代</a> 了解完整的描述。
+
+{% highlight java %}
 initialStream.iterate {
   iteration => {
     val iterationBody = iteration.map {/*do something*/}
     (iterationBody.filter(_ > 0), iterationBody.filter(_ <= 0))
   }
 }
-                {% endhighlight %}
+{% endhighlight %}
             </p>
           </td>
         </tr>
         <tr>
-          <td><strong>Extract Timestamps</strong><br>DataStream &rarr; DataStream</td>
+          <td><strong>提取时间戳</strong><br>DataStream &rarr; DataStream</td>
           <td>
             <p>
-                Extracts timestamps from records in order to work with windows
-                that use event time semantics.
-                See <a href="{{ site.baseurl }}/apis/streaming/time.html">working with time</a>.
-                {% highlight scala %}
+                为了能够工作于使用 event time 语义的窗口，需要从记录中提取时间戳。查阅 <a href="{{ site.baseurl }}/apis/streaming/time.html">working with time</a> 了解更多。
+{% highlight scala %}
 stream.assignTimestamps { timestampExtractor }
-                {% endhighlight %}
+{% endhighlight %}
             </p>
           </td>
         </tr>
@@ -876,26 +826,24 @@ stream.assignTimestamps { timestampExtractor }
 </div>
 </div>
 
-The following transformations are available on data streams of Tuples:
-
+下面的转换只适用于基于 Tuple 类型的数据流：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
 
-<br />
 
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th class="text-left" style="width: 20%">Transformation</th>
-      <th class="text-center">Description</th>
+      <th class="text-left" style="width: 20%">转换</th>
+      <th class="text-center">描述</th>
     </tr>
   </thead>
   <tbody>
    <tr>
-      <td><strong>Project</strong><br>DataStream &rarr; DataStream</td>
+      <td><strong>投影</strong><br>DataStream &rarr; DataStream</td>
       <td>
-        <p>Selects a subset of fields from the tuples
+        <p>从元组中选择了一部分字段子集。
 {% highlight java %}
 DataStream<Tuple3<Integer, Double, String>> in = // [...]
 DataStream<Tuple2<String, Integer>> out = in.project(2,0);
@@ -910,20 +858,18 @@ DataStream<Tuple2<String, Integer>> out = in.project(2,0);
 
 <div data-lang="scala" markdown="1">
 
-<br />
-
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th class="text-left" style="width: 20%">Transformation</th>
-      <th class="text-center">Description</th>
+      <th class="text-left" style="width: 20%">转换</th>
+      <th class="text-center">描述</th>
     </tr>
   </thead>
   <tbody>
    <tr>
-      <td><strong>Project</strong><br>DataStream &rarr; DataStream</td>
+      <td><strong>投影</strong><br>DataStream &rarr; DataStream</td>
       <td>
-        <p>Selects a subset of fields from the tuples
+        <p>从元组中选择了一部分字段子集。
 {% highlight scala %}
 val in : DataStream[(Int,Double,String)] = // [...]
 val out = in.project(2,0)
@@ -938,44 +884,43 @@ val out = in.project(2,0)
 </div>
 
 
-### Physical partitioning
+### 物理分区
 
-Flink also gives low-level control (if desired) on the exact stream partitioning after a transformation,
-via the following functions.
+在流转换后，Flink 在精确控制流分区上也提供了底层的控制（如果需要），通过下面的函数可以实现。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
 
-<br />
-
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th class="text-left" style="width: 20%">Transformation</th>
-      <th class="text-center">Description</th>
+      <th class="text-left" style="width: 20%">转换</th>
+      <th class="text-center">描述</th>
     </tr>
   </thead>
   <tbody>
    <tr>
-      <td><strong>Custom partitioning</strong><br>DataStream &rarr; DataStream</td>
+      <td><strong>自定义分区</strong><br>DataStream &rarr; DataStream</td>
       <td>
         <p>
-            Uses a user-defined Partitioner to select the target task for each element.
-            {% highlight java %}
+            使用一个用户自定义的 Partitioner 对每一个元素选择目标 task。
+          
+{% highlight java %}
 dataStream.partitionCustom(partitioner, "someKey");
 dataStream.partitionCustom(partitioner, 0);
-            {% endhighlight %}
+{% endhighlight %}
         </p>
       </td>
     </tr>
    <tr>
-     <td><strong>Random partitioning</strong><br>DataStream &rarr; DataStream</td>
+     <td><strong>随机分区</strong><br>DataStream &rarr; DataStream</td>
      <td>
        <p>
-            Partitions elements randomly according to a uniform distribution.
-            {% highlight java %}
+            以均匀分布的形式将元素随机地进行分区。
+          
+{% highlight java %}
 dataStream.shuffle();
-            {% endhighlight %}
+{% endhighlight %}
        </p>
      </td>
    </tr>
@@ -983,11 +928,11 @@ dataStream.shuffle();
       <td><strong>Rebalancing (Round-robin partitioning)</strong><br>DataStream &rarr; DataStream</td>
       <td>
         <p>
-            Partitions elements round-robin, creating equal load per partition. Useful for performance
-            optimization in the presence of data skew.
-            {% highlight java %}
+            基于 round-robin 对元素进行分区，使得每个分区负责均衡。对于存在数据倾斜的性能优化是很有用的。
+            
+{% highlight java %}
 dataStream.rebalance();
-            {% endhighlight %}
+{% endhighlight %}
         </p>
       </td>
     </tr>
@@ -995,32 +940,16 @@ dataStream.rebalance();
       <td><strong>Rescaling</strong><br>DataStream &rarr; DataStream</td>
       <td>
         <p>
-            Partitions elements, round-robin, to a subset of downstream operations. This is
-            useful if you want to have pipelines where you, for example, fan out from
-            each parallel instance of a source to a subset of several mappers to distribute load
-            but don't want the full rebalance that rebalance() would incur. This would require only
-            local data transfers instead of transferring data over network, depending on
-            other configuration values such as the number of slots of TaskManagers.
+            以 round-robin 的形式将元素分区到下游操作的子集中。如果你想要将数据从一个源的每个并行实例中散发到一些 mappers 的子集中，用来分散负载，但是又不想要完全的 rebalance 介入（引入 `rebalance()`），这会非常有用。根据一些如TaskManager 的 slots 个数的配置，这将会只需要本地数据传输，而不是通过网络。
         </p>
         <p>
-            The subset of downstream operations to which the upstream operation sends
-            elements depends on the degree of parallelism of both the upstream and downstream operation.
-            For example, if the upstream operation has parallelism 2 and the downstream operation
-            has parallelism 4, then one upstream operation would distribute elements to two
-            downstream operations while the other upstream operation would distribute to the other
-            two downstream operations. If, on the other hand, the downstream operation has parallelism
-            2 while the upstream operation has parallelism 4 then two upstream operations would
-            distribute to one downstream operation while the other two upstream operations would
-            distribute to the other downstream operations.
+            上游操作所发送的元素被分区到下游操作的哪些子集，依赖于上游和下游操作的并发度。例如，如果上游操作的并发为 2 ，而下游操作的并发为 4 ，那么一个上游操作会分发元素给两个下游操作，同时另一个上游操作会分发给另两个下游操作。相反的，如果下游操作的并发为 2 ，而下游操作的并发为4，那么两个上游操作会分发数据给一个下游操作，同时另两个上游操作会分发数据给另一个下游操作。
         </p>
         <p>
-            In cases where the different parallelisms are not multiples of each other one or several
-            downstream operations will have a differing number of inputs from upstream operations.
-
+            在上下游的并发度不是呈倍数关系的情况下，下游操作会有数量不同的来自上游操作的输入。
         </p>
         </p>
-            Please see this figure for a visualization of the connection pattern in the above
-            example:
+            下图是对上述例子的一个可视化：
         </p>
 
         <div style="text-align: center">
@@ -1029,21 +958,21 @@ dataStream.rebalance();
 
 
         <p>
-                    {% highlight java %}
+{% highlight java %}
 dataStream.rescale();
-            {% endhighlight %}
+{% endhighlight %}
 
         </p>
       </td>
     </tr>
    <tr>
-      <td><strong>Broadcasting</strong><br>DataStream &rarr; DataStream</td>
+      <td><strong>广播</strong><br>DataStream &rarr; DataStream</td>
       <td>
         <p>
-            Broadcasts elements to every partition.
-            {% highlight java %}
+            广播每个元素到所有分区。
+{% highlight java %}
 dataStream.broadcast();
-            {% endhighlight %}
+{% endhighlight %}
         </p>
       </td>
     </tr>
@@ -1059,31 +988,33 @@ dataStream.broadcast();
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th class="text-left" style="width: 20%">Transformation</th>
-      <th class="text-center">Description</th>
+      <th class="text-left" style="width: 20%">转换</th>
+      <th class="text-center">描述</th>
     </tr>
   </thead>
   <tbody>
    <tr>
-      <td><strong>Custom partitioning</strong><br>DataStream &rarr; DataStream</td>
+      <td><strong>自定义分区</strong><br>DataStream &rarr; DataStream</td>
       <td>
         <p>
-            Uses a user-defined Partitioner to select the target task for each element.
-            {% highlight scala %}
+            使用一个用户自定义的 Partitioner 对每一个元素选择目标 task。
+
+{% highlight scala %}
 dataStream.partitionCustom(partitioner, "someKey")
 dataStream.partitionCustom(partitioner, 0)
-            {% endhighlight %}
+{% endhighlight %}
         </p>
       </td>
     </tr>
    <tr>
-     <td><strong>Random partitioning</strong><br>DataStream &rarr; DataStream</td>
+     <td><strong>随机分区</strong><br>DataStream &rarr; DataStream</td>
      <td>
        <p>
-            Partitions elements randomly according to a uniform distribution.
-            {% highlight scala %}
+            以均匀分布的形式将元素随机地进行分区。
+
+{% highlight scala %}
 dataStream.shuffle()
-            {% endhighlight %}
+{% endhighlight %}
        </p>
      </td>
    </tr>
@@ -1091,11 +1022,10 @@ dataStream.shuffle()
       <td><strong>Rebalancing (Round-robin partitioning)</strong><br>DataStream &rarr; DataStream</td>
       <td>
         <p>
-            Partitions elements round-robin, creating equal load per partition. Useful for performance
-            optimization in the presence of data skew.
-            {% highlight scala %}
+            基于 round-robin 对元素进行分区，使得每个分区负责均衡。对于存在数据倾斜的性能优化是很有用的。
+{% highlight scala %}
 dataStream.rebalance()
-            {% endhighlight %}
+{% endhighlight %}
         </p>
       </td>
     </tr>
@@ -1103,32 +1033,16 @@ dataStream.rebalance()
       <td><strong>Rescaling</strong><br>DataStream &rarr; DataStream</td>
       <td>
         <p>
-            Partitions elements, round-robin, to a subset of downstream operations. This is
-            useful if you want to have pipelines where you, for example, fan out from
-            each parallel instance of a source to a subset of several mappers to distribute load
-            but don't want the full rebalance that rebalance() would incur. This would require only
-            local data transfers instead of transferring data over network, depending on
-            other configuration values such as the number of slots of TaskManagers.
+            以 round-robin 的形式将元素分区到下游操作的子集中。如果你想要将数据从一个源的每个并行实例中散发到一些 mappers 的子集中，用来分散负载，但是又不想要完全的 rebalance 介入（引入 `rebalance()`），这会非常有用。根据一些如TaskManager 的 slots 个数的配置，这将会只需要本地数据传输，而不是通过网络。
         </p>
         <p>
-            The subset of downstream operations to which the upstream operation sends
-            elements depends on the degree of parallelism of both the upstream and downstream operation.
-            For example, if the upstream operation has parallelism 2 and the downstream operation
-            has parallelism 4, then one upstream operation would distribute elements to two
-            downstream operations while the other upstream operation would distribute to the other
-            two downstream operations. If, on the other hand, the downstream operation has parallelism
-            2 while the upstream operation has parallelism 4 then two upstream operations would
-            distribute to one downstream operation while the other two upstream operations would
-            distribute to the other downstream operations.
+            上游操作所发送的元素被分区到下游操作的哪些子集，依赖于上游和下游操作的并发度。例如，如果上游操作的并发为 2 ，而下游操作的并发为 4 ，那么一个上游操作会分发元素给两个下游操作，同时另一个上游操作会分发给另两个下游操作。相反的，如果下游操作的并发为 2 ，而下游操作的并发为4，那么两个上游操作会分发数据给一个下游操作，同时另两个上游操作会分发数据给另一个下游操作。
         </p>
         <p>
-            In cases where the different parallelisms are not multiples of each other one or several
-            downstream operations will have a differing number of inputs from upstream operations.
-
+            在上下游的并发度不是呈倍数关系的情况下，下游操作会有数量不同的来自上游操作的输入。
         </p>
         </p>
-            Please see this figure for a visualization of the connection pattern in the above
-            example:
+            下图是对上述例子的一个可视化：
         </p>
 
         <div style="text-align: center">
@@ -1137,21 +1051,22 @@ dataStream.rebalance()
 
 
         <p>
-                    {% highlight java %}
+{% highlight java %}
 dataStream.rescale()
-            {% endhighlight %}
+{% endhighlight %}
 
         </p>
       </td>
     </tr>
    <tr>
-      <td><strong>Broadcasting</strong><br>DataStream &rarr; DataStream</td>
+      <td><strong>广播</strong><br>DataStream &rarr; DataStream</td>
       <td>
         <p>
-            Broadcasts elements to every partition.
-            {% highlight scala %}
+            广播每个元素到所有分区。
+
+{% highlight scala %}
 dataStream.broadcast()
-            {% endhighlight %}
+{% endhighlight %}
         </p>
       </td>
     </tr>
@@ -1161,41 +1076,30 @@ dataStream.broadcast()
 </div>
 </div>
 
-### Task chaining and resource groups
+### 任务链和资源组
 
-Chaining two subsequent transformations means co-locating them within the same thread for better
-performance. Flink by default chains operators if this is possible (e.g., two subsequent map
-transformations). The API gives fine-grained control over chaining if desired:
+为了获得更好的性能，你可以链接（chaining）两个连续的转换，这意味着将它们置于同一个线程中。Flink 会尽可能地链接 operators （例如，两个 map 转换）。如果需要的话，该 API 提供了对链接（chaining）细粒度的控制。
 
-Use `StreamExecutionEnvironment.disableOperatorChaining()` if you want to disable chaining in
-the whole job. For more fine grained control, the following functions are available. Note that
-these functions can only be used right after a DataStream transformation as they refer to the
-previous transformation. For example, you can use `someStream.map(...).startNewChain()`, but
-you cannot use `someStream.startNewChain()`.
+如果你想要在整个任务中禁用 chaining ，使用 `StreamExecutionEnvironment.disableOperatorChaining()`。想了解更细粒度的控制，下面的函数是很有用的。注意这些函数只能被用在一个 DataStream 的转换之后，因为它们要指向之前的转换。例如，你可以 `someStream.map(...).startNewChain()`，但不能 `someStream.startNewChain()`。
 
-A resource group is a slot in Flink, see
-[slots]({{site.baseurl}}/setup/config.html#configuring-taskmanager-processing-slots). You can
-manually isolate operators in separate slots if desired.
+在 Flink 中一个资源组就是一个 slot 。查阅 [slots]({{site.baseurl}}/setup/config.html#configuring-taskmanager-processing-slots) 了解更多。如果需要的话，你可以手动地隔离 slot 。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
 
-<br />
-
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th class="text-left" style="width: 20%">Transformation</th>
-      <th class="text-center">Description</th>
+      <th class="text-left" style="width: 20%">转换</th>
+      <th class="text-center">描述</th>
     </tr>
   </thead>
   <tbody>
    <tr>
       <td>Start new chain</td>
       <td>
-        <p>Begin a new chain, starting with this operator. The two
-  mappers will be chained, and filter will not be chained to
-  the first mapper.
+        <p>从这个操作符开始一个新的链条（chain）。这两个 mapper 会被链接，而 filter 不会被与第一个 mapper 链上。
+        
 {% highlight java %}
 someStream.filter(...).map(...).startNewChain().map(...);
 {% endhighlight %}
@@ -1205,7 +1109,7 @@ someStream.filter(...).map(...).startNewChain().map(...);
    <tr>
       <td>Disable chaining</td>
       <td>
-        <p>Do not chain the map operator
+        <p>不要与这个 map operator 进行链接。
 {% highlight java %}
 someStream.map(...).disableChaining();
 {% endhighlight %}
@@ -1215,7 +1119,8 @@ someStream.map(...).disableChaining();
    <tr>
       <td>Start a new resource group</td>
       <td>
-        <p>Start a new resource group containing the map and the subsequent operators.
+        <p>启动一个新的资源组，包含了这个 map 和之后的 operators。（译注：filter？）
+        
 {% highlight java %}
 someStream.filter(...).startNewResourceGroup();
 {% endhighlight %}
@@ -1225,7 +1130,7 @@ someStream.filter(...).startNewResourceGroup();
    <tr>
       <td>Isolate resources</td>
       <td>
-        <p>Isolate the operator in its own slot.
+        <p>将这个 operator 隔离在自己的 slot 中。
 {% highlight java %}
 someStream.map(...).isolateResources();
 {% endhighlight %}
@@ -1239,22 +1144,20 @@ someStream.map(...).isolateResources();
 
 <div data-lang="scala" markdown="1">
 
-<br />
 
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th class="text-left" style="width: 20%">Transformation</th>
-      <th class="text-center">Description</th>
+      <th class="text-left" style="width: 20%">转换</th>
+      <th class="text-center">描述</th>
     </tr>
   </thead>
   <tbody>
    <tr>
       <td>Start new chain</td>
       <td>
-        <p>Begin a new chain, starting with this operator. The two
-  mappers will be chained, and filter will not be chained to
-  the first mapper.
+        <p>从这个操作符开始一个新的链条（chain）。这两个 mapper 会被链接，而 filter 不会被与第一个 mapper 链上。
+
 {% highlight scala %}
 someStream.filter(...).map(...).startNewChain().map(...)
 {% endhighlight %}
@@ -1264,7 +1167,8 @@ someStream.filter(...).map(...).startNewChain().map(...)
    <tr>
       <td>Disable chaining</td>
       <td>
-        <p>Do not chain the map operator
+        <p>不要与这个 map operator 进行链接。
+
 {% highlight scala %}
 someStream.map(...).disableChaining()
 {% endhighlight %}
@@ -1274,7 +1178,8 @@ someStream.map(...).disableChaining()
    <tr>
       <td>Start a new resource group</td>
       <td>
-        <p>Start a new resource group containing the map and the subsequent operators.
+        <p>启动一个新的资源组，包含了这个 map 和之后的 operators。（译注：filter？）
+
 {% highlight scala %}
 someStream.filter(...).startNewResourceGroup()
 {% endhighlight %}
@@ -1284,7 +1189,8 @@ someStream.filter(...).startNewResourceGroup()
    <tr>
       <td>Isolate resources</td>
       <td>
-        <p>Isolate the operator in its own slot.
+        <p>将这个 operator 隔离在自己的 slot 中。
+
 {% highlight scala %}
 someStream.map(...).isolateResources()
 {% endhighlight %}
@@ -1300,221 +1206,160 @@ someStream.map(...).isolateResources()
 
 {% top %}
 
-Data Sources
+数据源
 ------------
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
 
-<br />
+源可以通过 `StreamExecutionEnvironment.addSource(sourceFunction)` 来创建。你可以使用 Flink 自带的数据源函数，也可以通过实现 `SourceFunction` 接口写一个自定义的非并行数据源，或者通过实现 `ParallelSourceFunction` 接口或者继承 `RichParallelSourceFunction` 来写一个并行的数据源。
 
-Sources can by created by using `StreamExecutionEnvironment.addSource(sourceFunction)`.
-You can either use one of the source functions that come with Flink or write a custom source
-by implementing the `SourceFunction` for non-parallel sources, or by implementing the
-`ParallelSourceFunction` interface or extending `RichParallelSourceFunction` for parallel sources.
+有一些预定义的流数据源，可以通过 `StreamExecutionEnvironment` 访问到。
 
-There are several predefined stream sources accessible from the `StreamExecutionEnvironment`:
+基于文件：
 
-File-based:
+- `readTextFile(path)` / `TextInputFormat` - 读取文件行并将它们以 String 类型返回。
 
-- `readTextFile(path)` / `TextInputFormat` - Reads files line wise and returns them as Strings.
+- `readFile(path)` / 任何输入格式 - 以指定的输入格式读取文件。
 
-- `readFile(path)` / Any input format - Reads files as dictated by the input format.
+- `readFileStream` - 创建一个流，当文件有修改的时候，会将元素附加到流中。
 
-- `readFileStream` - create a stream by appending elements when there are changes to a file
+基于 Socket：
 
-Socket-based:
+- `socketTextStream` - 从一个 socket 中读取数据，可以指定分隔符来切分元素。
 
-- `socketTextStream` - Reads from a socket. Elements can be separated by a delimiter.
+基于集合：
 
-Collection-based:
+- `fromCollection(Collection)` - 从 Java java.util.Collection 集合中创建一个数据流。集合中的所有元素的类型必须一致。
 
-- `fromCollection(Collection)` - Creates a data stream from the Java Java.util.Collection. All elements
-  in the collection must be of the same type.
+- `fromCollection(Iterator, Class)` - 从一个迭代器中创建一个数据流。Class 指定了迭代器返回的数据类型。
 
-- `fromCollection(Iterator, Class)` - Creates a data stream from an iterator. The class specifies the
-  data type of the elements returned by the iterator.
+- `fromElements(T ...)` - 从一个对象序列中创建一个数据流。所有的对象的类型必须一致。
 
-- `fromElements(T ...)` - Creates a data stream from the given sequence of objects. All objects must be
-  of the same type.
+- `fromParallelCollection(SplittableIterator, Class)` - 从一个迭代器中创建一个并行数据流。Class 指定了迭代器返回的数据类型。
 
-- `fromParallelCollection(SplittableIterator, Class)` - Creates a data stream from an iterator, in
-  parallel. The class specifies the data type of the elements returned by the iterator.
+- `generateSequence(from, to)` - 创建一个并行数据流，生成区间范围内的数字序列。
 
-- `generateSequence(from, to)` - Generates the sequence of numbers in the given interval, in
-  parallel.
+自定义：
 
-Custom:
-
-- `addSource` - Attache a new source function. For example, to read from Apache Kafka you can use
-    `addSource(new FlinkKafkaConsumer08<>(...))`. See [connectors]({{ site.baseurl }}/apis/streaming/connectors/) for more details.
+- `addSource` - 添加一个新的源函数。例如，从 Apache Kafka 读取的话你可以：`addSource(new FlinkKafkaConsumer08<>(...))`. 查阅 [连接器(connectors)]({{ site.baseurl }}/apis/streaming/connectors/) 了解更多。
 
 </div>
 
 <div data-lang="scala" markdown="1">
 
-<br />
+源可以通过 `StreamExecutionEnvironment.addSource(sourceFunction)` 来创建。你可以使用 Flink 自带的数据源函数，也可以通过实现 `SourceFunction` 接口写一个自定义的非并行数据源，或者通过实现 `ParallelSourceFunction` 接口或者继承 `RichParallelSourceFunction` 来写一个并行的数据源。
 
-Sources can by created by using `StreamExecutionEnvironment.addSource(sourceFunction)`.
-You can either use one of the source functions that come with Flink or write a custom source
-by implementing the `SourceFunction` for non-parallel sources, or by implementing the
-`ParallelSourceFunction` interface or extending `RichParallelSourceFunction` for parallel sources.
+有一些预定义的流数据源，可以通过 `StreamExecutionEnvironment` 访问到。
 
-There are several predefined stream sources accessible from the `StreamExecutionEnvironment`:
+基于文件：
 
-File-based:
+- `readTextFile(path)` / `TextInputFormat` - 读取文件行并将它们以 String 类型返回。
 
-- `readTextFile(path)` / `TextInputFormat` - Reads files line wise and returns them as Strings.
+- `readFile(path)` / 任何输入格式 - 以指定的输入格式读取文件。
 
-- `readFile(path)` / Any input format - Reads files as dictated by the input format.
+- `readFileStream` - 创建一个流，当文件有修改的时候，会将元素附加到流中。
 
-- `readFileStream` - create a stream by appending elements when there are changes to a file
+基于 Socket：
 
-Socket-based:
+- `socketTextStream` - 从一个 socket 中读取数据，可以指定分隔符来切分元素。
 
-- `socketTextStream` - Reads from a socket. Elements can be separated by a delimiter.
+基于集合：
 
-Collection-based:
+- `fromCollection(Seq)` - 从 Java java.util.Collection 集合中创建一个数据流。集合中的所有元素的类型必须一致。
 
-- `fromCollection(Seq)` - Creates a data stream from the Java Java.util.Collection. All elements
-  in the collection must be of the same type.
+- `fromCollection(Iterator)` - 从一个迭代器中创建一个数据流。Class 指定了迭代器返回的数据类型。
 
-- `fromCollection(Iterator)` - Creates a data stream from an iterator. The class specifies the
-  data type of the elements returned by the iterator.
+- `fromElements(elements: _*)` - 从一个对象序列中创建一个数据流。所有的对象的类型必须一致。
 
-- `fromElements(elements: _*)` - Creates a data stream from the given sequence of objects. All objects must be
-  of the same type.
+- `fromParallelCollection(SplittableIterator)` - 从一个迭代器中创建一个并行数据流。Class 指定了迭代器返回的数据类型。
 
-- `fromParallelCollection(SplittableIterator)` - Creates a data stream from an iterator, in
-  parallel. The class specifies the data type of the elements returned by the iterator.
+- `generateSequence(from, to)` - 创建一个并行数据流，生成区间范围内的数字序列。
 
-- `generateSequence(from, to)` - Generates the sequence of numbers in the given interval, in
-  parallel.
+自定义：
 
-Custom:
-
-- `addSource` - Attache a new source function. For example, to read from Apache Kafka you can use
-    `addSource(new FlinkKafkaConsumer08<>(...))`. See [connectors]({{ site.baseurl }}/apis/streaming/connectors/) for more details.
+- `addSource` - 添加一个新的源函数。例如，从 Apache Kafka 读取的话你可以：`addSource(new FlinkKafkaConsumer08<>(...))`. 查阅 [连接器(connectors)]({{ site.baseurl }}/apis/streaming/connectors/) 了解更多。
 
 </div>
 </div>
 
 {% top %}
 
-Data Sinks
+数据下沉（Sinks）
 ----------
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
 
-<br />
+数据下沉（sinks）消费了 DataStream 并将它们发往文件、socket、外部系统、或打印出来。Flink 拥有很多内建的输出格式，这些都被封装在了 DataStream 的操作背后：
 
-Data sinks consume DataStreams and forward them to files, sockets, external systems, or print them.
-Flink comes with a variety of built-in output formats that are encapsulated behind operations on the
-DataStreams:
+- `writeAsText()` / `TextOuputFormat` - 以字符串的形式成行地输出元素。元素的字符串可以通过调用 *toString()* 获得。
 
-- `writeAsText()` / `TextOuputFormat` - Writes elements line-wise as Strings. The Strings are
-  obtained by calling the *toString()* method of each element.
+- `writeAsCsv(...)` / `CsvOutputFormat` - 将元组写入到 CSV 文件。 Writes tuples as comma-separated value files. 行和字段的分隔符是可以配置的。每个字段的值可以通过对象的 *toString()* 方法获得。
 
-- `writeAsCsv(...)` / `CsvOutputFormat` - Writes tuples as comma-separated value files. Row and field
-  delimiters are configurable. The value for each field comes from the *toString()* method of the objects.
+- `print()` / `printToErr()`  - 打印每个元素的 *toString()* 值到标准输出流 / 标准错误流。可选的，可以提供一个前缀（msg）作为前置输出。这可以帮助区分不同次的调用 *print* 。如果并发度大于 1 ，task id 也会被前置到输出中。
 
-- `print()` / `printToErr()`  - Prints the *toString()* value
-of each element on the standard out / strandard error stream. Optionally, a prefix (msg) can be provided which is
-prepended to the output. This can help to distinguish between different calls to *print*. If the parallelism is
-greater than 1, the output will also be prepended with the identifier of the task which produced the output.
+- `writeUsingOutputFormat()` / `FileOutputFormat` - 自定义文件输出的方法和基类。支持自定义的对象到字节的转换。 
 
-- `writeUsingOutputFormat()` / `FileOutputFormat` - Method and base class for custom file outputs. Supports
-  custom object-to-bytes conversion.
+- `writeToSocket` - 根据 `SerializationSchema` 将元素写入到 socket 中。
 
-- `writeToSocket` - Writes elements to a socket according to a `SerializationSchema`
-
-- `addSink` - Invokes a custom sink function. Flink comes bundled with connectors to other systems (such as
-    Apache Kafka) that are implemented as sink functions.
+- `addSink` - 调用自定义的 sink 方法。Flink 自带了很多连接器（connectors），用来连接其他系统（如 Apache Kafka），这些连接器都实现了 sink 方法。
 
 </div>
 <div data-lang="scala" markdown="1">
 
-<br />
 
-Data sinks consume DataStreams and forward them to files, sockets, external systems, or print them.
-Flink comes with a variety of built-in output formats that are encapsulated behind operations on the
-DataStreams:
+数据下沉（sinks）消费了 DataStream 并将它们发往文件、socket、外部系统、或打印出来。Flink 拥有很多内建的输出格式，这些都被封装在了 DataStream 的操作背后：
 
-- `writeAsText()` / `TextOuputFormat` - Writes elements line-wise as Strings. The Strings are
-  obtained by calling the *toString()* method of each element.
+- `writeAsText()` / `TextOuputFormat` - 以字符串的形式成行地输出元素。元素的字符串可以通过调用 *toString()* 获得。
 
-- `writeAsCsv(...)` / `CsvOutputFormat` - Writes tuples as comma-separated value files. Row and field
-  delimiters are configurable. The value for each field comes from the *toString()* method of the objects.
+- `writeAsCsv(...)` / `CsvOutputFormat` - 将元组写入到 CSV 文件。 Writes tuples as comma-separated value files. 行和字段的分隔符是可以配置的。每个字段的值可以通过对象的 *toString()* 方法获得。
 
-- `print()` / `printToErr()`  - Prints the *toString()* value
-of each element on the standard out / strandard error stream. Optionally, a prefix (msg) can be provided which is
-prepended to the output. This can help to distinguish between different calls to *print*. If the parallelism is
-greater than 1, the output will also be prepended with the identifier of the task which produced the output.
+- `print()` / `printToErr()`  - 打印每个元素的 *toString()* 值到标准输出流 / 标准错误流。可选的，可以提供一个前缀（msg）作为前置输出。这可以帮助区分不同次的调用 *print* 。如果并发度大于 1 ，task id 也会被前置到输出中。
 
-- `writeUsingOutputFormat()` / `FileOutputFormat` - Method and base class for custom file outputs. Supports
-  custom object-to-bytes conversion.
+- `writeUsingOutputFormat()` / `FileOutputFormat` - 自定义文件输出的方法和基类。支持自定义的对象到字节的转换。 
 
-- `writeToSocket` - Writes elements to a socket according to a `SerializationSchema`
+- `writeToSocket` - 根据 `SerializationSchema` 将元素写入到 socket 中。
 
-- `addSink` - Invokes a custom sink function. Flink comes bundled with connectors to other systems (such as
-    Apache Kafka) that are implemented as sink functions.
+- `addSink` - 调用自定义的 sink 方法。Flink 自带了很多连接器（connectors），用来连接其他系统（如 Apache Kafka），这些连接器都实现了 sink 方法。
 
 </div>
 </div>
 
-Note that the `write*()` methods on `DataStream` are mainly intended for debugging purposes.
-They are not participating in Flink's checkpointing, this means these functions usually have
-at-least-once semantics. The data flushing to the target system depends on the implementation of the
-OutputFormat. This means that not all elements send to the OutputFormat are immediately showing up
-in the target system. Also, in failure cases, those records might be lost.
+注意 `DataStream` 的 `write*()` 方法主要是用来 debug 的。它们不会参与 Flink 的 checkpoint 机制，这意味着这些函数一般只有最少一次（at-lease-once）语义。数据刷到目标系统的动作依赖于 OutputFormat 的实现。这也就是说不是所有发送给 OutputFormat 的元素会立即在目标系统上可见。另外，在失败的情况下，这些记录可能会丢失。
 
-For reliable, exactly-once delivery of a stream into a file system, use the `flink-connector-filesystem`.
-Also, custom implementations through the `.addSink(...)` method can partiticpate in Flink's checkpointing
-for exactly-once semantics.
+为了可靠性，可以用 `flink-connector-filesystem` 实现流到文件系统的恰好一次（exactly-once）。同样的，可以通过 `.addSink(...)` 方法自己实现 SinkFunction，这也能参与 Flink 的 checkpoint 机制，达到 exactly-once 语义。
 
 {% top %}
 
-Iterations
+迭代（Iterations）
 ----------
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
 
-<br />
-
-Iterative streaming programs implement a step function and embed it into an `IterativeStream`. As a DataStream
-program may never finish, there is no maximum number of iterations. Instead, you need to specify which part
-of the stream is fed back to the iteration and which part is forwarded downstream using a `split` transformation
-or a `filter`. Here, we show an example using filters. First, we define an `IterativeStream`
+迭代的流程序实现了一个分步的函数并嵌入到了 `IterativeStream` 中。因为一个 DataStream 程序可能永远不会结束的，所以迭代次数没有上限。你需要指出流的哪部分是要反馈到迭代中的，哪部分是要继续往下游发送的，这可以用 `split` 或 `filter` 转换来实现。这里，我们给出一个使用 filters 的样例。首先，我们定义了一个 `IterativeStream`。
 
 {% highlight java %}
 IterativeStream<Integer> iteration = input.iterate();
 {% endhighlight %}
 
-Then, we specify the logic that will be executed inside the loop using a series of trasformations (here
-a simple `map` transformation)
+然后，我们使用一系列的转换来说明了迭代中被执行的逻辑（这里就是一个简单 `map` 转换）。
 
 {% highlight java %}
 DataStream<Integer> iterationBody = iteration.map(/* this is executed many times */);
 {% endhighlight %}
 
-To close an iteration and define the iteration tail, call the `closeWith(feedbackStream)` method of the `IterativeStream`.
-The DataStream given to the `closeWith` function will be fed back to the iteration head.
-A common pattern is to use a filter to separate the part of the strem that is fed back,
-and the part of the stream which is propagated forward. These filters can, e.g., define
-the "termination" logic, where an element is allowed to propagate downstream rather
-than being fed back.
+要关闭一个迭代并定义迭代的尾部，请调用 `IterativeStream` 的 `closeWith(feedbackStream)` 方法。传给 `closeWith` 方法的 DataStream 会被反馈给迭代的头部。一种常见的形式就是使用一个 filter 来分离流中需要被反馈的部分和需要被继续发往下游的部分。在 filter 中可以定义“结束”逻辑，来决定了一个元素是被发往下游还是被反馈的。
 
 {% highlight java %}
 iteration.closeWith(iterationBody.filter(/* one part of the stream */));
 DataStream<Integer> output = iterationBody.filter(/* some other part of the stream */);
 {% endhighlight %}
 
-By default the partitioning of the feedback stream will be automatically set to be the same as the input of the
-iteration head. To override this the user can set an optional boolean flag in the `closeWith` method.
+默认情况下，反馈流的分区将被自动设定为与迭代头部的输入相同的分区。用户可以在 `closeWith` 方法中设置一个可选的布尔 flag 来覆盖这种默认行为。
 
-For example, here is program that continuously subtracts 1 from a series of integers until they reach zero:
+例如，下面这段程序就是对一串数字不断地做减 1 操作，知道它们都为 0 了为止。
 
 {% highlight java %}
 DataStream<Long> someIntegers = env.generateSequence(0, 1000);
@@ -1547,14 +1392,8 @@ DataStream<Long> lessThanZero = minusOne.filter(new FilterFunction<Long>() {
 </div>
 <div data-lang="scala" markdown="1">
 
-<br />
+迭代的流程序实现了一个分步的函数并嵌入到了 `IterativeStream` 中。因为一个 DataStream 程序可能永远不会结束的，所以迭代次数没有上限。你需要指出流的哪部分是要反馈到迭代中的，哪部分是要继续往下游发送的，这可以用 `split` 或 `filter` 转换来实现。这里，我们给出一个迭代样例，其中主体部分（不断重复计算的部分）是一个简单的 map 转换，而每个元素到底是被反馈还是被发往下游主要是使用 filter 来区分的。
 
-Iterative streaming programs implement a step function and embed it into an `IterativeStream`. As a DataStream
-program may never finish, there is no maximum number of iterations. Instead, you need to specify which part
-of the stream is fed back to the iteration and which part is forwarded downstream using a `split` transformation
-or a `filter`. Here, we show an example iteration where the body (the part of the computation that is repeated)
-is a simple map transformation, and the elements that are fed back are distinguished by the elements that
-are forwarded downstream using filters.
 
 {% highlight scala %}
 val iteratedStream = someDataStream.iterate(
@@ -1564,11 +1403,9 @@ val iteratedStream = someDataStream.iterate(
 })
 {% endhighlight %}
 
+默认情况下，反馈流的分区将被自动设定为与迭代头部的输入相同的分区。用户可以在 closeWith 方法中设置一个可选的布尔 flag 来覆盖这种默认行为。
 
-By default the partitioning of the feedback stream will be automatically set to be the same as the input of the
-iteration head. To override this the user can set an optional boolean flag in the `closeWith` method.
-
-For example, here is program that continuously subtracts 1 from a series of integers until they reach zero:
+例如，下面这段程序就是对一串数字不断地做减 1 操作，知道它们都为 0 了为止。
 
 {% highlight scala %}
 val someIntegers: DataStream[Long] = env.generateSequence(0, 1000)
@@ -1588,36 +1425,30 @@ val iteratedStream = someIntegers.iterate(
 
 {% top %}
 
-Execution Parameters
+<a id="execution-parameters"></a>
+
+执行参数
 --------------------
 
-The `StreamExecutionEnvironment` contains the `ExecutionConfig` which allows to set job specific configuration values for the runtime.
+`StreamExecutionEnvironment` 包含了 `ExecutionConfig`，`ExecutionConfig` 用来设置任务运行时的具体配置值。
 
-Please refer to [execution configuration]({{ site.baseurl }}/apis/common/index.html#execution-configuration)
-for an explanation of most parameters. These parameters pertain specifically to the DataStream API:
+请参考 [execution configuration]({{ site.baseurl }}/apis/common/index.html#execution-configuration) 了解更多参数的说明。下面这些参数是 DataStream API 特有的：
 
-- `enableTimestamps()` / **`disableTimestamps()`**: Attach a timestamp to each event emitted from a source.
-    `areTimestampsEnabled()` returns the current value.
+- `enableTimestamps()` / **`disableTimestamps()`**: 启用的话，从源发出的每一条消息（event）都会附加上一个时间戳。`areTimestampsEnabled()` 返回了当前是否启用的值。
 
-- `setAutoWatermarkInterval(long milliseconds)`: Set the interval for automatic watermark emission. You can
-    get the current value with `long getAutoWatermarkInterval()`
+- `setAutoWatermarkInterval(long milliseconds)`: 设置自动水位排放的间隔时间。你可以通过 `long getAutoWatermarkInterval()` 获得当前值。
 
 {% top %}
 
-### Fault Tolerance
+### 容错
 
-The [Fault Tolerance Documentation](fault_tolerance.html) describes the options and parameters to enable and configure Flink's checkpointing mechanism.
+[容错章节](fault_tolerance.html) 描述了启用和配置 Flink checkpoint 机制的选项和配置项。
 
-### Controlling Latency
+### 延迟控制
 
-By default, elements are not transferred on the network one-by-one (which would cause unnecessary network traffic)
-but are buffered. The size of the buffers (which are actually transferred between machines) can be set in the Flink config files.
-While this method is good for optimizing throughput, it can cause latency issues when the incoming stream is not fast enough.
-To control throughput and latency, you can use `env.setBufferTimeout(timeoutMillis)` on the execution environment
-(or on individual operators) to set a maximum wait time for the buffers to fill up. After this time, the
-buffers are sent automatically even if they are not full. The default value for this timeout is 100 ms.
+默认情况下，数据并不是一个接着一个在网络上传输的（这会导致不必要的网络流量），而是被缓冲的（buffered）。缓冲（实际上是机器之间的传输） 的大小可以在 Flink 配置文件中设置。虽然这种方法有利于优化吞吐量，但当输入的数据流不够快时，它可能会导致延迟问题时。要控制吞吐量和延迟，你可以在 `StreamExecutionEnvironment` 上使用`env.setBufferTimeout(timeoutMillis)`（或者单独的 operator 上）设置等待缓冲区被填满的最长等待时间。超过了这个时间，即时缓冲区还没有满也会被自动发送出去。默认的超时时间是 100 ms。
 
-Usage:
+用法:
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -1638,30 +1469,22 @@ env.genereateSequence(1,10).map(myMap).setBufferTimeout(timeoutMillis)
 </div>
 </div>
 
-To maximize throughput, set `setBufferTimeout(-1)` which will remove the timeout and buffers will only be
-flushed when they are full. To minimize latency, set the timeout to a value close to 0 (for example 5 or 10 ms).
-A buffer timeout of 0 should be avoided, because it can cause severe performance degradation.
+为了最大化吞吐量，可以设置 `setBufferTimeout(-1)`，这会移除超时等待时间而缓冲区只有被填满后才会被发送出去。为了最小化延时，可以设置一个接近 0 的超时时间（如 5 或 10 毫秒）。建议避免缓冲超时时间为 0 ，因为这会降低服务性能。
 
 {% top %}
 
-Debugging
+调试
 ---------
 
-Before running a streaming program in a distributed cluster, it is a good
-idea to make sure that the implemented algorithm works as desired. Hence, implementing data analysis
-programs is usually an incremental process of checking results, debugging, and improving.
+先确保实现的算法按照预期正常工作了，再将这个 streaming 程序跑到分布式集群上，是一个好想法。因此，实现数据分析程序通常是一个渐进的过程：检查结果、调试和改进。
 
-Flink provides features to significantly ease the development process of data analysis
-programs by supporting local debugging from within an IDE, injection of test data, and collection of
-result data. This section give some hints how to ease the development of Flink programs.
+Flink 提供了许多特性来极大地简化了数据分析程序的开发过程。比如支持了在 IDE 中进行本地调试，测试数据注入，和结果数据的收集。本节主要就如何简化开发 Flink 程序提供一些提示。
 
-### Local Execution Environment
+### 本地执行环境
 
-A `LocalStreamEnvironment` starts a Flink system within the same JVM process it was created in. If you
-start the LocalEnvironement from an IDE, you can set breakpoints in your code and easily debug your
-program.
+`LocalStreamEnvironment` 会在同一个 JVM 进程中启动一个 Flink 引擎。如果你从 IDE 中启动了`LocalStreamEnvironment`，你可以在你的代码中设置断点，然后轻松地调试你的程序。
 
-A LocalEnvironment is created and used as follows:
+一个 LocalEnvironment 可以像下面这样被创建和使用；
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -1687,13 +1510,11 @@ env.execute()
 </div>
 </div>
 
-### Collection Data Sources
+### 集合数据源
 
-Flink provides special data sources which are backed
-by Java collections to ease testing. Once a program has been tested, the sources and sinks can be
-easily replaced by sources and sinks that read from / write to external systems.
+Flink 提供了基于 Java 集合实现的特殊数据源，用来简化测试。一旦一个程序测试通过了，数据源和 sinks 可以被方便地替换成从外部系统读写的数据源和 sinks。
 
-Collection data sources can be used as follows:
+集合数据源可以以如下的方式使用：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -1730,13 +1551,12 @@ val myLongs = env.fromCollection(longIt)
 </div>
 </div>
 
-**Note:** Currently, the collection data source requires that data types and iterators implement
-`Serializable`. Furthermore, collection data sources can not be executed in parallel (
-parallelism = 1).
+**注意：** 现在，集合数据源需要数据类型和迭代器都实现 `Serializable`。此外，集合数据源不能被并行执行（parallelism = 1）。
 
-### Iterator Data Sink
 
-Flink also provides a sink to collect DataStream results for testing and debugging purposes. It can be used as follows:
+### 数据接收迭代器（Iterator Data Sink）
+
+Flink 为了测试和调试的目的还提供了一个 sink 来收集 DataStream 的结果。可以像下面这样使用：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">

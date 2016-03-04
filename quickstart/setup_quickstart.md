@@ -87,7 +87,7 @@ $ bin/start-local.sh    # 运行 Flink
 
 - 在当前目录下你会找到一个名叫 *wordcount-result.txt* 的文件。
 
-如果想要运行复杂例子，可以参考 [Kmeans Example]({{ site.baseurl }}/quickstart/run_example_quickstart.html)
+如果想要运行复杂例子，可以参考 [Kmeans Example]({{ site.baseurl }}/quickstart/run_example_quickstart.html)。
 
 ## 停止
 

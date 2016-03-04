@@ -42,7 +42,7 @@ sudo apt-get install ssh
 sudo apt-get install openjdk-7-jre
 ```
 
-<a id="passwordless_ssh"></a>
+<a id="passwordless-ssh"></a>
 
 ### SSH 免密码登录
 

@@ -54,9 +54,13 @@ ul.nav li.dropdown ul.dropdown-menu li.dropdown-submenu ul.dropdown-menu {
  * no color change on hover.
  */
 .nav-tabs > .active > a, .nav-tabs > .active > a:hover {
-  color: #08c;
+  color: #08c !important;
 }
 
 .nav-tabs > li > a, .nav-tabs > li > a:hover {
   color: #333;
+}
+
+.nav.nav-tabs {
+  margin-bottom: 20px;
 }

@@ -38,7 +38,7 @@ cd flink-china-doc/docker
 
 我们非常欢迎有兴趣的同学参与一起翻译和优化中文文档。欢迎**译者**与**校对**的加入。我们会在[感谢页面](http://doc.flink-china.org/about/#thanks)感谢所有参与了贡献的人。
 
-**如果你想要翻译一篇文章，请先在 [issue](https://github.com/flink-china/flink-china-doc/issues) 页面中查看是否已经有人在翻译这篇文档。如果没有，你可以发布一个issue或者回复某个模块的issue，说明你要认领的文档。**
+**如果你想要翻译一篇文章，请先在 [issue](https://github.com/flink-china/flink-china-doc/issues) 页面中查看是否已经有人在翻译这篇文档。如果没有，你可以发布一个 issue 或者回复某个模块的 issue，说明你要认领的文档。**
 
 我们建议你先在本地将英文文档按照原格式翻译成中文，直接在原英文文档基础上编辑翻译，注意保留文档原有的LISENCE，front matter等内容。并在本地测试验证后，提交你的翻译成果。提交翻译成果有两种方式：
 
@@ -62,7 +62,7 @@ transformations 转换/转换操作
 
 ## 不翻译的术语
 
-DataSet, DataStream
+DataSet, DataStream, sink, operator。
 
 
 # 写作指南

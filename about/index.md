@@ -23,7 +23,7 @@ under the License.
 
 Flink 中文文档网站是 [Apache Flink 官方文档](https://ci.apache.org/projects/flink/flink-docs-master/) 的中文翻译版，Flink是一个开源的针对批量数据和流数据的分布式处理平台。本次翻译主要是为Flink感兴趣和致力于从事大数据开发人员提供有价值的中文资料，并推动Flink在国内的发展。希望能够对大家的工作和学习有所帮助。
 
-如果你对 Flink 感兴趣，并且愿意参与一起翻译和优化中文文档，请访问[GitHub Repository](https://github.com/flink-china/flink-china-doc#翻译)了解更多。
+如果你对 Flink 感兴趣，并且愿意参与一起翻译和优化中文文档，请访问 [GitHub Repository](https://github.com/flink-china/flink-china-doc#翻译) 了解更多。
 
 <iframe src="http://ghbtns.com/github-btn.html?user=flink-china&repo=flink-china-doc&type=watch&count=true"
   allowtransparency="true" frameborder="0" scrolling="0" width="95" height="20" style="vertical-align: middle;"></iframe><iframe src="http://ghbtns.com/github-btn.html?user=flink-china&repo=flink-china-doc&type=fork&count=true"
@@ -36,7 +36,7 @@ Flink 中文文档网站是 [Apache Flink 官方文档](https://ci.apache.org/pr
 
 特别感谢以下人员对本站翻译和校对工作的贡献。
 
-<table class="table table-striped flink-table">
+<table class="table table-striped user-table">
   <thead>
     <th class="text-center"></th>
     <th class="text-center">Name</th>
