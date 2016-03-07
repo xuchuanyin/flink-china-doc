@@ -27,20 +27,20 @@ under the License.
 * This will be replaced by the TOC
 {:toc}
 
-Start working on your Flink Java program in a few simple steps.
+简单几步开启你的Flink Java程序。
 
 
-## Requirements
+## 要求
 
-The only requirements are working __Maven 3.0.4__ (or higher) and __Java 7.x__ (or higher) installations.
+唯一的要求是使用 __Maven 3.0.4__ (或者更高) 和 __Java 7.x__ (或者更高) 版本。
 
-## Create Project
+## 创建工程
 
-Use one of the following commands to __create a project__:
+使用下列命令中的一个 __创建工程__:
 
 <ul class="nav nav-tabs" style="border-bottom: none;">
-    <li class="active"><a href="#maven-archetype" data-toggle="tab">Use <strong>Maven archetypes</strong></a></li>
-    <li><a href="#quickstart-script" data-toggle="tab">Run the <strong>quickstart script</strong></a></li>
+    <li class="active"><a href="#maven-archetype" data-toggle="tab">使用 <strong>Maven archetypes</strong></a></li>
+    <li><a href="#quickstart-script" data-toggle="tab">运行 <strong>quickstart script</strong></a></li>
 </ul>
 <div class="tab-content">
     <div class="tab-pane active" id="maven-archetype">
@@ -50,7 +50,7 @@ Use one of the following commands to __create a project__:
       -DarchetypeArtifactId=flink-quickstart-java      \
       -DarchetypeVersion={{site.version}}
     {% endhighlight %}
-        This allows you to <strong>name your newly created project</strong>. It will interactively ask you for the groupId, artifactId, and package name.
+        这种创建方式允许你 <strong>给新创建的工程命名</strong>。 他会提示你输入 groupId、 artifactId， 以及 package name。
     </div>
     <div class="tab-pane" id="quickstart-script">
     {% highlight bash %}
@@ -59,35 +59,34 @@ Use one of the following commands to __create a project__:
     </div>
 </div>
 
-## Inspect Project
+## 检查工程
 
-There will be a new directory in your working directory. If you've used the _curl_ approach, the directory is called `quickstart`. Otherwise, it has the name of your artifactId.
+您的工作目录中会出现一个新的目录。如果你使用了 _curl_ 建立工程，这个目录就是 `quickstart`。否则，就以你输入的 artifactId 命名。
 
-The sample project is a __Maven project__, which contains two classes. _Job_ is a basic skeleton program and _WordCountJob_ a working example. Please note that the _main_ method of both classes allow you to start Flink in a development/testing mode.
+这个示例工程是一个 __Maven 工程__, 包含两个类。 _Job_ 是一个基本的框架程序， _WordCountJob_ 是一个示例。 请注意，这两个类的_main_方法允许你在开发/测试模式下启动Flink。
 
-We recommend to __import this project into your IDE__ to develop and test it. If you use Eclipse, the [m2e plugin](http://www.eclipse.org/m2e/) allows to [import Maven projects](http://books.sonatype.com/m2eclipse-book/reference/creating-sect-importing-projects.html#fig-creating-import). Some Eclipse bundles include that plugin by default, others require you to install it manually. The IntelliJ IDE also supports Maven projects out of the box.
+推荐 __把这个工程导入你的IDE__ ，进行测试和开发。 如果用的是Eclipse， 可以用 [m2e plugin](http://www.eclipse.org/m2e/)  [导入Maven工程](http://books.sonatype.com/m2eclipse-book/reference/creating-sect-importing-projects.html#fig-creating-import)。有些Eclipse默认捆绑了这个插件，有些的需要你手动安装。 IntelliJ IDE 也提供了对Maven工程的支持。
 
 
-A note to Mac OS X users: The default JVM heapsize for Java is too small for Flink. You have to manually increase it. Choose "Run Configurations" -> Arguments and write into the "VM Arguments" box: "-Xmx800m" in Eclipse.
+给 Mac OS X 用户的提示：默认的JVM 堆内存对Flink来说太小了，你必须手动调高它。 在Eclipse里，选择 “运行时配置” -> 参数， 在“VM 参数” 里写入： "-Xmx800m"。
 
-## Build Project
+## 构建工程
 
-If you want to __build your project__, go to your project directory and issue the `mvn clean install -Pbuild-jar` command. You will __find a jar__ that runs on every Flink cluster in __target/your-artifact-id-1.0-SNAPSHOT.jar__. There is also a fat-jar,  __target/your-artifact-id-1.0-SNAPSHOT-flink-fat-jar.jar__. This
-also contains all dependencies that get added to the maven project.
+如果你想要 __构建你的工程__, 进入工程目录，输入 `mvn clean install -Pbuild-jar` 命令。 你会__找到一个jar包__：__target/your-artifact-id-1.0-SNAPSHOT.jar__，它可以在任意Flink机器运行。 还有一个 fat-jar，  __target/your-artifact-id-1.0-SNAPSHOT-flink-fat-jar.jar__，包含了所有添加到Maven工程的依赖。
 
-## Next Steps
+## 下一步
 
-Write your application!
+编写你的应用程序
 
-The quickstart project contains a WordCount implementation, the "Hello World" of Big Data processing systems. The goal of WordCount is to determine the frequencies of words in a text, e.g., how often do the terms "the" or "house" occur in all Wikipedia texts.
+Quickstart包含了一个WordCount的实现，也就是大数据处理系统的"Hello World"。WordCount的目标是计算文本中单词的出现的频率。比如： 单词"the"或者"house"在所有的维基百科文本中出现了多少次。
 
-__Sample Input__:
+__示例输入__:
 
 ~~~bash
 big data is big
 ~~~
 
-__Sample Output__:
+__示例输出__:
 
 ~~~bash
 big 2
@@ -95,7 +94,7 @@ data 1
 is 1
 ~~~
 
-The following code shows the WordCount implementation from the Quickstart which processes some text lines with two operators (FlatMap and Reduce), and prints the resulting words and counts to std-out.
+下面的代码就是Quickstart工程的WordCount实现，它使用两种操作(FlatMap and Reduce)处理了一些文本，并且在标准输出中打印了单词的计数结果。
 
 ~~~java
 public class WordCount {
@@ -126,7 +125,7 @@ public class WordCount {
 }
 ~~~
 
-The operations are defined by specialized classes, here the LineSplitter class.
+这些操作是在专门的类中定义的，下面是LineSplitter类。
 
 ~~~java
 public class LineSplitter implements FlatMapFunction<String, Tuple2<String, Integer>> {
@@ -146,7 +145,6 @@ public class LineSplitter implements FlatMapFunction<String, Tuple2<String, Inte
 }
 ~~~
 
-{% gh_link /flink-examples/flink-examples-batch/src/main/java/org/apache/flink/examples/java/wordcount/WordCount.java "Check GitHub" %} for the full example code.
-
-For a complete overview over our API, have a look at the [Programming Guide]({{ site.baseurl }}/apis/programming_guide.html) and [further example programs](examples.html). If you have any trouble, ask on our [Mailing List](http://mail-archives.apache.org/mod_mbox/flink-dev/). We are happy to provide help.
+在{% gh_link /flink-examples/flink-examples-batch/src/main/java/org/apache/flink/examples/java/wordcount/WordCount.java "GitHub"%}中检索所有的示例代码。 
+想要完整的API，看这里[Programming Guide]({{ site.baseurl }}/apis/programming_guide.html) 和这里 [further example programs](examples.html). 如果你有任何疑问，咨询我们的 [Mailing List](http://mail-archives.apache.org/mod_mbox/flink-dev/)。我很高兴可以提供帮助。
 
