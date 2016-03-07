@@ -1,9 +1,9 @@
 ---
-title: "¿ìËÙÆğ²½: ÔËĞĞ K-Means ÊµÀı"
+title: "å¿«é€Ÿèµ·æ­¥: è¿è¡Œ K-Means å®ä¾‹"
 # Top navigation
 top-nav-group: quickstart
 top-nav-pos: 2
-top-nav-title: ÔËĞĞÊµÀı
+top-nav-title: è¿è¡Œå®ä¾‹
 ---
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
@@ -26,84 +26,84 @@ under the License.
 
 * This will be replaced by the TOC
 {:toc}
-±¾ÎÄÖ÷Òª½éÉÜÔÚFlink ÉÏÔËĞĞÊµÀı([K-Means clustering](http://en.wikipedia.org/wiki/K-means_clustering))ĞèÒª²Ù×÷µÄÒ»ÏµÁĞ²½Öè¡£ÁíÒ»·½Ãæ£¬ÄãÄÜ¹Û²ìÊµÀıÔËĞĞ¹ı³ÌÖĞµÄ¿É
-ÊÓ»¯½çÃæ¡¢ÓÅ»¯²ßÂÔÒÔ¼°¸ú×ÙÊµÀıÖ´ĞĞ½ø¶È¡£
+æœ¬æ–‡ä¸»è¦ä»‹ç»åœ¨Flink ä¸Šè¿è¡Œå®ä¾‹([K-Means clustering](http://en.wikipedia.org/wiki/K-means_clustering))éœ€è¦æ“ä½œçš„ä¸€ç³»åˆ—æ­¥éª¤ã€‚å¦ä¸€æ–¹é¢ï¼Œä½ èƒ½è§‚å¯Ÿå®ä¾‹è¿è¡Œè¿‡ç¨‹ä¸­çš„å¯
+è§†åŒ–ç•Œé¢ã€ä¼˜åŒ–ç­–ç•¥ä»¥åŠè·Ÿè¸ªå®ä¾‹æ‰§è¡Œè¿›åº¦ã€‚
 
 
-## °²×° Flink
-Çë²é¿´ [¿ìËÙ°²×°](setup_quickstart.html) À´°²×°Flink£¬²¢½øÈëFlink °²×°µÄ¸ùÄ¿Â¼¡£
+## å®‰è£… Flink
+è¯·æŸ¥çœ‹ [å¿«é€Ÿå®‰è£…](setup_quickstart.html) æ¥å®‰è£…Flinkï¼Œå¹¶è¿›å…¥Flink å®‰è£…çš„æ ¹ç›®å½•ã€‚
 
 
-## Éú³ÉÊäÈëÊı¾İ
-Flink Îª K-Means ·â×°ÁËÊı¾İÉú³ÉÆ÷
+## ç”Ÿæˆè¾“å…¥æ•°æ®
+Flink ä¸º K-Means å°è£…äº†æ•°æ®ç”Ÿæˆå™¨
 
 ~~~bash
-# ¼ÙÉèÄãÒÑ¾­Î»ÓÚFlink µÄ°²×°¸ùÄ¿Â¼
+# å‡è®¾ä½ å·²ç»ä½äºFlink çš„å®‰è£…æ ¹ç›®å½•
 mkdir kmeans
 cd kmeans
-# ÔËĞĞÊı¾İÉú³ÉÆ÷
+# è¿è¡Œæ•°æ®ç”Ÿæˆå™¨
 java -cp ../examples/batch/KMeans.jar:../lib/flink-dist-{{ site.version }}.jar \
   org.apache.flink.examples.java.clustering.util.KMeansDataGenerator \
   -points 500 -k 10 -stddev 0.08 -output `pwd`
 ~~~
 
-Éú³ÉÆ÷ĞèÒªÒÔÏÂ²ÎÊı£¨Î»ÓÚ`[]`µÄ²ÎÊıÊÇ¿ÉÑ¡Ïî£©£º
+ç”Ÿæˆå™¨éœ€è¦ä»¥ä¸‹å‚æ•°ï¼ˆä½äº`[]`çš„å‚æ•°æ˜¯å¯é€‰é¡¹ï¼‰ï¼š
 
 ~~~bash
 -points <num> -k <num clusters> [-output <output-path>] [-stddev <relative stddev>] [-range <centroid range>] [-seed <seed>]
 ~~~
 
-*Ïà¶Ô±ê×¼Æ«²î* £¨`stddev`£©ÊÇÒ»¸öÓĞÈ¤µÄµ÷Õû²ÎÊı£¬Ëü¾ö¶¨ÁËÊı¾İµãÓëËæ»úÖĞĞÄµãµÄ½ôÃÜ³Ì¶È¡£
+*ç›¸å¯¹æ ‡å‡†åå·®* ï¼ˆ`stddev`ï¼‰æ˜¯ä¸€ä¸ªæœ‰è¶£çš„è°ƒæ•´å‚æ•°ï¼Œå®ƒå†³å®šäº†æ•°æ®ç‚¹ä¸éšæœºä¸­å¿ƒç‚¹çš„ç´§å¯†ç¨‹åº¦ã€‚
 
-`kmeans/` Ä¿Â¼ÏÂ°üº¬Á½¸öÎÄ¼ş: `centers` ºÍ `points`. `points` °üº¬ÁË¼¯ÈºÉÏËùÓĞµÄÊı¾İµã£¬ `centers` °üº¬ÁË¼¯Èº³õÊ¼»¯ºóµÄËùÓĞÖĞĞÄ¡£
+`kmeans/` ç›®å½•ä¸‹åŒ…å«ä¸¤ä¸ªæ–‡ä»¶: `centers` å’Œ `points`. `points` åŒ…å«äº†é›†ç¾¤ä¸Šæ‰€æœ‰çš„æ•°æ®ç‚¹ï¼Œ `centers` åŒ…å«äº†é›†ç¾¤åˆå§‹åŒ–åçš„æ‰€æœ‰ä¸­å¿ƒã€‚
 
 
-## ¼ì²âÊı¾İ
-Ê¹ÓÃ `plotPoints.py` ¹¤¾ßÀ´¼ì²éÖ®Ç°²úÉúµÄÊı¾İ¡£ [Download Python Script](plotPoints.py)
+## æ£€æµ‹æ•°æ®
+ä½¿ç”¨ `plotPoints.py` å·¥å…·æ¥æ£€æŸ¥ä¹‹å‰äº§ç”Ÿçš„æ•°æ®ã€‚ [Download Python Script](plotPoints.py)
 
 ~~~ bash
 python plotPoints.py points ./points input
 ~~~ 
 
-±¸×¢: Äã¿ÉÄÜĞèÒª°²×° [matplotlib](http://matplotlib.org/) (ÔÚUbuntnÏµÍ³ÉÏÊÇ`python-matplotlib`) À´ÅÜPython½Å±¾.
+å¤‡æ³¨: ä½ å¯èƒ½éœ€è¦å®‰è£… [matplotlib](http://matplotlib.org/) (åœ¨Ubuntnç³»ç»Ÿä¸Šæ˜¯`python-matplotlib`) æ¥è·‘Pythonè„šæœ¬.
 
-Äã¿ÉÒÔ´ò¿ª `input-plot.pdf` À´²é¿´ÊäÈëÊı¾İ, ±ÈÈçEvinceÏà¹ØµÄÊı¾İ¾Í´æ·ÅÔÚ (`evince input-plot.pdf`)ÎÄ¼şÉÏ.
+ä½ å¯ä»¥æ‰“å¼€ `input-plot.pdf` æ¥æŸ¥çœ‹è¾“å…¥æ•°æ®, æ¯”å¦‚Evinceç›¸å…³çš„æ•°æ®å°±å­˜æ”¾åœ¨ (`evince input-plot.pdf`)æ–‡ä»¶ä¸Š.
 
-ÒÔÏÂÊÇ¶Ô -stddev ÉèÖÃ²»Í¬ÖµÇé¿öÏÂÊäÈëÊı¾İµã·Ö²¼Í¼µÄÕ¹Ê¾¡£
+ä»¥ä¸‹æ˜¯å¯¹ -stddev è®¾ç½®ä¸åŒå€¼æƒ…å†µä¸‹è¾“å…¥æ•°æ®ç‚¹åˆ†å¸ƒå›¾çš„å±•ç¤ºã€‚
 
 |relative stddev = 0.03|relative stddev = 0.08|relative stddev = 0.15|
 |:--------------------:|:--------------------:|:--------------------:|
 |<img src="{{ site.baseurl }}/page/img/quickstart-example/kmeans003.png" alt="example1" style="width: 275px;"/>|<img src="{{ site.baseurl }}/page/img/quickstart-example/kmeans008.png" alt="example2" style="width: 275px;"/>|<img src="{{ site.baseurl }}/page/img/quickstart-example/kmeans015.png" alt="example3" style="width: 275px;"/>|
 
 
-## Æô¶¯ Flink
-ÔÚÄã±¾»úÉÏÆô¶¯ Flink ºÍ web¶ËÈÎÎñÌá½»¿Í»§¶Ë¡£
+## å¯åŠ¨ Flink
+åœ¨ä½ æœ¬æœºä¸Šå¯åŠ¨ Flink å’Œ webç«¯ä»»åŠ¡æäº¤å®¢æˆ·ç«¯ã€‚
 
 ~~~ bash
-# ·µ»Øµ½ Flink µÄ¸ùÄ¿Â¼
+# è¿”å›åˆ° Flink çš„æ ¹ç›®å½•
 cd ..
-# Æô¶¯ Flink
+# å¯åŠ¨ Flink
 ./bin/start-local.sh
 ~~~
 
-## ÔËĞĞ K-Means ÊµÀı
-Flink web ½çÃæÉÏÔÊĞíÓÃ»§½»»¥È¥Ìá½»Flink ÈÎÎñ¡£
+## è¿è¡Œ K-Means å®ä¾‹
+Flink web ç•Œé¢ä¸Šå…è®¸ç”¨æˆ·äº¤äº’å»æäº¤Flink ä»»åŠ¡ã€‚
 
 <div class="row" style="padding-top:15px">
 	<div class="col-md-6">
 		<a data-lightbox="compiler" href="{{ site.baseurl }}/page/img/quickstart-example/jobmanager_kmeans_submit.png" data-lightbox="example-1"><img class="img-responsive" src="{{ site.baseurl }}/page/img/quickstart-example/jobmanager_kmeans_submit.png" /></a>
 	</div>
 	<div class="col-md-6">
-		1. ´ò¿ªweb½çÃæ <a href="http://localhost:8081">localhost:8081</a> <br>
-		2. ÔÚ²Ëµ¥ÉÏÑ¡Ôñ "Submit new Job"  <br>
-		3. Í¨¹ıµã»÷"Add New"£¬ Ñ¡Ôñ<code>examples/batch</code> Ä¿Â¼ÏÂµÄ <code>KMeans.jar</code>£¬Ö®ºóµã»÷ "Upload"¡£ <br>
-		4. ÔÚÈÎÎñÁĞ±íÖĞÑ¡Ôñ <code>KMeans.jar</code> <br>
-		5. ÔÚµ¯³ö¿òÖĞÊäÈë²ÎÊı¼°ÅäÖÃ: <br>
-		    Î¬³Ö <i>Entry Class</i> ºÍ <i>Parallelism</i> ±í¸ñ²»±ä<br>
-		    Îª¸ÃÊµÀıÊäÈëÒÔÏÂ²ÎÊı: <br>
-		    (KMeans ÆÚÍûµÄÊäÈë²ÎÊıÊÇ: <code>--points &lt;path&gt; --centroids &lt;path&gt; --output &lt;path&gt; --iterations &lt;n&gt;</code>
+		1. æ‰“å¼€webç•Œé¢ <a href="http://localhost:8081">localhost:8081</a> <br>
+		2. åœ¨èœå•ä¸Šé€‰æ‹© "Submit new Job"  <br>
+		3. é€šè¿‡ç‚¹å‡»"Add New"ï¼Œ é€‰æ‹©<code>examples/batch</code> ç›®å½•ä¸‹çš„ <code>KMeans.jar</code>ï¼Œä¹‹åç‚¹å‡» "Upload"ã€‚ <br>
+		4. åœ¨ä»»åŠ¡åˆ—è¡¨ä¸­é€‰æ‹© <code>KMeans.jar</code> <br>
+		5. åœ¨å¼¹å‡ºæ¡†ä¸­è¾“å…¥å‚æ•°åŠé…ç½®: <br>
+		    ç»´æŒ <i>Entry Class</i> å’Œ <i>Parallelism</i> è¡¨æ ¼ä¸å˜<br>
+		    ä¸ºè¯¥å®ä¾‹è¾“å…¥ä»¥ä¸‹å‚æ•°: <br>
+		    (KMeans æœŸæœ›çš„è¾“å…¥å‚æ•°æ˜¯: <code>--points &lt;path&gt; --centroids &lt;path&gt; --output &lt;path&gt; --iterations &lt;n&gt;</code>
 			{% highlight bash %}--points /tmp/kmeans/points --centroids /tmp/kmeans/centers --output /tmp/kmeans/result --iterations 10{% endhighlight %}<br>
-		6. µã»÷ <b>Submit</b> À´Æô¶¯ÈÎÎñ
+		6. ç‚¹å‡» <b>Submit</b> æ¥å¯åŠ¨ä»»åŠ¡
 	</div>
 </div>
 <hr>
@@ -113,28 +113,28 @@ Flink web ½çÃæÉÏÔÊĞíÓÃ»§½»»¥È¥Ìá½»Flink ÈÎÎñ¡£
 	</div>
 
 	<div class="col-md-6">
-		²é¿´ÈÎÎñÖ´ĞĞ¹ı³Ì¡£
+		æŸ¥çœ‹ä»»åŠ¡æ‰§è¡Œè¿‡ç¨‹ã€‚
 	</div>
 </div>
 
 
-## Í£Ö¹ Flink
-Í£Ö¹ Flink ÃüÁî.
+## åœæ­¢ Flink
+åœæ­¢ Flink å‘½ä»¤.
 
 ~~~ bash
-# Í£Ö¹ Flink
+# åœæ­¢ Flink
 ./bin/stop-local.sh
 ~~~
 
-## ·ÖÎö½á¹û
-¿ÉÒÔÔÙ´ÎÔËĞĞ [Python Script](plotPoints.py) ½Å±¾À´¿ÉÊÓ»¯½á¹û.
+## åˆ†æç»“æœ
+å¯ä»¥å†æ¬¡è¿è¡Œ [Python Script](plotPoints.py) è„šæœ¬æ¥å¯è§†åŒ–ç»“æœ.
 
 ~~~bash
 cd kmeans
 python plotPoints.py result ./result clusters
 ~~~
 
-ÒÔÏÂÈı·ùÍ¼Õ¹Ê¾ÁË¶ÔÖ®Ç°ÊäÈëÊı¾İµã¼¯²ÉÑùÍ³¼ÆµÄ½á¹û¡£Äã¿ÉÒÔ¶à´Îµ÷Õû²ÎÊı£¨µü´ú´ÎÊı¡¢¼¯ÈºÊıÁ¿£©À´²é¿´ÕâĞ©²ÎÊıÈçºÎÓ°ÏìÊı¾İµãµÄ·Ö²¼¡£
+ä»¥ä¸‹ä¸‰å¹…å›¾å±•ç¤ºäº†å¯¹ä¹‹å‰è¾“å…¥æ•°æ®ç‚¹é›†é‡‡æ ·ç»Ÿè®¡çš„ç»“æœã€‚ä½ å¯ä»¥å¤šæ¬¡è°ƒæ•´å‚æ•°ï¼ˆè¿­ä»£æ¬¡æ•°ã€é›†ç¾¤æ•°é‡ï¼‰æ¥æŸ¥çœ‹è¿™äº›å‚æ•°å¦‚ä½•å½±å“æ•°æ®ç‚¹çš„åˆ†å¸ƒã€‚
 
 
 |relative stddev = 0.03|relative stddev = 0.08|relative stddev = 0.15|
