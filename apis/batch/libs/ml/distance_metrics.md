@@ -1,11 +1,11 @@
 ---
 mathjax: include
-title: Distance Metrics
+title: 距离度量
 
 # Sub navigation
 sub-nav-group: batch
 sub-nav-parent: flinkml
-sub-nav-title: Distance Metrics
+sub-nav-title: 距离度量
 ---
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
@@ -29,74 +29,73 @@ under the License.
 * This will be replaced by the TOC
 {:toc}
 
-## Description
+## 描述
 
-Different metrics of distance are convenient for different types of analysis. Flink ML provides
-built-in implementations for many standard distance metrics. You can create custom
-distance metrics by implementing the `DistanceMetric` trait.
+不同的距离度量方法在不同的分析类型中非常有用，Flink ML内置了许多标准的距离度量实现。
+此外，用户也可以通过实现`DistanceMetric`这个trait来创建自定义的距离度量。
 
-## Built-in Implementations
+## 内置实现
 
-Currently, FlinkML supports the following metrics:
+目前，Flink ML支持以下距离度量实现：
 
 <table class="table table-bordered">
     <thead>
       <tr>
-        <th class="text-left" style="width: 20%">Metric</th>
-        <th class="text-center">Description</th>
+        <th class="text-left" style="width: 20%">度量实现</th>
+        <th class="text-center">说明</th>
       </tr>
     </thead>
 
     <tbody>
       <tr>
-        <td><strong>Euclidean Distance</strong></td>
+        <td><strong>欧氏距离(Euclidean Distance)</strong></td>
         <td>
           $$d(\x, \y) = \sqrt{\sum_{i=1}^n \left(x_i - y_i \right)^2}$$
         </td>
       </tr>
       <tr>
-        <td><strong>Squared Euclidean Distance</strong></td>
+        <td><strong>欧氏距离平方(Squared Euclidean Distance)</strong></td>
         <td>
           $$d(\x, \y) = \sum_{i=1}^n \left(x_i - y_i \right)^2$$
         </td>
       </tr>
       <tr>
-        <td><strong>Cosine Similarity</strong></td>
+        <td><strong>余弦相似度(Cosine Similarity)</strong></td>
         <td>
           $$d(\x, \y) = 1 - \frac{\x^T \y}{\Vert \x \Vert \Vert \y \Vert}$$
         </td>
       </tr>
       <tr>
-        <td><strong>Chebyshev Distance</strong></td>
+        <td><strong>切比雪夫距离(Chebyshev Distance)</strong></td>
         <td>
           $$d(\x, \y) = \max_{i}\left(\left \vert x_i - y_i \right\vert \right)$$
         </td>
       </tr>
       <tr>
-        <td><strong>Manhattan Distance</strong></td>
+        <td><strong>曼哈顿距离(Manhattan Distance)</strong></td>
         <td>
           $$d(\x, \y) = \sum_{i=1}^n \left\vert x_i - y_i \right\vert$$
         </td>
       </tr>
       <tr>
-        <td><strong>Minkowski Distance</strong></td>
+        <td><strong>明氏距离(Minkowski Distance)</strong></td>
         <td>
           $$d(\x, \y) = \left( \sum_{i=1}^{n} \left( x_i - y_i \right)^p \right)^{\rfrac{1}{p}}$$
         </td>
       </tr>
       <tr>
-        <td><strong>Tanimoto Distance</strong></td>
+        <td><strong>Tanimoto距离(Tanimoto Distance)</strong></td>
         <td>
           $$d(\x, \y) = 1 - \frac{\x^T\y}{\Vert \x \Vert^2 + \Vert \y \Vert^2 - \x^T\y}$$ 
-          with $\x$ and $\y$ being bit-vectors
+          其中$\x$和$\y$为位矢量(bit-vector)
         </td>
       </tr>
     </tbody>
   </table>
 
-## Custom Implementation
+## 自定义实现
 
-You can create your own distance metric by implementing the `DistanceMetric` trait.
+用户也可以通过实现`DistanceMetric`这个trait来创建自定义的距离度量。
 
 {% highlight scala %}
 class MyDistance extends DistanceMetric {
