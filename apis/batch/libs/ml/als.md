@@ -58,6 +58,7 @@ $$\arg\min_{U,V} \sum_{\{i,j\mid r_{i,j} \not= 0\}} \left(r_{i,j} - u_{i}^Tv_{j}
 ### 训练
 
 ALS通过稀疏的评分矩阵来进行训练：
+
 * `fit: DataSet[(Int, Int, Double)] => Unit` 
 
 ### 预测

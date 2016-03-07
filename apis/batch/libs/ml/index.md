@@ -46,7 +46,7 @@ FlinkML currently supports the following algorithms:
 ### Supervised Learning
 
 * [SVM using Communication efficient distributed dual coordinate ascent (CoCoA)](svm.html)
-* [Multiple linear regression](multiple_linear_regression.html)
+* [多线性回归](multiple_linear_regression.html)
 * [Optimization Framework](optimization.html)
 
 ### Data Preprocessing
@@ -57,11 +57,11 @@ FlinkML currently supports the following algorithms:
 
 ### Recommendation
 
-* [Alternating Least Squares (ALS)](als.html)
+* [交替最小二乘法 (ALS)](als.html)
 
 ### Utilities
 
-* [Distance Metrics](distance_metrics.html)
+* [距离度量](distance_metrics.html)
 
 ## Getting Started
 
