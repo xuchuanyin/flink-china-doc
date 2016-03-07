@@ -1117,22 +1117,12 @@ someStream.map(...).disableChaining();
       </td>
     </tr>
    <tr>
-      <td>Start a new resource group</td>
+      <td>Set slot sharing group</td>
       <td>
-        <p>启动一个新的资源组，包含了这个 map 和之后的 operators。（译注：filter？）
-        
+        <p>设置一个操作的 slot 共享组。Flink 会将相同 slot 共享组的操作都放到同一个 slot 中，而把没有 slot 共享组的操作放到其他 slots 上。这可以用来做 slots 隔离。如果所有的输入操作都在相同的 slot 共享组中，那么 slot 共享组会从输入操作中继承来的。默认的 slot 共享组名称是 "default"，操作（operations）可以通过调用 `slotSharingGroup("default")` 显示地将其置于该组中。
+
 {% highlight java %}
-someStream.filter(...).startNewResourceGroup();
-{% endhighlight %}
-        </p>
-      </td>
-    </tr>
-   <tr>
-      <td>Isolate resources</td>
-      <td>
-        <p>将这个 operator 隔离在自己的 slot 中。
-{% highlight java %}
-someStream.map(...).isolateResources();
+someStream.filter(...).slotSharingGroup("name");
 {% endhighlight %}
         </p>
       </td>
@@ -1176,23 +1166,12 @@ someStream.map(...).disableChaining()
       </td>
     </tr>
    <tr>
-      <td>Start a new resource group</td>
+      <td>Set slot sharing group</td>
       <td>
-        <p>启动一个新的资源组，包含了这个 map 和之后的 operators。（译注：filter？）
+        <p>设置一个操作的 slot 共享组。Flink 会将相同 slot 共享组的操作都放到同一个 slot 中，而把没有 slot 共享组的操作放到其他 slots 上。这可以用来做 slots 隔离。如果所有的输入操作都在相同的 slot 共享组中，那么 slot 共享组会从输入操作中继承来的。默认的 slot 共享组名称是 "default"，操作（operations）可以通过调用 `slotSharingGroup("default")` 显示地将其置于该组中。
 
 {% highlight scala %}
-someStream.filter(...).startNewResourceGroup()
-{% endhighlight %}
-        </p>
-      </td>
-    </tr>
-   <tr>
-      <td>Isolate resources</td>
-      <td>
-        <p>将这个 operator 隔离在自己的 slot 中。
-
-{% highlight scala %}
-someStream.map(...).isolateResources()
+someStream.filter(...).slotSharingGroup("name");
 {% endhighlight %}
         </p>
       </td>
