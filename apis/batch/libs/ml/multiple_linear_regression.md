@@ -70,6 +70,7 @@ under the License.
 ### 预测
 
 多元线性回归预测所有`Vector`子类型的回归值：
+
 * `predict[T <: Vector]: DataSet[T] => DataSet[LabeledVector]`
 
 通过`DataSet[LabeledVector]`来预测，将得到每条数据的回归值，且返回`DataSet[(Double, Double)]`。
@@ -122,7 +123,7 @@ under the License.
         <td>
             <p>
             学习率方法，用于计算每次迭代的有效学习率。Flink ML支持的学习率方法列表见：
-                <a href="optimization.html">learing rate methods</a>。
+                <a href="optimization.html">learning rate methods</a>。
                 (默认值：<strong>LearningRateMethod.Default</strong>)
             </p>
         </td>
