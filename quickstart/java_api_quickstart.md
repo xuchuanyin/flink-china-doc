@@ -1,5 +1,5 @@
 ---
-title: "Quickstart: Java API"
+title: "快速起步：Java API"
 # Top navigation
 top-nav-group: quickstart
 top-nav-pos: 3
@@ -44,18 +44,18 @@ under the License.
 </ul>
 <div class="tab-content">
     <div class="tab-pane active" id="maven-archetype">
-    {% highlight bash %}
-    $ mvn archetype:generate                               \
-      -DarchetypeGroupId=org.apache.flink              \
-      -DarchetypeArtifactId=flink-quickstart-java      \
-      -DarchetypeVersion={{site.version}}
-    {% endhighlight %}
+{% highlight bash %}
+$ mvn archetype:generate                               \
+  -DarchetypeGroupId=org.apache.flink              \
+  -DarchetypeArtifactId=flink-quickstart-java      \
+  -DarchetypeVersion={{site.version}}
+{% endhighlight %}
         这种创建方式允许你 <strong>给新创建的工程命名</strong>。 他会提示你输入 groupId、 artifactId， 以及 package name。
     </div>
     <div class="tab-pane" id="quickstart-script">
-    {% highlight bash %}
-    $ curl https://flink.apache.org/q/quickstart.sh | bash
-    {% endhighlight %}
+{% highlight bash %}
+$ curl https://flink.apache.org/q/quickstart.sh | bash
+{% endhighlight %}
     </div>
 </div>
 
@@ -145,6 +145,6 @@ public class LineSplitter implements FlatMapFunction<String, Tuple2<String, Inte
 }
 ~~~
 
-在{% gh_link /flink-examples/flink-examples-batch/src/main/java/org/apache/flink/examples/java/wordcount/WordCount.java "GitHub"%}中查看完整的示例代码。 
-想要完整的 API，看这里 [Programming Guide]({{ site.baseurl }}/apis/programming_guide.html) 和这里 [further example programs](examples.html). 如果你有任何疑问，咨询我们的 [Mailing List](http://mail-archives.apache.org/mod_mbox/flink-dev/)。我们很高兴可以提供帮助。
+在 {% gh_link /flink-examples/flink-examples-batch/src/main/java/org/apache/flink/examples/java/wordcount/WordCount.java "GitHub"%} 中查看完整的示例代码。 
+想要了解完整的 API，可以查阅 [编程指南]({{ site.baseurl }}/apis/programming_guide.html) 和 [更进一步的实例程序](run_example_quickstart.html)。 如果你有任何疑问，咨询我们的 [Mailing List](http://mail-archives.apache.org/mod_mbox/flink-dev/)。我们很高兴可以提供帮助。
 
