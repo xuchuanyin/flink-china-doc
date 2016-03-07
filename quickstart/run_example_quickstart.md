@@ -1,5 +1,5 @@
 ---
-title: "快速启动: 运行 K-Means 实例"
+title: "快速起步: 运行 K-Means 实例"
 # Top navigation
 top-nav-group: quickstart
 top-nav-pos: 2
@@ -26,19 +26,19 @@ under the License.
 
 * This will be replaced by the TOC
 {:toc}
-本文主要介绍在flink上运行实例([K-Means clustering](http://en.wikipedia.org/wiki/K-means_clustering))需要操作的一系列步骤。另一方面，你能观察实例运行过程中的可
+本文主要介绍在Flink 上运行实例([K-Means clustering](http://en.wikipedia.org/wiki/K-means_clustering))需要操作的一系列步骤。另一方面，你能观察实例运行过程中的可
 视化界面、优化策略以及跟踪实例执行进度。
 
 
 ## 安装 Flink
-请查看 [快速安装](setup_quickstart.html) 来安装flink，并进入flink安装的根目录。
+请查看 [快速安装](setup_quickstart.html) 来安装Flink，并进入Flink 安装的根目录。
 
 
 ## 生成输入数据
-Flink 为 K-Means 封装了数据生产器
+Flink 为 K-Means 封装了数据生成器
 
 ~~~bash
-# 假设你已经位于flink的安装根目录
+# 假设你已经位于Flink 的安装根目录
 mkdir kmeans
 cd kmeans
 # 运行数据生成器
@@ -53,7 +53,7 @@ java -cp ../examples/batch/KMeans.jar:../lib/flink-dist-{{ site.version }}.jar \
 -points <num> -k <num clusters> [-output <output-path>] [-stddev <relative stddev>] [-range <centroid range>] [-seed <seed>]
 ~~~
 
--stddev 是一个有趣的调整参数，它决定了随机生成的数据点于中心的接近程度。
+*相对标准偏差* （`stddev`）是一个有趣的调整参数，它决定了数据点与随机中心点的紧密程度。
 
 `kmeans/` 目录下包含两个文件: `centers` 和 `points`. `points` 包含了集群上所有的数据点， `centers` 包含了集群初始化后的所有中心。
 
@@ -87,7 +87,7 @@ cd ..
 ~~~
 
 ## 运行 K-Means 实例
-Flink web 界面上允许用户交互去提交Flink任务。
+Flink web 界面上允许用户交互去提交Flink 任务。
 
 <div class="row" style="padding-top:15px">
 	<div class="col-md-6">
@@ -97,7 +97,7 @@ Flink web 界面上允许用户交互去提交Flink任务。
 		1. 打开web界面 <a href="http://localhost:8081">localhost:8081</a> <br>
 		2. 在菜单上选择 "Submit new Job"  <br>
 		3. 通过点击"Add New"， 选择<code>examples/batch</code> 目录下的 <code>KMeans.jar</code>，之后点击 "Upload"。 <br>
-		4. 在一列任务中选择 <code>KMeans.jar</code> <br>
+		4. 在任务列表中选择 <code>KMeans.jar</code> <br>
 		5. 在弹出框中输入参数及配置: <br>
 		    维持 <i>Entry Class</i> 和 <i>Parallelism</i> 表格不变<br>
 		    为该实例输入以下参数: <br>
@@ -119,7 +119,7 @@ Flink web 界面上允许用户交互去提交Flink任务。
 
 
 ## 停止 Flink
-停止 Flink命令.
+停止 Flink 命令.
 
 ~~~ bash
 # 停止 Flink
@@ -127,7 +127,7 @@ Flink web 界面上允许用户交互去提交Flink任务。
 ~~~
 
 ## 分析结果
-可以再次运行 [Python Script](plotPoints.py) 脚本来可视化展示结果.
+可以再次运行 [Python Script](plotPoints.py) 脚本来可视化结果.
 
 ~~~bash
 cd kmeans
