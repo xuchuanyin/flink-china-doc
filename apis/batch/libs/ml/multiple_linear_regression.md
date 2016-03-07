@@ -1,11 +1,11 @@
 ---
 mathjax: include
-title: Multiple linear regression
+title: 多元线性回归
 
 # Sub navigation
 sub-nav-group: batch
 sub-nav-parent: flinkml
-sub-nav-title: Multiple Linear Regression
+sub-nav-title: 多元线性回归
 ---
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
@@ -29,75 +29,64 @@ under the License.
 * This will be replaced by the TOC
 {:toc}
 
-## Description
+## 描述
 
- Multiple linear regression tries to find a linear function which best fits the provided input data.
- Given a set of input data with its value $(\mathbf{x}, y)$, multiple linear regression finds
- a vector $\mathbf{w}$ such that the sum of the squared residuals is minimized:
+ 多元线性回归的目标是找到一个最佳拟合输入数据的线性函数。通过输入数据集：$(\mathbf{x}, y)$，
+ 多元线性回归将得到一个向量$\mathbf{w}$，从而最小化残差平方(squared residuals)和： 
 
  $$ S(\mathbf{w}) = \sum_{i=1} \left(y - \mathbf{w}^T\mathbf{x_i} \right)^2$$
 
- Written in matrix notation, we obtain the following formulation:
-
+ 通过矩阵的表示方法，得到以下公式：
  $$\mathbf{w}^* = \arg \min_{\mathbf{w}} (\mathbf{y} - X\mathbf{w})^2$$
 
- This problem has a closed form solution which is given by:
-
+  从而得到一个确定解：
   $$\mathbf{w}^* = \left(X^TX\right)^{-1}X^T\mathbf{y}$$
 
-  However, in cases where the input data set is so huge that a complete parse over the whole data
-  set is prohibitive, one can apply stochastic gradient descent (SGD) to approximate the solution.
-  SGD first calculates for a random subset of the input data set the gradients. The gradient
-  for a given point $\mathbf{x}_i$ is given by:
+ 但是，如果输入数据集过大从而导致无法完全解析所有数据时，可以通过随机梯度下降(SGD)来得到一个近似解。
+ SGD首先用输入数据集的随机子集求得一个梯度，特定点$\mathbf{x}_i$上的梯度为：
 
   $$\nabla_{\mathbf{w}} S(\mathbf{w}, \mathbf{x_i}) = 2\left(\mathbf{w}^T\mathbf{x_i} -
     y\right)\mathbf{x_i}$$
 
-  The gradients are averaged and scaled. The scaling is defined by $\gamma = \frac{s}{\sqrt{j}}$
-  with $s$ being the initial step size and $j$ being the current iteration number. The resulting gradient is subtracted from the
-  current weight vector giving the new weight vector for the next iteration:
+ 求解出来的梯度被归一化，公式为：$\gamma = \frac{s}{\sqrt{j}}$，其中$s$为初始步长，$j$为当前迭代次数。
+ 当前梯度的权重向量减去归一化后的当前梯度值，即得到下一次迭代的权重向量：
 
   $$\mathbf{w}_{t+1} = \mathbf{w}_t - \gamma \frac{1}{n}\sum_{i=1}^n \nabla_{\mathbf{w}} S(\mathbf{w}, \mathbf{x_i})$$
 
-  The multiple linear regression algorithm computes either a fixed number of SGD iterations or terminates based on a dynamic convergence criterion.
-  The convergence criterion is the relative change in the sum of squared residuals:
+ 多元线性回归可以根据输入的SGD迭代次数终止，也可以在达到给定的收敛条件后终止。其中收敛条件为两次迭代之间残差平方和满足：
 
   $$\frac{S_{k-1} - S_k}{S_{k-1}} < \rho$$
   
-## Operations
+## 操作
 
-`MultipleLinearRegression` is a `Predictor`.
-As such, it supports the `fit` and `predict` operation.
+`MultipleLinearRegression`是`Predictor`，因此支持训练和预测操作。
 
-### Fit
+### 训练
 
-MultipleLinearRegression is trained on a set of `LabeledVector`: 
+多元线性回归通过输入一个`LabeledVector`来进行训练： 
 
 * `fit: DataSet[LabeledVector] => Unit`
 
-### Predict
+### 预测
 
-MultipleLinearRegression predicts for all subtypes of `Vector` the corresponding regression value: 
-
+多元线性回归预测所有`Vector`子类型的回归值：
 * `predict[T <: Vector]: DataSet[T] => DataSet[LabeledVector]`
 
-If we call predict with a `DataSet[LabeledVector]`, we make a prediction on the regression value
-for each example, and return a `DataSet[(Double, Double)]`. In each tuple the first element
-is the true value, as was provided from the input `DataSet[LabeledVector]` and the second element
-is the predicted value. You can then use these `(truth, prediction)` tuples to evaluate
-the algorithm's performance.
+通过`DataSet[LabeledVector]`来预测，将得到每条数据的回归值，且返回`DataSet[(Double, Double)]`。
+在每个元组中，第一个元素为对应输入`DataSet[LabeledVector]`中的真实值，第二个元素为预测值。
+可以通过`(truth, prediction)`的对比来评估算法的好坏。
 
 * `predict: DataSet[LabeledVector] => DataSet[(Double, Double)]`
 
-## Parameters
+## 参数列表
 
-  The multiple linear regression implementation can be controlled by the following parameters:
+多元线性回归可以通过以下参数来控制：
   
    <table class="table table-bordered">
     <thead>
       <tr>
-        <th class="text-left" style="width: 20%">Parameters</th>
-        <th class="text-center">Description</th>
+        <th class="text-left" style="width: 20%">参数</th>
+        <th class="text-center">说明</th>
       </tr>
     </thead>
 
@@ -106,7 +95,7 @@ the algorithm's performance.
         <td><strong>Iterations</strong></td>
         <td>
           <p>
-            The maximum number of iterations. (Default value: <strong>10</strong>)
+          最大迭代次数(默认值：<strong>10</strong>)
           </p>
         </td>
       </tr>
@@ -114,10 +103,8 @@ the algorithm's performance.
         <td><strong>Stepsize</strong></td>
         <td>
           <p>
-            Initial step size for the gradient descent method.
-            This value controls how far the gradient descent method moves in the opposite direction of the gradient.
-            Tuning this parameter might be crucial to make it stable and to obtain a better performance. 
-            (Default value: <strong>0.1</strong>)
+          梯度下降的初始步长。该值确定每次进行梯度下降时，反向移动的距离。调整步长对于算法的稳定收敛及性能非常重要。
+            (默认值：<strong>0.1</strong>)
           </p>
         </td>
       </tr>
@@ -125,8 +112,8 @@ the algorithm's performance.
         <td><strong>ConvergenceThreshold</strong></td>
         <td>
           <p>
-            Threshold for relative change of the sum of squared residuals until the iteration is stopped.
-            (Default value: <strong>None</strong>)
+          算法停止迭代的残差平方和变化程度的收敛阈值。
+            (默认值：<strong>None</strong>)
           </p>
         </td>
       </tr>
@@ -134,16 +121,16 @@ the algorithm's performance.
         <td><strong>LearningRateMethod</strong></td>
         <td>
             <p>
-                Learning rate method used to calculate the effective learning rate for each iteration.
-                See the list of supported <a href="optimization.html">learing rate methods</a>.
-                (Default value: <strong>LearningRateMethod.Default</strong>)
+            学习率方法，用于计算每次迭代的有效学习率。Flink ML支持的学习率方法列表见：
+                <a href="optimization.html">learing rate methods</a>。
+                (默认值：<strong>LearningRateMethod.Default</strong>)
             </p>
         </td>
       </tr>
     </tbody>
   </table>
 
-## Examples
+## 示例代码
 
 {% highlight scala %}
 // Create multiple linear regression learner
