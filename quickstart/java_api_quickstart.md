@@ -146,5 +146,5 @@ public class LineSplitter implements FlatMapFunction<String, Tuple2<String, Inte
 ~~~
 
 在{% gh_link /flink-examples/flink-examples-batch/src/main/java/org/apache/flink/examples/java/wordcount/WordCount.java "GitHub"%}中检索所有的示例代码。 
-想要完整的API，看这里[Programming Guide]({{ site.baseurl }}/apis/programming_guide.html) 和这里 [further example programs](examples.html). 如果你有任何疑问，咨询我们的 [Mailing List](http://mail-archives.apache.org/mod_mbox/flink-dev/)。我很高兴可以提供帮助。
+想要完整的API，看这里[Programming Guide]({{ site.baseurl }}/apis/programming_guide.html) 和这里 [further example programs](examples.html). 如果你有任何疑问，咨询我们的 [Mailing List](http://mail-archives.apache.org/mod_mbox/flink-dev/)。我们很高兴可以提供帮助。
 
