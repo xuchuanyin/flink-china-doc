@@ -40,25 +40,26 @@ cd flink-china-doc/docker
 
 **如果你想要翻译一篇文章，请先在 [issue](https://github.com/flink-china/flink-china-doc/issues) 页面中查看是否已经有人在翻译这篇文档。如果没有，你可以发布一个 issue 或者回复某个模块的 issue，说明你要认领的文档。**
 
-我们建议你先在本地将英文文档按照原格式翻译成中文，直接在原英文文档基础上编辑翻译，注意保留文档原有的LISENCE，front matter等内容。并在本地测试验证后，提交你的翻译成果。提交翻译成果有两种方式：
+我们建议你先在本地将英文文档按照原格式翻译成中文，直接在原英文文档基础上编辑翻译，注意保留文档原有的 TOC 、`{% top %}`等内容。并在本地测试验证后，提交你的翻译成果。提交翻译成果有两种方式：
 
 1. 可以在[Flink中文文档](http://doc.flink-china.org)的具体文档页面的最下方找到"在 Github 上编辑此页！"的链接，你可以点击链接，并修改错误或者提交翻译结果。
 2. 通过提交[Pull Request](https://help.github.com/articles/using-pull-requests/)的方式提交你的翻译结果。
 
+**注意：**请通过 PR 的方式来提交翻译结果（包括拥有 commit 权限的成员），并至少邀请一位校对人员审核通过后才能被 merge 。在评论中 @flink-china/review  即可邀请所有校对人员。
 
 ## 翻译要求
 
 - 汉字，字母，数字等之间以空格隔开。
 - 中文使用中文符号，英文使用英文符号。
-- 专有词注意大小写，如 HTML，CSS，JavaScript，Java，Scala。
+- 专有词注意大小写，如 Flink，Java，Scala，API，不要用小写的 flink, java, scala, api。
 - 术语与已有译文保持一致，如果有不同意见请先在 issue 中讨论。
-- 代码只翻译注释。
-- 标题会转化为链接，文档其它地方可能会用到，所以标题应尽量简短，在修改标题时搜索一下它是否还用在其它地方。在修改文档内链接时也应搜索一下。
+- 代码只翻译注释，也可不翻译注释。
 
 
 ## 术语翻译对照
 
 transformations 转换/转换操作
+lazy evaluation 延迟计算
 
 ## 不翻译的术语
 

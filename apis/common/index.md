@@ -1,10 +1,10 @@
 ---
-title: "Basic Concepts"
+title: "基本概念"
 
 # Top-level navigation
 top-nav-group: apis
 top-nav-pos: 1
-top-nav-title: <strong>Basic Concepts</strong>
+top-nav-title: <strong>基本概念</strong>
 
 # Sub-level navigation
 #sub-nav-group: common
@@ -32,260 +32,379 @@ under the License.
 -->
 
 
-# 基本概念
+Flink 程序是在分布式集合上实现转换（比如 filtering, mapping, updating state, joining, grouping, defining windows, aggregating）的常用方案。 数据集合根据一些 source（比如 文件，kafka 或本地的集合）初始化创建。 通过 sinks 返回的结果，sink 可以写入到（分布式）文件或标准输出（如终端命令行）。Flink 运行在各种环境下，standalone 或嵌入到其他程序中。 可能在本地 JVM 中执行，或多台机器的集群上运行。
 
-flink 程序就是在分布式集合（collection）上实现transformation（比如filtering, mapping, updating state, joining, grouping, defining windows, aggregating）的普通程序. 数据集合根据一些source（比如 文件， kafka或本地的集合）初始化创建。 通过sinks返回的结果，sink可以写书到到（分布式）文件或标准输出（如终端命令行）。flink 运行在各种context下，standalone或潜入到其他程序中。 可能在本地jvm中执行，或多台机器的集群上运行。
+根据数据源的类型，例如有界或无界的数据源，用户可以实现一个批处理(batch program)或一个流式程序(streaming program), 其中 DataSet API 用于前者，DataStream API 用于后者。本文档介绍这两种 API 共通的一些基本概念。更详细的编程指南请参考 [Streaming 指南]({{ site.baseurl }}/apis/streaming/index.html) 和
+[Batch 指南]({{ site.baseurl }}/apis/batch/index.html)。
 
-根据data source的类型， 固定大小或无穷无尽的source， 用户可以实现一个批处理(batch program)或一个流式程序(streaming program), 从而DataSet API 用于前者，而DataStream API 用于后者。 本文档介绍2种api 都需要的基本概念。
+**注意**: 在本文档介绍 API 使用的实例中，我们将使用 `StreamingExecutionEnvironment` 和 DataStream API, 这些概念同样适用于 DataSet API，仅仅是换成 `ExecutionEnvironment` and DataSet 而已。
 
-<b>注意</b>: 在本文档介绍api使用的example中， 我们将使用 StreamingExecutionEnvironment和DataStream API, 这些概念同样适用于DataSet api, 仅仅是换成ExecutionEnvironment and DataSet。
 
----
-<a name="top"></a>
+* This will be replaced by the TOC
+{:toc}
 
-* <a href="#link">Linking with Flink</a>
-* <a href="#DataSet-and-DataStream">DataSet andDataStream</a>
-* <a href="#skeleton">程序框架</a>
-* <a href="#lazy">延迟执行</a>
-* <a href="#specifying-keys">Specifying keys</a>
-* <a href="#Specifying-Transformation-Functions">指定转换函数</a>
-* <a href="#Supported-Data-Types">数据类型</a>
-* <a href="#execution-configuration">执行配置</a>
-* <a href="#Program-Packaging-and-Distributed-Execution">程序打包和分布式执行</a>
-* <a href="#Accumulators-Counters">累加器和计数器</a>
-* <a href="#Parallel-Execution">并发执行</a>
-* <a href=“#Execution-Plans”>执行计划</a>
---- 
+关联 Flink
+------------------
 
-<a name="link"><a>
-# Linking with Flink
+要用 Flink 编写程序，你需要引入与你使用的编程语言相对应的 Flink library。
 
-最简单link flink到项目的方式是使用 快速入门的脚本，比如[Java API](java-api-quickstart)或[Scala API](scala-api)。也可以通过下面maven插件来创建一个空的项目，archetypeVersion 可以选择其他稳定版本或snapshot版本
-```
+最简单的引入 Flink 到项目的方式是使用快速起步中的脚本，比如 [Java API]({{ site.baseurl }}/quickstart/java_api_quickstart.html) 或是 [Scala API]({{ site.baseurl }}/quickstart/scala_api_quickstart.html)。也可以通过下面的 maven 插件来创建一个空的项目，`archetypeVersion` 可以选择其他稳定版本或预发版本（`-SNAPSHOT`）版本。
+
+<div class="codetabs" markdown="1">
+<div data-lang="java" markdown="1">
+{% highlight bash %}
 mvn archetype:generate \
     -DarchetypeGroupId=org.apache.flink \
     -DarchetypeArtifactId=flink-quickstart-java \
-    -DarchetypeVersion=1.1-SNAPSHOT
-```
-```
+    -DarchetypeVersion={{site.version }}
+{% endhighlight %}
+</div>
+<div data-lang="scala" markdown="1">
+{% highlight bash %}
 mvn archetype:generate \
     -DarchetypeGroupId=org.apache.flink \
     -DarchetypeArtifactId=flink-quickstart-scala \
-    -DarchetypeVersion=1.1-SNAPSHOT
-```
+    -DarchetypeVersion={{site.version }}
+{% endhighlight %}
+</div>
+</div>
 
-如果想要把flink加入到现有的maven项目中，则需要增加依赖：
-```
+如果想要把 Flink 加入到现有的 maven 项目中，则需要添加依赖，将下面这段添加到项目 *pom.xml* 的 *dependencies* 块中：
+
+
+<div class="codetabs" markdown="1">
+<div data-lang="java" markdown="1">
+{% highlight xml %}
 <!-- Use this dependency if you are using the DataStream API -->
 <dependency>
   <groupId>org.apache.flink</groupId>
-  <artifactId>flink-streaming-java_2.10</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <artifactId>flink-streaming-java{{ site.scala_version_suffix }}</artifactId>
+  <version>{{site.version }}</version>
 </dependency>
 <!-- Use this dependency if you are using the DataSet API -->
 <dependency>
   <groupId>org.apache.flink</groupId>
   <artifactId>flink-java</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <version>{{site.version }}</version>
 </dependency>
 <dependency>
   <groupId>org.apache.flink</groupId>
-  <artifactId>flink-clients_2.10</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <artifactId>flink-clients{{ site.scala_version_suffix }}</artifactId>
+  <version>{{site.version }}</version>
 </dependency>
-```
-```
+{% endhighlight %}
+</div>
+<div data-lang="scala" markdown="1">
+{% highlight xml %}
 <!-- Use this dependency if you are using the DataStream API -->
 <dependency>
   <groupId>org.apache.flink</groupId>
-  <artifactId>flink-streaming-scala_2.10</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <artifactId>flink-streaming-scala{{ site.scala_version_suffix }}</artifactId>
+  <version>{{site.version }}</version>
 </dependency>
 <!-- Use this dependency if you are using the DataSet API -->
 <dependency>
   <groupId>org.apache.flink</groupId>
-  <artifactId>flink-scala_2.10</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <artifactId>flink-scala{{ site.scala_version_suffix }}</artifactId>
+  <version>{{site.version }}</version>
 </dependency>
 <dependency>
   <groupId>org.apache.flink</groupId>
-  <artifactId>flink-clients_2.10</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <artifactId>flink-clients{{ site.scala_version_suffix }}</artifactId>
+  <version>{{site.version }}</version>
 </dependency>
-```
-注意：如果使用scala api，得二选一import下面：
-```
+{% endhighlight %}
+
+
+**重要:** 如果使用 Scala API，则需要 import 下面两者其中一个。
+{% highlight scala %}
 import org.apache.flink.api.scala._
-```
+{% endhighlight %}
 
-```
+or
+
+{% highlight scala %}
 import org.apache.flink.api.scala.createTypeInformation
-```
-原因是flink需要分析程序中使用的类型，从而生成出serializers和comparaters。 硬刺程序需要import 他们之一，从而能过enable一个非明确的转化，为flink的一些操作创建类型信息。
-## scala 依赖版本
-因为scala 2.10 binary 不兼容2.11，因此flink提供多个版本为不通scala version。从0.10开始，flink社区交叉编译了所有的flink 模块为2.10 和2.11. 只需要对应版本的`artifactId`后加上版本信息，比如"_2.11".  当然也可以自己[编译flink](https://ci.apache.org/projects/flink/flink-docs-release-0.10/setup/building.html).
+{% endhighlight %}
 
-## hadoop 版本依赖
-如果flink 运行在hadoop上，请选择正确的hadoop版本，详情请参考[downloads](http://flink.apache.org/downloads.html) 
+原因是 Flink 需要分析程序中使用的类型，从而生成 serializers 和 comparaters 。通过 import 上述两者之一，可以开启一个隐式的转换，为 Flink 的操作创建类型信息。
 
-flink-clients 依赖仅仅是本地模式需要。 如果想要在集群模式下运行， 可以忽略这个依赖。
-
-<a href="#top">返回顶部</a>
-
-<a name="DataSet-and-DataStream"></a>
-# DataSet and DataStream
-
-Flink 用特别的类 DataSet和DataStream 来表示程序中的数据。 用户可以认为它们是含有重复数据的不可修改的集合(collection).  当使用DataSet时， 数据是有限的， 而DataStream 中元素的数量是无限的。
-
-在几个关键点上， 这些集合不同于java collections。 首先， 它们是不可修改的， 意味着一旦被创建出来， 用户不能添加或删除元素， 也不能简单检查元素内部。
-
-在一个flink程序中， 添加一个source来初始化一个collection， 可以通过transformation 这些collection得到一个新的collection， transformation的api函数比如 map， filter 等。
-
-<a href="#top">返回顶部</a>
-
-<a name="skeleton"></a>
-# 程序框架
-就像example所示，  flink DataSet程序含有java常有的main函数， 还包括一些其他的逻辑：
-* 获得一个ExecutionEnvironment
-* 加载或创建 原始数据
-* 确定数据上至下的transformations
-* 确定计算结果的存储地方
-* 启动程序执行。
-
-我们将展示每一步， 所有的核心class java api都在[org.apache.flink.api.java](https://github.com/apache/flink/blob/master//flink-java/src/main/java/org/apache/flink/api/java)。
+</div>
+</div>
 
 
-ExecutionEnvironment是所有flink DataSet程序的基础。 可以如下来创建它：
-```
+#### Scala 依赖版本
+
+因为scala 2.10 binary 不兼容2.11，因此我们提供多个 artifacts 来支持这两种 Scala 版本。
+
+从 0.10 开始，我们为 2.10 和 2.11 交叉编译了所有的 Flink 模块。如果你想要将你的程序跑在 Scala 2.11 的 Flink 上，只需要在对应模块的 `artifactId` 后加上 `_2.11` 版本后缀。
+
+如果你想要用 Scala 2.11 自己编译 Flink，可以参考 [编译 Flink]({{ site.baseurl }}/setup/building.html#scala-versions)。
+
+
+#### Hadoop 依赖版本
+
+如果 Flink 要运行在 Hadoop 上，请选择正确的 Hadoop 版本，详情请参考 [下载页面](http://flink.apache.org/downloads.html) 可用版本列表，同时了解如何关联自定义版本的 Hadoop。
+
+想要关联最新的 SNAPSHOT 版本的代码，请参考 [这篇教程](http://flink.apache.org/how-to-contribute.html#snapshots-nightly-builds)。
+
+*flink-clients* 依赖仅仅是本地模式需要（如测试调试）。 如果想要 [在集群模式下运行]({{ site.baseurl }}/apis/cluster_execution.html) ，可以忽略这个依赖。
+
+
+{% top %}
+
+DataSet 和 DataStream
+----------------------
+
+Flink 用特别的类 DataSet 和 DataStream 来表示程序中的数据。用户可以认为它们是含有重复数据的不可修改的集合(collection)。当使用 DataSet 时，数据是有限的，而DataStream 中元素的数量是无限的。
+
+在几个关键点上， 这些集合与 Java 集合是不同的。首先，它们是不可修改的，这意味着它们一旦被创建出来，就不能添加或删除元素。你也不能简单地查看内部的元素。
+
+在一个 Flink 程序中，一个集合是通过添加一个 source 来初始化获得的，新的集合可以通过转换（transformation）得到，转换的 API 函数有 `map`，`filter` 等。
+
+<a id="anatomy-of-a-flink-program"></a>
+
+剖析 Flink 程序
+--------------------------
+
+Flink 程序看起来就像常规程序一样转换数据集合。每一个程序都由一些基本部分组成：
+
+1. 获得一个 `execution environment`，
+2. 加载/创建初始数据，
+3. 指定在该数据上进行的转换，
+4. 指定计算结果的存储地方，
+5. 启动程序执行。
+
+
+<div class="codetabs" markdown="1">
+<div data-lang="java" markdown="1">
+
+现在，我们将大致介绍下每一步，你可以参考相应的章节了解更多。注意所有的 Java DataSet API 核心类都可以在 {% gh_link /flink-java/src/main/java/org/apache/flink/api/java "org.apache.flink.api.java" %} 中找到，而所有的 Java DataStream API 核心类可以在 {% gh_link /flink-streaming-java/src/main/java/org/apache/flink/streaming/api "org.apache.flink.streaming.api" %} 中找到。
+
+
+`StreamExecutionEnvironment` 是所有 Flink 程序的基础，你可以使用 `StreamExecutionEnvironment` 中的这些静态方法来获得：
+
+{% highlight java %}
 getExecutionEnvironment()
 
-createCollectionsEnvironment()
-
 createLocalEnvironment()
-createLocalEnvironment(int parallelism)
-createLocalEnvironment(Configuration customConfiguration)
 
 createRemoteEnvironment(String host, int port, String... jarFiles)
-createRemoteEnvironment(String host, int port, int parallelism, String... jarFiles)
+{% endhighlight %}
 
-```
-一般来说， 用户者需要调用getExecutionEnvironment， 因为flink会根据不同的上下文来做对应的事情，比如程序运行在一个ide中， 或者在本地机器上执行程序；如果创建一个jar 文件， 并通过[commandline client](command-client)或[web interface](web-client)来提交任务， flink集群的manager会执行程序的main函数并调用getExecutionEnvironment()得到一个为运行在集群上运行你程序的一个执行环境（execution environment）。
+一般来说， 你只需要调用 `getExecutionEnvironment()`，因为 Flink 会根据不同的上下文来做对应的事情，比如你是在一个 IDE 中，或是作为一个常规的 Java 程序来执行 Flink 程序，那么它会创建一个本地环境，即在本地机器上执行你的程序。如果你编译了一个 JAR 文件出来，并通过 [命令行]({{ site.baseurl }}/apis/cli.html) 提交，那么 Flink 集群 manager 会执行你的 main 方法，而 `getExecutionEnvironment()` 会返回一个集群环境，即在集群上执行你的程序。
 
-为了去定data source， 执行环境有几种方式读取文件： 可以一行一行来读取，比如csv文件， 或使用自定义的输入格式。 可以通过下列方式，来按行来读取一个text文件：
-```
-final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+执行环境（execution environment）有多种读取文件的方法用来指定数据源：可以一行一行来读取，比如csv文件， 或使用自定义的输入格式。 可以通过下列方式，来按行来读取一个文本文件：
 
-DataSet<String> text = env.readTextFile("file:///path/to/file");
-```
-这用用户就可以得到一个可以做各种transformation的DataSet. 可以参考<a href="#data-source">Data Sources</a>.
 
-可以使用transformation来转化一个DataSet得到一个新的DataSet, 可以将新的可以使用transformation来转化一个DataSet得到一个新的DataSet写到文件，或再做一次transformation 或和其他可以使用transformation来转化一个DataSet得到一个新的DataSet 合并。 例如：
-一个map的transformation：
-```
+{% highlight java %}
+final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+
+DataStream<String> text = env.readTextFile("file:///path/to/file");
+{% endhighlight %}
+
+通过这种方式你就能得到一个 DataStream，在这之上你可以接着应用一些转换来得到衍生的 DataStream。
+
+你可以通过调用 DataStream 上的转换函数来应用转换。例如，一个 map 转换看起来是这样的：
+
+{% highlight java %}
+DataStream<String> input = ...;
+
+DataStream<Integer> parsed = input.map(new MapFunction<String, Integer>() {
+    @Override
+    public Integer map(String value) {
+        return Integer.parseInt(value);
+    }
+});
+{% endhighlight %}
+
+这会创建一个新的 DataStream，其中原始集合中的每一个 String 都被转换成了 Integer。
+
+一旦你得到了一个包含最终结果的 DataStream，你就可以通过创建一个 sink 将它写入到外部系统中。以下是一些创建 sink 的方法例子：
+
+{% highlight java %}
+writeAsText(String path)
+
+print()
+{% endhighlight %}
+
+</div>
+<div data-lang="scala" markdown="1">
+
+现在，我们将大致介绍下每一步，你可以参考相应的章节了解更多。注意所有的 Scala DataSet API 核心类都可以在 {% gh_link /flink-scala/src/main/scala/org/apache/flink/api/scala "org.apache.flink.api.scala" %} 中找到，而所有的 Scala DataStream API 核心类可以在 {% gh_link /flink-streaming-scala/src/main/java/org/apache/flink/streaming/api/scala "org.apache.flink.streaming.api.scala" %} 中找到。
+
+`StreamExecutionEnvironment` 是所有 Flink 程序的基础，你可以使用 `StreamExecutionEnvironment` 中的这些静态方法来获得：
+
+{% highlight scala %}
+getExecutionEnvironment()
+
+createLocalEnvironment()
+
+createRemoteEnvironment(host: String, port: Int, jarFiles: String*)
+{% endhighlight %}
+
+一般来说， 你只需要调用 `getExecutionEnvironment()`，因为 Flink 会根据不同的上下文来做对应的事情，比如你是在一个 IDE 中，或是作为一个常规的 Java 程序来执行 Flink 程序，那么它会创建一个本地环境，即在本地机器上执行你的程序。如果你编译了一个 JAR 文件出来，并通过 [命令行]({{ site.baseurl }}/apis/cli.html) 提交，那么 Flink 集群 manager 会执行你的 main 方法，而 `getExecutionEnvironment()` 会返回一个集群环境，即在集群上执行你的程序。
+
+执行环境（execution environment）有多种读取文件的方法用来指定数据源：可以一行一行来读取，比如csv文件， 或使用自定义的输入格式。 可以通过下列方式，来按行来读取一个文本文件：
+
+{% highlight scala %}
+val env = StreamExecutionEnvironment.getExecutionEnvironment()
+
+val text: DataStream[String] = env.readTextFile("file:///path/to/file")
+{% endhighlight %}
+
+通过这种方式你就能得到一个 DataStream，在这之上你可以接着应用一些转换来得到衍生的 DataStream。
+
+你可以通过调用 DataStream 上的转换函数来应用转换。例如，一个 map 转换看起来是这样的：
+
+{% highlight scala %}
 val input: DataSet[String] = ...
 
 val mapped = input.map { x => x.toInt }
-```
-这个transformation将通过将所有的string转化为integer来创建一个新的DataSet。 可以参考<a href="#transformation">Transformations</a>来进一步了解transformation。
+{% endhighlight %}
 
-一旦获得最终的DataSet， 用户可以把它写到文件或打印出来
-```
-def writeAsText(path: String, writeMode: WriteMode = WriteMode.NO_OVERWRITE)
-def writeAsCsv(
-    filePath: String,
-    rowDelimiter: String = "\n",
-    fieldDelimiter: String = ',',
-    writeMode: WriteMode = WriteMode.NO_OVERWRITE)
-def write(outputFormat: FileOutputFormat[T],
-    path: String,
-    writeMode: WriteMode = WriteMode.NO_OVERWRITE)
+这会创建一个新的 DataStream，其中原始集合中的每一个 String 都被转换成了 Integer。
 
-def printOnTaskManager()
+一旦你得到了一个包含最终结果的 DataStream，你就可以通过创建一个 sink 将它写入到外部系统中。以下是一些创建 sink 的方法例子：
 
-def print()
+{% highlight scala %}
+writeAsText(path: String)
 
-def collect()
-```
-第三个函数可以指定一个文件输出格式。 可以参考<a href="#data-sink">Data Sinks</a>来获得更多sink相关资料。
+print()
+{% endhighlight %}
 
-print（）函数很方便用来debug和开发。 输出DataSet内容到标准输出（在启动flink执行的jvm上）。 注意： 现在的print行为和0.9.x的print行为是不同的， 在0.9.x中，它是输出到worker的日志文件中， 现在是把DataSet发送到客户端并在那里打印。
+</div>
+</div>
 
-collection（）是从集群上收集DataSet到本地jvm， 它将返回一个list。
+一旦完成程序，用户需要**启动程序执行**，可以直接调用 `StreamExecutionEnviroment` 的 `execute()`， 根据不同的 `ExecutionEnvironment` 类型，将会决定本地模式执行或是提交到集群上执行。
 
-print和collection都会触发程序执行， 用户无需手动调用execute.
+`execute()` 函数会返回 `JobExecutionResult`，包含执行的次数和累加器（accumulator）结果。
 
-注意： print和collect 都会从集群上获取数据到客户端， 当前， collection收集的数据大小会受限于rpc系统，建议不要超过10MB.
+请查阅 [Streaming 指南]({{ site.baseurl }}/apis/streaming/index.html) 了解更多关于流数据源、sink、以及关于 DataStream 所支持转换（transformations）的更深入的信息。
 
-printOnTaskManager 可以打印DataSet 内容到taskmanager， 但这个函数不会触发程序执行。
-
-一旦完成程序，用户需要启动程序执行，可以直接调用ExecutionEnviroment的execute， 也可以间接调用通过collect或print。 ExecutionEnvironment将会决定运行在本地模式或集群上。
-
-注意，不能在程序的最后调用collect／print或execute。
-
-execute()函数会返回JobExecutionResult， 包含执行的次数和计算结果。 print和collection 并不会返回结果，但可以通过getLastJobExecutionResult来获得结果。
-
-<a href="#top">返回顶部</a>
-
-<a name="lazy"></a>
-# 延迟执行
-
-所有的flink程序都是延迟执行， 当执行程序main函数时， 加载数据但transformation并没有马上执行。相反，创建每一个操作并加到程序执行计划中。当调用ExecutionEnvironment.execute（collect／print也会触发这些操作）时，这些操作才真正执行，不管程序是本地执行还是分布式执行。
+请查阅 [Batch 指南]({{ site.baseurl }}/apis/batch/index.html) 了解更多关于批数据源、sink、以及关于 DataSet 所支持转换（transformations）的更深入的信息。
 
 
-<a href="#top">返回顶部</a>
+{% top %}
 
-<a name="specifying-keys"></a>
-# Specifying Keys
-一些transformation（比如join，coGroup）邀请它参数的DataSet 定一个key。 另外一些transformation(比如Reduce, GroupReduce, Aggregate)会对他们用的某个key做group操作
-```
+延迟计算（Lazy Evaluation）
+---------------
+
+所有的 Flink 程序都是延迟执行的：当执行程序的 main 函数时，数据加载了但转换并没有马上执行。相反，每个操作都被创建并加入到了程序执行计划中。当调用 `ExecutionEnvironment` 的 `execute()` 时，这些操作才被真正执行。程序是本地执行还是分布式执行取决于执行环境。
+
+延迟计算的机制可以让你能构建复杂的程序，而 Flink 仍会视为一个整体计划执行。
+
+{% top %}
+
+指定 Keys
+---------------
+
+一些转换（join，coGroup，keyBy，groupBy）需要在数据集上定义一个 key 。另外一些转换（Reduce，GroupReduce，Aggregate，Window）允许应用在根据 key 分组的数据上（如 KeyedStream）。
+
+一个 DataSet 可以如下这样被分组：
+{% highlight java %}
 DataSet<...> input = // [...]
 DataSet<...> reduced = input
   .groupBy(/*define key here*/)
   .reduceGroup(/*do something*/);
-```
-flink的数据模型并不是基于key-value pair模型。 因此，用户不需要把数据类型转换成key／values。 key实际上是“虚拟”的， 他们被定义到实际数据上的function 来帮助一些grouping操作。
+{% endhighlight %}
 
-## 为tuple 定义key
-最简单的例子：在一个或多个field上对一组tuples进行grouping：
-```
-DataSet<Tuple3<Integer,String,Long>> input = // [...]
-DataSet<Tuple3<Integer,String,Long> grouped = input
-  .groupBy(0)
-  .reduceGroup(/*do something*/);
-```
-对第一个filed进行group操作， GroupReduce函数会接受到第一个field相同值的tuples。 下例是组合field。<>
-```
-DataSet<Tuple3<Integer,String,Long>> input = // [...]
-DataSet<Tuple3<Integer,String,Long> grouped = input
-  .groupBy(0,1)
-  .reduce(/*do something*/);
-```
-对于复杂的tuple：
-```
-DataSet<Tuple3<Tuple2<Integer, Float>,String,Long>> ds;
-```
-如果groupby(0), 则会使用完整的Tuple2  作为key。 如果想进一步到Tuple2内部， 需要使用filed 表达式， 后面会介绍。
+而在 DataStream 上指定一个 key 时需要：
+{% highlight java %}
+DataStream<...> input = // [...]
+DataStream<...> windowed = input
+  .key(/*define key here*/)
+  .window(/*window specification*/);
+{% endhighlight %}
 
-## filed 表达式
-从0.7 开始， 用户可以使用基于string的filed表达式来引用嵌套filed， 用于grouping／sorting／joining／coGrouping. 除此之外， filed 表达式可以用来定义 <a href="#annotaions">sematic function annotations</a>
-```
+Flink 的数据模型并不是基于键值对的。因此，你不需要把数据类型转换成 keys/values。Key 实际上是“虚拟”的：它们被定义为实际数据上的函数，用来引导分组操作（grouping operator）。
+
+**注意：**在下面的讨论中我们会使用 `DataStream` API 和 `keyBy`。对于 DataSet API 你只需要替换成 `DataSet` 和  `groupBy`。
+
+
+### 为 Tuple 定义 key
+{:.no_toc}
+
+最简单的例子是，在一个或多个字段上对一组 Tuples 进行 grouping：
+
+<div class="codetabs" markdown="1">
+<div data-lang="java" markdown="1">
+{% highlight java %}
+DataStream<Tuple3<Integer,String,Long>> input = // [...]
+KeyedStream<Tuple3<Integer,String,Long> keyed = input.keyBy(0)
+{% endhighlight %}
+</div>
+<div data-lang="scala" markdown="1">
+{% highlight scala %}
+val input: DataStream[(Int, String, Long)] = // [...]
+val keyed = input.keyBy(0)
+{% endhighlight %}
+</div>
+</div>
+
+这组 Tuples 是在第一个字段上进行分组的（Integer 类型的那个）。
+
+<div class="codetabs" markdown="1">
+<div data-lang="java" markdown="1">
+{% highlight java %}
+DataStream<Tuple3<Integer,String,Long>> input = // [...]
+KeyedStream<Tuple3<Integer,String,Long> keyed = input.keyBy(0,1)
+{% endhighlight %}
+</div>
+<div data-lang="scala" markdown="1">
+{% highlight scala %}
+val input: DataSet[(Int, String, Long)] = // [...]
+val grouped = input.groupBy(0,1)
+{% endhighlight %}
+</div>
+</div>
+
+这里，我们在第一个和第二个字段的组合 key 上对 Tuples 进行了分组。
+
+嵌套 Tuples 的注意点： 如果你有一个嵌套 tuple 的 DataStream，比如：
+
+{% highlight java %}
+DataStream<Tuple3<Tuple2<Integer, Float>,String,Long>> ds;
+{% endhighlight %}
+
+指定 `keyBy(0)`，系统会使用整个 `Tuple2` 作为一个 key （Integer 和 Float 字段同时作为 key）。如果你想要“导航”到嵌套 `Tuple2` 里，你还得使用字段表达式，下面将会讲到。
+
+### 使用字段表达式定义 Key
+{:.no_toc}
+
+你可以使用基于 String 的字段表达式来引用嵌套字段并定义 keys，用来做 grouping, sorting, joining, 或 coGrouping。
+
+字段表达式使得在（嵌套的）组合类型中选择字段变得非常方便，比如 [Tuple](#tuples-and-case-classes) 和 [POJO](#pojos) 类型.
+
+<div class="codetabs" markdown="1">
+<div data-lang="java" markdown="1">
+
+下面的例子中，我们有一个 `WC` POJO，带有两个字段 "word" 和 "count"。要按照 `word` 字段来分组，我们只需要将它的名字传到 `groupBy()` 函数中。
+
+{% highlight java %}
 // some ordinary POJO (Plain old Java Object)
 public class WC {
-  public String word; 
+  public String word;
   public int count;
 }
-DataSet<WC> words = // [...]
-DataSet<WC> wordCounts = words.groupBy("word").reduce(/*do something*/);
-```
-filed 表达式语法：
+DataStream<WC> words = // [...]
+DataStream<WC> wordCounts = words.keyBy("word").window(/*window specification*/);
+{% endhighlight %}
 
-* 选择pojo对象的成员作为filed name。 比如上例
-* 用filed name or 基于0的offset field index。 比如："f0" 和“5” 代表第一个和第6个field.
-* 使用嵌套filed。 举例 “user.zip” 代表"user" pojo的“zip” filed。并且支持和其他方式混用，比如"f1.user.zip"/"user.f3.zip"
-* 可以使用"*"来选择所有的类型。 可以用于既不是tuple又不是pojo的类型。
+**字段表达式语法**:
 
-例子：
-```
+- 通过字段名来选择 POJO 中的字段。例如 `"user"` 就代表 WC POJO 中的 "user" 字段。
+
+- 通过字段名或者从 0 偏移的字段索引来选择 Tuple 中的字段。例如 `"f0"` 和 `"5"` 就分别代表了一个 Java Tuple 类中的第一个和第六个字段。
+
+- 你可以在 POJOs 和 Tuples 中选择嵌套的字段。例如，`"user.zip"` 代表了一个 POJO 类型中的 "user" 字段中的 "zip" 字段，其中 "user" 也是 POJO 类型。也支持任意嵌套以及 POJOs 与 Tuples 的混合，如 `"f1.user.zip"` 或 `"user.f3.1.zip"`。
+
+- 你可以使用 `"*"` 通配符来选择全部类型。这对于不是 Tuple 和 POJO 类型的也同样适用。
+
+
+**字段表达式实例**:
+
+{% highlight java %}
 public static class WC {
   public ComplexNestedClass complex; //nested POJO
   private int count;
@@ -303,101 +422,263 @@ public static class ComplexNestedClass {
   public Tuple3<Long, Long, String> word;
   public IntWritable hadoopCitizen;
 }
-```
-* "count": 指WC的count 字段
-* "complex": 指pojo ComplexNestedClass的所有字段
-* "complex.word.f2",  最后一个字段在Tuple3.
-* "complex.hadoopCitizen": IntWritable 类型。
+{% endhighlight %}
 
-## key 选择函数
-还有一种定义key的方法是"key selector"函数。 key 选择函数 用一个单独的dataset 元素作为输入， 输出这个元素对应的key。 这个key可以是任何类型， 也可以是任意计算结果。
-```
+对于上面的实例代码，这些字段表达式都是合法的：
+
+- `"count"`: 指 WC 类中的 `count` 字段。
+
+- `"complex"`: 递归选择了 POJO 类型 `ComplexNestedClass` 的所有字段。
+
+- `"complex.word.f2"`: 选择了嵌套的 `Tuple3` 中的最后一个字段。
+
+- `"complex.hadoopCitizen"`: 选择了这个 Hadoop `IntWritable` 类型的字段。
+
+</div>
+<div data-lang="scala" markdown="1">
+
+下面的例子中，我们有一个 `WC` POJO，带有两个字段 "word" 和 "count"。要按照 `word` 字段来分组，我们只需要将它的名字传到 `groupBy()` 函数中。
+
+{% highlight java %}
+// some ordinary POJO (Plain old Java Object)
+class WC(var word: String, var count: Int) {
+  def this() { this("", 0L) }
+}
+val words: DataStream[WC] = // [...]
+val wordCounts = words.keyBy("word").window(/*window specification*/)
+
+// or, as a case class, which is less typing
+case class WC(word: String, count: Int)
+val words: DataStream[WC] = // [...]
+val wordCounts = words.keyBy("word").reduce(/*window specification*/)
+{% endhighlight %}
+
+**字段表达式语法**:
+
+
+- 通过字段名来选择 POJO 中的字段。例如 `"user"` 就代表 WC POJO 中的 "user" 字段。
+
+- 通过从 1 偏移的字段名或者从 0 偏移的字段索引来选择 Tuple 中的字段。例如 `"_1"` 和 `"5"` 就分别代表了一个 Java Tuple 类中的第一个和第六个字段。
+
+- 你可以在 POJOs 和 Tuples 中选择嵌套的字段。例如，`"user.zip"` 代表了一个 POJO 类型中的 "user" 字段中的 "zip" 字段，其中 "user" 也是 POJO 类型。也支持任意嵌套以及 POJOs 与 Tuples 的混合，如 `"_2.user.zip"` 或 `"user._4.1.zip"`。
+
+- 你可以使用 `"_"` 通配符来选择全部类型。这对于不是 Tuple 和 POJO 类型的也同样适用。
+
+
+**字段表达式实例**:
+
+{% highlight scala %}
+class WC(var complex: ComplexNestedClass, var count: Int) {
+  def this() { this(null, 0) }
+}
+
+class ComplexNestedClass(
+    var someNumber: Int,
+    someFloat: Float,
+    word: (Long, Long, String),
+    hadoopCitizen: IntWritable) {
+  def this() { this(0, 0, (0, 0, ""), new IntWritable(0)) }
+}
+{% endhighlight %}
+
+
+对于上面的实例代码，这些字段表达式都是合法的：
+
+- `"count"`: 指 WC 类中的 `count` 字段。
+
+- `"complex"`: 递归选择了 POJO 类型 `ComplexNestedClass` 的所有字段。
+
+- `"complex.word._3"`: 选择了嵌套的 `Tuple3` 中的最后一个字段。
+
+- `"complex.hadoopCitizen"`: 选择了这个 Hadoop `IntWritable` 类型的字段。
+
+</div>
+</div>
+
+### 使用 Key 选择器函数定义 Key
+{:.no_toc}
+
+还有一种定义 key 的方法是 "key 选择器"（key selector） 函数。Key 选择器函数接受一个单独的元素作为输入，并返回这个元素的 key。这个 key 可以是任何类型，也可以是任意计算结果。
+
+下面这个例子展示了一个 key 选择器函数：简单地返回了一个对象的字段。
+
+<div class="codetabs" markdown="1">
+<div data-lang="java" markdown="1">
+{% highlight java %}
 // some ordinary POJO
 public class WC {public String word; public int count;}
-DataSet<WC> words = // [...]
-DataSet<WC> wordCounts = words
-                         .groupBy(
-                           new KeySelector<WC, String>() {
-                             public String getKey(WC wc) { return wc.word; }
-                           })
-                         .reduce(/*do something*/);
-```
+DataStream<WC> words = // [...]
+KeyedStream<WC> kyed = words
+  .keyBy(new KeySelector<WC, String>() {
+     public String getKey(WC wc) { return wc.word; }
+   });
+{% endhighlight %}
 
-<a href="#top">返回顶部</a>
+</div>
+<div data-lang="scala" markdown="1">
+{% highlight scala %}
+// some ordinary case class
+case class WC(word: String, count: Int)
+val words: DataStream[WC] = // [...]
+val keyed = words.keyBy( _.word )
+{% endhighlight %}
+</div>
+</div>
 
-<a name="Specifying-Transformation-Functions"></a>
-# 指定转换函数
+{% top %}
 
-##  实现一个接口
-最常见的是实现一个flink 指定的接口：
-```
+定义转换函数
+--------------------------
+
+大部分转换都需要一个用户实现的函数。这一节就如何定义转换函数列出了一些不同的方法。
+
+<div class="codetabs" markdown="1">
+<div data-lang="java" markdown="1">
+
+
+#### 实现接口
+
+最常见的方式是实现一个 Flink 提供的接口：
+
+{% highlight java %}
 class MyMapFunction implements MapFunction<String, Integer> {
   public Integer map(String value) { return Integer.parseInt(value); }
 });
-data.map (new MyMapFunction());
-```
+data.map(new MyMapFunction());
+{% endhighlight %}
 
-## 匿名类
-```
+
+#### 匿名类
+
+以匿名类的形式传入一个函数：
+
+{% highlight java %}
 data.map(new MapFunction<String, Integer> () {
   public Integer map(String value) { return Integer.parseInt(value); }
 });
-```
+{% endhighlight %}
 
-## java 8 lambda
-```
-DataSet<String> data = // [...]
+#### Java 8 Lambdas
+
+Flink 在 Java API 中也支持了 Java 8 Lambdas。请参考完整的 [Java 8 指南]({{ site.baseurl }}/apis/java8.html)。
+
+{% highlight java %}
 data.filter(s -> s.startsWith("http://"));
-DataSet<Integer> data = // [...]
+{% endhighlight %}
+
+{% highlight java %}
 data.reduce((i1,i2) -> i1 + i2);
-```
-## rich 函数
-```
+{% endhighlight %}
+
+#### 富函数
+
+所有转换中需要的用户自定义函数都可以被替换成*富*函数（rich function）作为参数。例如，代替
+
+{% highlight java %}
 class MyMapFunction implements MapFunction<String, Integer> {
   public Integer map(String value) { return Integer.parseInt(value); }
 });
-```
-可以改成：
-```
+{% endhighlight %}
+
+你可以写成
+
+{% highlight java %}
 class MyMapFunction extends RichMapFunction<String, Integer> {
   public Integer map(String value) { return Integer.parseInt(value); }
 });
-```
-所有使用用户定义函数的transformations都可以换成采用rich 函数作为参数的transformation。
-因此， 可以传递这个函数给map transformation：
-```
+{% endhighlight %}
+
+然后，与之前一样，将这个函数传到 `map` 转换中：
+
+{% highlight java %}
 data.map(new MyMapFunction());
-```
-rich 函数也可以使用匿名类：
-```
+{% endhighlight %}
+
+富函数同样可以被定义成匿名类：
+{% highlight java %}
 data.map (new RichMapFunction<String, Integer>() {
   public Integer map(String value) { return Integer.parseInt(value); }
 });
-```
+{% endhighlight %}
 
-除了用户自定义的函数map/reduce， rich 函数还提供4种函数：open/close/getRuntimeContext/setRuntimeContext. 当参数话这些函数时， 这些rich函数非常有用(<a href="passing-parameter-to-function"> Passing Parameters to Functions </a>), 创建／结束local state， 访问广播变量(<a href="#broadcast-variables">Broadcast Variable</a>, 访问runtime 信息 如accumulators/counters/iterations).
+</div>
+<div data-lang="scala" markdown="1">
 
-对于reduceGroup, rich 函数是唯一的定义一个可选combine函数的方式。 
+#### Lambda 函数
 
-<a href="#top">返回顶部</a>
+如在上述实例中看到的，所有操作都接受了一个 lambda 函数，用来描述操作的内容：
 
-<a name="Supported-Data-Types"></a>
-# 数据类型
+{% highlight scala %}
+val data: DataSet[String] = // [...]
+data.filter { _.startsWith("http://") }
+{% endhighlight %}
 
-DataSets中元素和transformation返回的结果 的类型会有限制。 原因是系统需要分析这些类型来决定高效执行策略。
+{% highlight scala %}
+val data: DataSet[Int] = // [...]
+data.reduce { (i1,i2) => i1 + i2 }
+// or
+data.reduce { _ + _ }
+{% endhighlight %}
 
-6种不同的分类：
-* java Tuples/Scala Case Classes
-* java POJO
-* 基本类型(Primitive Types)
-* 基本类(Regular Classes)
-* Values
-* Hadoop Writables
+#### 富函数
 
-## Tuples and Case Classes
-Tuples 是由固定数量的field组成的。 java api 提供Tuple1 到Tuple25. tuple的任意一个field可以任意类型，可以是嵌套tuple。 tuple的field可以直接用类似"tuple.f4"或者getter函数如tuple.getField(int position)来访问。 起始index是0. 注意， 这个和scala的tuples不一样，但和java的通用index是一致的。
-```
-DataSet<Tuple2<String, Integer>> wordCounts = env.fromElements(
+所有转换中需要的用户自定义函数都可以被替换成*富*函数（rich function）作为参数。例如，代替
+
+{% highlight scala %}
+data.map { x => x.toInt }
+{% endhighlight %}
+
+你可以写成
+
+{% highlight scala %}
+class MyMapFunction extends RichMapFunction[String, Int] {
+  def map(in: String):Int = { in.toInt }
+})
+{% endhighlight %}
+
+然后，与之前一样，将这个函数传到 `map` 转换中：
+
+{% highlight scala %}
+data.map(new MyMapFunction())
+{% endhighlight %}
+
+富函数同样可以被定义成匿名类：
+{% highlight scala %}
+data.map (new RichMapFunction[String, Int] {
+  def map(in: String):Int = { in.toInt }
+})
+{% endhighlight %}
+</div>
+</div>
+
+除了给用户自定义的函数外（如 map、reduce 等），富函数还提供了四种函数：`open`, `close`, `getRuntimeContext`，以及`setRuntimeContext`。这些对于参数化函数（参考 [给函数传参]({{ site.baseurl }}/apis/batch/index.html#passing-parameters-to-functions))，创建和销毁本地状态，访问广播变量（参考 [广播变量]({{ site.baseurl }}/apis/batch/index.html#broadcast-variables)），以及访问运行时信息如累加器和计数器（参考 [Accumulators 和 Counters](#accumulators--counters)），还有迭代信息（参考 [迭代]({{ site.baseurl }}/apis/batch/index.html#iteration-operators)）都是有很大帮助的。
+
+{% top %}
+
+支持的数据类型
+--------------------
+
+Flink 对于 DataSets 和 DataStream 中元素类型有一些限制。原因是系统需要分析这些类型来决定高效执行策略。
+
+有 6 种不同的数据类型：
+
+1. **Java 元组（Tuples）** 和 **Scala 样本类（Case Classes）**
+2. **Java POJOs**
+3. **基本类型（Primitive Types）**
+4. **一般类（Regular Classes）**
+5. **Values**
+6. **Hadoop Writables**
+7. **特殊类型（Special Types）**
+
+#### 元组和样本类（Tuples 和 Case Classes）
+
+<div class="codetabs" markdown="1">
+<div data-lang="java" markdown="1">
+
+Tuples 是由固定数量的字段组成，字段类型可以是多样化的。Java API 提供了从 `Tuple1` 到 `Tuple25` 。Tuple 中的每一个字段都可以是任意的 Flink 类型，可以是嵌套 tuple。Tuple 的字段可以直接通过字段名（如 `tuple.f4`）或者 getter 函数（如 `tuple.getField(int position)`）来访问。字段的起始索引是 0。注意，这个和 Scala tuples 不一样，但和 Java 的通用索引是一致的。
+
+{% highlight java %}
+DataStream<Tuple2<String, Integer>> wordCounts = env.fromElements(
     new Tuple2<String, Integer>("hello", 1),
     new Tuple2<String, Integer>("world", 2));
 
@@ -407,170 +688,303 @@ wordCounts.map(new MapFunction<Tuple2<String, Integer>, Integer>() {
         return value.f1;
     }
 });
-```
-当grouping／sorting／joining 一组tuples， 可以用field index或express作为key， 可以参考 <a href="#transformation">Transformations</a> 和<a href="#specifying-keys">Specifying keys</a>
 
-## POJO
-如果满足下列条件， java 或scala 类就会被当做POJO:
-* class 必须是public
-* 含有无参构造函数
-* 所有的field是public或可以通过getter／setter访问。
-* 所有的fileld 类型是flink支持。 同时， flink使用avro来序列号对象。
+wordCounts.keyBy(0); // also valid .keyBy("f0")
 
-flink可以分析pojo的类型，分析它的field。 最终pojo 比一般类型更容易使用，而且flink 会比一般类型更高效的处理pojo。
-```
+
+{% endhighlight %}
+
+</div>
+<div data-lang="scala" markdown="1">
+
+Scala 的样本类（case classes）以及 Scala 元组（tuples，一种特殊的样本类）是包含了数量固定的各种类型的字段的复合类型。元组不能通过名称获取字段，而是使用位置下标来读取对象；而且这个下标基于 1，而不是基于 0。样本类是通过名称来获得字段。
+
+{% highlight scala %}
+case class WordCount(word: String, count: Int)
+val input = env.fromElements(
+    WordCount("hello", 1),
+    WordCount("world", 2)) // Case Class Data Set
+
+input.keyBy("word")// key by field expression "word"
+
+val input2 = env.fromElements(("hello", 1), ("world", 2)) // Tuple2 Data Set
+
+input2.keyBy(0, 1) // key by field positions 0 and 1
+{% endhighlight %}
+
+</div>
+</div>
+
+#### POJOs
+
+如果满足下列所有条件， Java 和 Scala 类就会被当做 POJO 类型：
+
+- 类必须是 public 的
+
+- 含有无参构造函数
+
+- 所有的字段要么是 public 的，要么是可以通过 getter 和 setter 函数访问的。对于一个叫做 `foo` 的字段来说，getter 和 setter 方法必须是 `getFoo()` 和 `setFoo()`。
+
+- 所有的字段类型都能被 Flink 支持。同时，Flink 使用 [Avro](http://avro.apache.org) 来序列化对象（如 `Date`）。
+
+Flink 会分析 POJO 类型的结构，比如 POJO 的字段。所以 POJO 比一般类型更容易使用，而且 Flink 处理 POJO 类型会比一般类型更高效。
+
+下面展示了一个带有两个 public 字段的 POJO 类型。
+
+<div class="codetabs" markdown="1">
+<div data-lang="java" markdown="1">
+{% highlight java %}
 public class WordWithCount {
 
     public String word;
     public int count;
 
-    public WordCount() {}
+    public WordWithCount() {}
 
-    public WordCount(String word, int count) {
+    public WordWithCount(String word, int count) {
         this.word = word;
         this.count = count;
     }
 }
-```
-## 基本类型(Primitive Types)
-java/scala 基本类型，如Integer/String/Double.
 
-## 基本类（general class）
-flink支持大部分的java/scala 类。 一般遵守java Beans 惯例的class 都可以， 对于一些不能序列化的filed 比如文件指针／io streams/native resource 的filed 会有限制。
+DataStream<Tuple2<String, Integer>> wordCounts = env.fromElements(
+    new WordWithCount("hello", 1),
+    new WordWithCount("world", 2));
 
-并不是所有的类会当做pojo类型， 当做general的类会被认为黑盒子，并且不会访问他们的内容， 会用kryo来序列化或反序列化general class。
+wordCounts.keyBy("word"); // key by field expression "word"
 
-## Values
-value 类型定义了他们自己的序列化和反序列化方式。 用户自己来实现"org.apache.flinktypes.Value"接口read／write。当通用的序列化方式不高效时，选择value 类型是合理的。 比如， 一个实现sparse vector（元素是array）作为数据类型 。
+{% endhighlight %}
+</div>
+<div data-lang="scala" markdown="1">
+{% highlight scala %}
+class WordWithCount(var word: String, var count: Int) {
+    def this() {
+      this(null, -1)
+    }
+}
 
-“org.apache.flinktypes.CopyableValue”提供手动clone 逻辑。
+val input = env.fromElements(
+    new WordWithCount("hello", 1),
+    new WordWithCount("world", 2)) // Case Class Data Set
 
-flink已经预定义了一批基本的value类型（ByteValue, ShortValue, IntValue, LongValue, FloatValue, DoubleValue, StringValue, CharValue, BooleanValue）. 这些类型是一些mutable的基本类型。 他们的值可以被修改，允许开发者重复使用这些对象，减轻gc的压力。
+input.keyBy("word")// key by field expression "word"
 
-## Hadoop Writables
-用户可以使用实现"org.apache.hadoop.Writable" 的类型。
-
-## 类型消除和类型诊断（type erasure & type inference）
-编译后， java编译器会扔掉很多基本的类型信息，这就是java中的type erasure。 这意味着， 在runtime时，一个object的instance 的基本类型并不知道， 比如DataSet<String>和DataSet<Long>的instance， 对jvm来说，就是一样的。
-
-flink 会请求类型信息，当它准备执行程序时（当main函数已经被调用）。flink java api会尝试构建扔掉的类型信息并把他们显示存到数据集和operator中。 用户可以通过调用DataSet.getType()来获取它们。 这个函数返回TypeInformation 对象，以flink内在方式来表示类型。
-
-type inferrence有它自己的限制并且在一些情况下需要程序员的配合。 举例来说， 从集合中创建的数据集的函数，比如ExecutionEnvironment.fromCollection(), 在这些函数中， 用户可以传递一些描叙类型的参数。 但一些常见函数比如MapFunction<I, O>需要一些额外的类型信息。
-
-通过明确输入格式和函数返回类型来实现ResultTypeQueryable接口。 函数的输入类型通常可以通过前一个操作返回值进行判断。
-
-## 重复使用object
-flink 会尽量减少申请object来获得更好的性能。
-
-默认情况下， 用户定义的函数比如map／groupReduce 会在每次调用时获得新的对象。因此有可能在这些函数内部，保持这些对象的引用。
-
-经常把用户定义的函数串联起来， 举例来说， 定义2个相同并发的mapper， 一个接上另外一个。 在这种串联情况下， 串联的函数都是接受相同的对象。 因此，第二个map函数接受第一个map返回的对象。当第一个函数保留所有对象为一个list，而第二个map会去修改这些对象时，这种情况会引发错误。这种情况下， 用户需要手动创建对象的copy在把它们放到list之前。
-
-注意， 系统是假设用户在filter函数中不会修改输入的object。
-
-ExectionConfig 有一个开关， 它可以允许用户打开 object resue 模式（enableObjectReuse()）。 对于易变类型， flink会重复使用对象。 这样意味着一个map函数总是接受到相同的对象，单它的字段设置为新的值。 对象复用模式会产生更好的性能，因为申请更少的对象， 但用户需要小心处理他们正使用的对象。
+{% endhighlight %}
+</div>
+</div>
 
 
-<a href="#top">返回顶部</a>
+#### 基本类型（Primitive Types）
 
-<a name="execution-configuration"></a>
-# 执行配置
-ExecutionEnvironment 包含ExecutionConfig， 从而可以设定任务在运行期间的特殊的配置。
-```
-ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+Flink 支持所有的 Java 和 Scala 的基本类型，例如 `Integer`, `String`, 和 `Double`。
+
+#### 一般类（General Class Types）
+
+Flink 支持大部分的 Java 和 Scala 类（API 或自定义的）。对于一些不能被序列化的字段会有限制，比如文件指针，I/O 流，native
+resources。一般遵守 Java Beans 惯例的类都是可以的。
+
+Flink 会把没有被当做 POJO 类型（请参考上面的 POJO 要求）的都当做一般类来处理。Flink 会把它们看做黑盒子并且无法访问它们的内容（例如，高效排序）。一般类型会用序列化框架 [Kryo](https://github.com/EsotericSoftware/kryo) 来做序列化/反序列化。
+
+
+#### Values
+
+*Value* 类型定义了他们自己的序列化和反序列化方式。用户自己来实现 `org.apache.flinktypes.Value` 接口的 `read` 和 `write` 方法，而不是使用通用的序列化框架。当通用的序列化方式不高效时，选择 Value 类型是合理的。一个例子是一个数据类型以数组实现了一个稀疏向量（sparse vector）。我们知道这个数组里大部分都是零，我们可以为非零元素使用一种特殊编码，然而通用的序列化框架只会简单的写入所有的数组元素。
+
+类似的，`org.apache.flinktypes.CopyableValue` 接口提供了手动内部克隆（clone）逻辑。
+
+
+Flink 已经预定义了一批基本的 Value 类型（`ByteValue`, `ShortValue`, `IntValue`, `LongValue`, `FloatValue`, `DoubleValue`, `StringValue`, `CharValue`, `BooleanValue`）。这些类型充当了基本数据类型的可变类型：它们的值可以被修改，允许开发者重复使用这些对象来减轻 GC 的压力。
+
+
+#### Hadoop Writables
+
+你可以使用实现了 `org.apache.hadoop.Writable` 接口的类型。定义在 `write()` 和 `readFields()` 方法中的序列化逻辑会被用来做序列化。
+
+
+#### 特殊类型（Special Types）
+
+你可以使用特殊类型，包括 Scala 的 `Either`, `Option`, 和 `Try`。Flink 在 Java API 中自己实现了一个 `Either`，很像 Scala 的 `Either`，它代表一个两种可能类型的值，*Left* 或 *Right*。`Either` 在错误处理或是 operator 需要输出两种不同类型的记录的时候是非常有用的。
+
+#### 类型擦除和类型诊断
+
+*注意: 本节只与 Java 有关。*
+
+Java 编译器会在编译后扔掉很多泛型类型信息，这就是 Java 中的*类型擦除*（type erasure）。也就是说在运行时，一个对象实例是不知道它的泛型类型的。举例来说，`DataStream<String>` 和 `DataStream<Long>` 的实例对 JVM 说看起来是一样的。
+
+
+当 Flink 准备执行程序时（当 main 函数被调用），Flink 会请求类型信息。Flink Java API 会尝试重新构造被类型擦除扔掉的类型信息，并把他们显示存到数据集和 operator 中。你可以通过调用 `DataStream.getType()` 来获取它们。这个函数返回了一个 `TypeInformation` 实例，这是 Flink 内部用来表示类型的类。
+
+类型诊断（type inferrence）有它自己的限制并且在一些情况下需要程序员的“配合”。举例来说， 从集合中创建的数据集的函数，比如 `ExecutionEnvironment.fromCollection()` ，在这些函数中， 用户可以传入一个用来描叙类型的参数。但一些泛型函数比如 `MapFunction<I, O>` 还需要一些额外的类型信息。
+
+{% gh_link /flink-java/src/main/java/org/apache/flink/api/java/typeutils/ResultTypeQueryable.java "ResultTypeQueryable" %} 接口可以通过输入格式和函数来实现明确地告诉 API 他们的返回类型。函数的*输入类型*通常可以通过前一个操作的返回值进行判断。
+
+
+执行配置
+-----------------------
+
+`StreamExecutionEnvironment` 中包含了 `ExecutionConfig`， `ExecutionConfig` 可以用来设定任务在运行期间的具体配置。
+
+<div class="codetabs" markdown="1">
+<div data-lang="java" markdown="1">
+{% highlight java %}
+StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 ExecutionConfig executionConfig = env.getConfig();
-```
-下面一些配置项(可以参考源码下面的注释， 源码下面ExecutionConfig有更多的配置项)：
-* enableClosureCleaner() / disableClosureCleaner(). 默认情况是 closure cleaner（关闭清理器）是打开的。 关闭清理器会清除对匿名函数内部的surrounding类的引用。如果关闭关闭清理器， 有可能一个用户匿名函数还在引用一个surrounging 类， 这个类通常不是Serializable， 这样会导致序列化组件会出现exception。
-* getParallelism() / setParallelism(int parallelism) 设置任务的并发。
-* getNumberOfExecutionRetries() / setNumberOfExecutionRetries(int numberOfExecutionRetries) 设置失败task重新执行次数。 为0 表示关闭容错。 －1 表示使用系统默认值。
-* getExecutionRetryDelay() / setExecutionRetryDelay(long executionRetryDelay)   设当一个任务失败时， 在重新运行前，设置等待多少个毫秒。 当所有的task被taskmanager成功停止后， 才开始计时delay， 一旦设置的delay时间到了， 所有task开始重新运行。这个参数非常有用， 对于一些time-out 相关的failure场景， 比如一些broken的连接并没有完全timeout， 如果立即重试，容易导致相同的故障。这个参数只有当重试执行次数大于等于1时，才有效。
-* getExecutionMode() / setExecutionMode(). 默认执行模式是PIPELINED。 设置程序的执行模式， 决定了数据交换是采用batch或pipeline的方式。
-* enableForceKryo() / disableForceKryo, 默认没有使用kryo。 设置GenericTypeInformation 对pojo使用kryo序列化起，即使flink可以识别它们为pojo。 某些情况下推荐使用这种方式， 举例， 当flink 内部序列化器不能正确处理pojo。
-* enableForceAvro() / disableForceAvro(),  默认avro关闭。 设置AvroTypeInformation 使用avro序列化器当序列化avro pojo。
-* enableObjectReuse() / disableObjectReuse(), 默认object不会被重复使用。参考<a href="#types">数据类型</a>的重复使用章节。
-* enableSysoutLogging() / disableSysoutLogging() 默认jobmanager的状态更新会打印到System.out, 这些函数可以对这个进行设置。
-* getGlobalJobParameters() / setGlobalJobParameters(), 这个函数可以设置一个自定义的对象作为任务的全局配置。 因为 可以在所有用户定义的函数中访问ExecutionConfig，这是一种可以全局访问配置的方便方式。
-* addDefaultKryoSerializer(Class<?> type, Serializer<?> serializer)  为一个指定类型注册一个kryo 序列化instance
-* addDefaultKryoSerializer(Class<?> type, Class<? extends Serializer<?>> serializerClass) 为一个指定类型注册kryo序列化类。
-* registerTypeWithKryoSerializer(Class<?> type, Serializer<?> serializer)， 注册一个指定的类型给kryo并指定一个序列化对象给它。 通过注册类型到kryo， 这个类型的序列化会更高效。
-* registerKryoType(Class<?> type) Registers the given type with the serialization stack. If the type is eventually serialized as a POJO, then the type is registered with the POJO serializer. If the type ends up being serialized with Kryo, then it will be registered at Kryo to make sure that only tags are written.
-* registerPojoType(Class<?> type) Registers the given type with the serialization stack. If the type is eventually serialized as a POJO, then the type is registered with the POJO serializer. If the type ends up being serialized with Kryo, then it will be registered at Kryo to make sure that only tags are written. If a type is not registered with Kryo, its entire class-name will be serialized with every instance, leading to much higher I/O costs.
-* disableAutoTypeRegistration() Automatic type registration is enabled by default. The automatic type registration is registering all types (including sub-types) used by usercode with Kryo and the POJO serializer.
+{% endhighlight %}
+</div>
+<div data-lang="scala" markdown="1">
+{% highlight scala %}
+val env = StreamExecutionEnvironment.getExecutionEnvironment
+var executionConfig = env.getConfig
+{% endhighlight %}
+</div>
+</div>
 
-注意: kryo序列化实例是不能访问用registerKryoType注册的类型。
+下面这些配置项都是可以用的：(加粗的是默认项)
 
-在Rich*函数中通过getRuntimeContext得到的RuntimeContext 也可以访问ExecutionConfig 在所有用户定义的函数中。
+- **`enableClosureCleaner()`** / `disableClosureCleaner()`. 默认情况下闭包清理器（closure cleaner）是打开的。闭包清理器会清除对匿名函数的环绕类（surrounding class）的无用引用。如果关闭闭包清理器，有可能一个匿名用户函数还在引用某个环绕类，这个类通常不是可序列化的（Serializable）。这样会导致序列化组件会抛出异常。
 
-<a href="#top">返回顶部</a>
+- `getParallelism()` / `setParallelism(int parallelism)` 设置任务的并发。
 
-<a name="Program-Packaging-and-Distributed-Execution"> </a>
-# 程序打包和分布式执行
-向前面所叙， flink程序可以运行在远程的集群环境中。 程序可以打包成jar来执行。 打包程序是通过命令执行它们的前提条件。
+- `getNumberOfExecutionRetries()` / `setNumberOfExecutionRetries(int numberOfExecutionRetries)` 设置失败 task 的重新执行次数。为 0 表示关闭容错。－1 表示使用系统默认值。
 
-## 打包程序
-为了支持通过命令行或web 接口从一个打包的jar执行， 一个程序必须使用通过StreamExecutionEnvironment.getExecutionEnvironment()获得的environment. 当jar通过命令行或web接口提交上去后， 这个environment就会作为集群模式下的environment. 如果flink程序不是通过这些接口来调用， 这个environment就运行在本地environment。
+- `getExecutionRetryDelay()` / `setExecutionRetryDelay(long executionRetryDelay)` 当一个任务失败时，设置重新运行前的等待时间，单位毫秒。延期（delay）会在 TaskManager 上所有 task 都被成功停止后才开始计时。一旦设置的延期时间到了，所有 task 开始重新运行。这个参数用来延迟重新执行是非常有用的，目的是让某些超时相关的故障场景完全浮出水面（比如断了的连接还没有完全超时）。如果立即重试，容易导致相同的故障。这个参数只有当重试执行次数大于等于 1 时，才有效。
 
-为了打包程序，可以简单export所有涉及到的class到一个jar文件中。这个jar文件的manifest必须指向程序的入口累。 最简单的方式是设置main-class入口到mainifest。 这个main-class设置和jvm执行一个jar文件（java -jar pathtojarfile）找到main入口函数一样。 大部分的ide提供导出jar时自动设置入口函数。
+- `getExecutionMode()` / `setExecutionMode()`. 默认执行模式是 PIPELINED。 设置程序的执行模式， 这决定了数据交换是采用 batch 还是 pipeline 的方式。
 
-## 通过计划打包程序
-flink 还支持通过plans来打包程序。 不是在main函数中定义一个程序并在那个环境上调用execute， plan packaging返回程序计划(program plan), 它是用来描叙程序data flow。 因此， 程序必须实现org.apache.flink.api.common.Program接口， 定义getPlan(String...)。 传递给这个函数的string列表就是命令行参数， 这个程序的plan可以通过 ExecutionEnvironment#createProgramPlan()来创建出来， 这个jar的mainfest必须指向实现org.apache.flinkapi.common.Program接口类的class，而不是带main入口函数的类。
+- `enableForceKryo()` / **`disableForceKryo()`**. 默认没有使用 Kryo。强制 GenericTypeInformation 对 POJO 使用 Kryo 序列化器，即使 Flink 可以识别它们为 POJO。某些情况下推荐使用这种方式，举例来说，当 Flink 内部序列化器不能正确处理 POJO 时。
 
-## 总结
-调用一个打包的程序的流程如下：
-* 搜索jar的manifest 找到main-class或program－class， 如果设置了2个属性， 则program-class属性优先考虑。 当jar的manifest 2者都不包含时， 命令行和web 接口支持输入参数来指定入口函数。
-* 如果入口类实现org.apache.flinkapi.common.Program， 则系统会调用它的getPlan来获得程序plan去执行。
-* 如果入口类没有实现org.apache.flinkapi.common.Program， 则系统调用对应类的main函数。
+- `enableForceAvro()` / **`disableForceAvro()`**. 默认强制 Avro 是关闭的。在序列化 Avro POJO 时，强制 AvroTypeInformation 使用 Avro 序列化器代替 Kryo。
 
-<a href="#top">返回顶部</a>
+- `enableObjectReuse()` / **`disableObjectReuse()`**. 默认对象是不会被重复使用的。开启对象重用，会在运行时重新使用用户的对象，这能获得更好的性能。注意如果用户在定义操作的函数时并不清楚这一行为的话，可能到导致 bug。
 
-<a name="Accumulators-Counters"></a>
-# 累加器和计数器
-累加器（Accumulators）由一个add 操作和一个final 累加结果组成， 当任务结束后，可以获得累加结果。
+- **`enableSysoutLogging()`** / `disableSysoutLogging()`. 默认 Jobmanager 的状态更新会打印到 `System.out`。可以通过这个配置关闭这种行为。
 
-最直接的累加器就是计数器（counter）。 用户可以调用Accumulator.add(V value)来增加。 任务结束后， flink会合并所有的结果并将总结果返回给客户端。累加器在调试时很有作用，另外用户如果想知道数据更多的信息也很有作用。
+- `getGlobalJobParameters()` / `setGlobalJobParameters()` 这个函数可以设置一个自定义的对象作为任务的全局配置。 因为 `ExecutionConfig` 在所有用户定义的函数中都是可以访问到的，这是设置全局配置的一种方便方式。
 
-flink 现在有如下的内置累加器， 他们都实现了“Accumulator”接口：
-＊ IntCounter, LongCounter and DoubleCounter: See below for an example using a counter.
-＊ Histogram: A histogram implementation for a discrete number of bins. Internally it is just a map from Integer to Integer. You can use this to compute distributions of values, e.g. the distribution of words-per-line for a word count program
+- `addDefaultKryoSerializer(Class<?> type, Serializer<?> serializer)` 为一个指定类型（`type`）注册一个 Kryo 序列化实例。
 
-## 如何使用累加器:
-* 首先在用户自定义的transformation函数中创建一个累加器
-```
+- `addDefaultKryoSerializer(Class<?> type, Class<? extends Serializer<?>> serializerClass)` 为一个指定类型（`type`）注册一个 Kryo 序列化类。
+
+- `registerTypeWithKryoSerializer(Class<?> type, Serializer<?> serializer)` 为一个指定的类型注册 以 Kryo 序列化实例。通过注册类型到 Kryo，这个类型的序列化会更高效。
+
+- `registerKryoType(Class<?> type)`  如果这个类型最终是用 Kryo 序列化的，那么它会在 Kryo 被注册以确保只有标签（整型 ID）会被写入。如果一个类型不是使用 Kryo 注册的，那么它的整个类名（class-name）会被序列化到每个实例中，这会导致更高的 I/O 开销。
+
+- `registerPojoType(Class<?> type)` 用序列化堆栈来注册给定的类型。如果这个类型最终是以 POJO 来序列化的，那么这个类型会使用 POJO 序列化器注册。如果这个类型最终是用 Kryo 被序列化，那么它会在 Kryo 被注册以确保只有标签（整型 ID）会被写入。如果一个类型不是使用 Kryo 注册的，它整个类名（class-name）会被序列化到每个实例中，这会导致更高的 I/O 开销。
+
+注意使用 `registerKryoType()` 注册的类型是不能用于 Flink 的 Kryo 序列化实例的。
+
+- `disableAutoTypeRegistration()` 自动类型注册默认是开启的。"自动类型注册"存储了用户代码中用到的所有类型（包括子类型）。
+
+
+在 `Rich*` 函数中可以通过 `getRuntimeContext()` 方法获得 `RuntimeContext`，从中可以访问到 `ExecutionConfig`。
+
+{% top %}
+
+
+程序打包和分布式执行
+-----------------------------------------
+
+如前所述，Flink 程序使用一个 `remote enviroment` 可以运行在远程的集群环境中。同样的，程序可以打包成 JAR 来执行。程序的打包是通过 [命令行接口]({{ site.baseurl }}/apis/cli.html) 执行它们的前提条件。
+
+
+#### 打包程序
+
+为了支持通过命令行或 web 接口执行一个打包的 JAR 文件，一个程序必须使用通过 `StreamExecutionEnvironment.getExecutionEnvironment()` 获得的环境。当 JAR 通过命令行或 web 接口提交上去后，这个环境就会是集群模式环境。如果 Flink 程序不是通过这些接口来调用，这个环境就是本地模式环境。
+
+
+为了打包程序，可以简单地导出所有涉及到的类到一个 JAR 文件中。这个 JAR 文件的 manifest 必须指向程序的*入口类*。最简单的方式是将 *main-class* 入口加到 mainifest 中（如 `main-class: org.apache.flinkexample.MyProgram`）。 这个 *main-class* 属性和 JVM 通过命令行 `java -jar pathToTheJarFile` 执行一个 JAR 文件找到 main 入口函数是一样的。大部分的 IDE 都提供导出 JAR 时自动添加入口函数。
+
+
+#### 通过计划打包程序
+
+Flink 还支持通过计划（*Plans*）来打包程序。计划打包返回的是 *Program Plan*（这是一个对程序数据流的描述），而不是在 main 函数中定义程序并在环境上调用 `execute()`。因此，程序必须实现 `org.apache.flink.api.common.Program` 接口，定义 `getPlan(String...)` 方法。传递给这个函数的 String 列表就是命令行参数。这个程序的计划可以通过 `ExecutionEnvironment#createProgramPlan()` 来创建出来。当打包这个程序的计划时，这个 JAR 的 mainfest 必须指向实现 `org.apache.flinkapi.common.Program` 接口的类，而不是带 main 入口函数的类。
+
+
+#### 总结
+
+调用一个打包的程序的整体流程如下：
+
+1. 搜索 JAR 的 manifest 找到 *main-class* 或 *program－class*。如果这两个属性都被找到了，则 *program-class* 属性优先考虑。 当 JAR 的 manifest 两者都不包含时，命令行和 web 接口都支持输入参数来手动指定入口类名。
+
+2. 如果入口类实现了 `org.apache.flinkapi.common.Program`，则系统会调用它的 `getPlan(String...)` 来获得程序计划并执行。
+
+3. 如果入口类没有实现 `org.apache.flinkapi.common.Program`，则系统调用入口类的 main 函数。
+
+{% top %}
+
+
+累加器和计数器
+---------------------------
+累加器（Accumulators）由一个 **add 操作** 和一个 **final 累加结果** 组成，当任务结束后，才能获得累加结果。
+
+最直接的累加器就是**计数器**（counter）。用户可以调用 `Accumulator.add(V value)` 来做累加。任务结束后， Flink 会合并所有的结果并将总结果返回给客户端。累加器在调试时很有作用，另外如果想快速知道数据的更多信息时也很有作用。
+
+Flink 现在有如下的**内置累加器**， 他们都实现了 {% gh_link /flink-core/src/main/java/org/apache/flink/api/common/accumulators/Accumulator.java "Accumulator" %} 接口：
+
+- {% gh_link /flink-core/src/main/java/org/apache/flink/api/common/accumulators/IntCounter.java "__IntCounter__" %},
+  {% gh_link /flink-core/src/main/java/org/apache/flink/api/common/accumulators/LongCounter.java "__LongCounter__" %}
+  和 {% gh_link /flink-core/src/main/java/org/apache/flink/api/common/accumulators/DoubleCounter.java "__DoubleCounter__" %}:
+  请看下方的例子了解如何使用计数器（counter）。
+- {% gh_link /flink-core/src/main/java/org/apache/flink/api/common/accumulators/Histogram.java "__Histogram__" %}: Histogram 实现了离散数据的分布。内部实现上它只是一个从 Integer 到 Integer 的 map。你可以使用这个去计算值的分布，例如 word count 程序中每行单词数的分布。
+
+__如何使用累加器:__
+
+首先你需要在自定义的转换函数中创建一个累加器（这里是一个计数器）。
+
+{% highlight java %}
 private IntCounter numLines = new IntCounter();
-```
-* 注册这个累加器对象， 通过在rich函数内部的open函数内， 如下，可以定义一个名字
-```
+{% endhighlight %}
+
+然后，注册这个累加器对象，一般是在富函数（*rich* function）中的 `open()` 函数内， 如下，可以定义一个名字。
+
+{% highlight java %}
 getRuntimeContext().addAccumulator("num-lines", this.numLines);
-```
-＊ 可以在这个operator函数的任何地方调用累加器 包括open/close
-```
+{% endhighlight %}
+
+现在，你可以在这个 operator 函数的任何地方调用累加器了，包括`open()`和`close()`方法。
+
+{% highlight java %}
 this.numLines.add(1);
-```
-＊  最终结果会存储在由environment的execute函数返回的JobExecutionResult对象中。
-```
+{% endhighlight %}
+
+最终结果会存储在由执行环境（execution environment）的 `execute()` 函数返回的 `JobExecutionResult` 对象中（当前这只在执行等待作业完成的情况下有效）。
+
+{% highlight java %}
 myJobExecutionResult.getAccumulatorResult("num-lines")
-```
-一个任务的所有的累加器共享一个namespace。 因此用户可以在不同的operator函数中使用相同的累加器。 flink内部会merge所有的相同名字的累加器。
+{% endhighlight %}
 
-关于累加器和迭代器的一个注意：当器累加器的结果只能当任务结束后才能获得。 开发者计划前一个迭代的结果可以在下一个迭代中获得。 用户可以使用迭代器去计算每个迭代的statics。
+一个任务的所有的累加器共享一个命名空间。因此用户可以在不同的 operator 函数中使用相同的累加器。Flink 内部会合并所有的相同名字的累加器。
 
-## 用户自定义累加器
-用户可以实现自己的累加器。 如果想要把自定义的累加器推广到flink社区，请随意创建一个pull request。
+关于累加器和迭代器的一个注意点：当前累加器的结果只能在任务结束后才能获得。我们计划实现前一个迭代的结果可以在下一个迭代中获得。用户可以使用 {% gh_link /flink-java/src/main/java/org/apache/flink/api/java/operators/IterativeDataSet.java#L98 "Aggregators" %} 去计算每个迭代的统计，然后基于统计结果来结束迭代。
 
-还有一种选择是实现 Accumulator or SimpleAccumulator.
 
-Accumulator<V,R> 非常灵活， 它定义需要增加的value的类型V, 最终返回类型R. 例如： 对于一个histogram， V 是一个数字， R是一个histogram。 SimpleAccumulator 就是V和R是同一种类型， 比如技术器。
+__自定义累加器:__
 
-<a href="#top">返回顶部</a>
+用户可以通过实现 `Accumulator` 接口方便地创建自己的累加器。如果想要把自己实现的累加器加入到 Flink，请随意创建一个 pull request。
 
-<a name="Parallel-Execution"></a>
-# 并发执行
-这个章节将介绍在flink中如何设置并发执行。 一个flink程序由多个task(transformation/operator, data sources/sinks)组成。 一个task会切分到几个实例中并发执行， 每一个并发实例处理task输入数据的一个子集。 task的并发实例数称为并行度。
+你可以选择是实现
+{% gh_link /flink-core/src/main/java/org/apache/flink/api/common/accumulators/Accumulator.java "Accumulator" %}
+还是 {% gh_link /flink-core/src/main/java/org/apache/flink/api/common/accumulators/SimpleAccumulator.java "SimpleAccumulator" %}。
 
-## operator级别
-独立的operator/data source/data sink 可以通过setParallelism来设置
-```
+```Accumulator<V,R>``` 非常灵活: 它定义了需要增加的值的类型 ```V```, 和最终返回结果的类型 ```R```。 例如，对于一个 histogram 来说，```V```  是一个数字，```R``` 是一个 histogram。```SimpleAccumulator``` 就是 V 和 R 是同一种类型，比如计数器。
+
+{% top %}
+
+
+并发执行
+------------------
+
+这个章节将介绍在 Flink 中如何设置并发执行。 一个 Flink 程序由多个 task (transformation/operator, data sources, sinks)组成。一个 task 会切分成几个实例中并发执行，每一个并发实例处理 task 输入数据的一个子集。task 的并发实例数称为 *parallelism*（并行度）。
+
+一个 task 的并行度在 Flink 的不同级别中指定。
+
+### Operator 级别
+
+独立的 operator，data source，data sink 可以通过调用 `setParallelism()` 来设置。例如：
+
+<div class="codetabs" markdown="1">
+<div data-lang="java" markdown="1">
+{% highlight java %}
 final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
 DataStream<String> text = [...]
@@ -583,11 +997,35 @@ DataStream<Tuple2<String, Integer>> wordCounts = text
 wordCounts.print();
 
 env.execute("Word Count Example");
-```
+{% endhighlight %}
+</div>
+<div data-lang="scala" markdown="1">
+{% highlight scala %}
+val env = StreamExecutionEnvironment.getExecutionEnvironment
 
-## 执行环境级别
-本章所说， flink程序是在一个执行环境的context中运行。一个执行环境可以定义一个默认的所有operator/data source/data sink的并行度， 通过setParallelism。 执行环境的并行度可以被一个operator的并行度覆盖。
-```
+val text = [...]
+val wordCounts = text
+    .flatMap{ _.split(" ") map { (_, 1) } }
+    .keyBy(0)
+    .timeWindow(Time.seconds(5))
+    .sum(1).setParallelism(5)
+wordCounts.print()
+
+env.execute("Word Count Example")
+{% endhighlight %}
+</div>
+</div>
+
+
+### 执行环境级别
+
+就像[这里](#anatomy-of-a-flink-program)提到过的，Flink 程序是在一个执行环境的上下文中运行的。一个执行环境为所有 operator，data source，data sink 定义了一个默认的并行度。执行环境的并行度可以被 operator 的并行度覆盖。
+
+一个执行环境的默认并行度可以通过调用 `setParallelism()` 方法指定。要以并行度为 `3` 来执行所有的 operators, data sources, data sinks，可以如下这样设置执行环境的默认并行度：
+
+<div class="codetabs" markdown="1">
+<div data-lang="java" markdown="1">
+{% highlight java %}
 final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 env.setParallelism(3);
 
@@ -596,17 +1034,43 @@ DataStream<Tuple2<String, Integer>> wordCounts = [...]
 wordCounts.print();
 
 env.execute("Word Count Example");
-```
+{% endhighlight %}
+</div>
+<div data-lang="scala" markdown="1">
+{% highlight scala %}
+val env = StreamExecutionEnvironment.getExecutionEnvironment
+env.setParallelism(3)
 
-## 客户端级别
-当提交任务到flink时， 客户端可以设置并行度。 这个客户端可以是java或scala程序， 举例来说，就是命令行客户端(Command-line interface CLI)
+val text = [...]
+val wordCounts = text
+    .flatMap{ _.split(" ") map { (_, 1) } }
+    .keyBy(0)
+    .timeWindow(Time.seconds(5))
+    .sum(1)
+wordCounts.print()
 
-在CLI中， 可以通过－p参数来设置并行度， 例如：
-```
-./bin/flink run -p 10 ../examples/*WordCount-java*.jar
-```
-在java程序中：
-```
+env.execute("Word Count Example")
+{% endhighlight %}
+</div>
+</div>
+
+
+### 客户端级别
+
+当提交任务到 Flink 时，客户端可以设置并行度。这个客户端可以是一个 Java 或 Scala 程序。 Flink 的命令行客户端(Command-line interface CLI)就是这样一个例子。
+
+在 CLI 客户端中，可以通过 `-p` 参数来设置并行度，例如：
+
+
+    ./bin/flink run -p 10 ../examples/*WordCount-java*.jar
+
+
+在 Java/Scala 程序中，并行度可以如下这样设置：
+
+<div class="codetabs" markdown="1">
+<div data-lang="java" markdown="1">
+{% highlight java %}
+
 try {
     PackagedProgram program = new PackagedProgram(file, args);
     InetSocketAddress jobManagerAddress = RemoteExecutor.getInetFromHostport("localhost:6123");
@@ -620,40 +1084,85 @@ try {
 } catch (ProgramInvocationException e) {
     e.printStackTrace();
 }
-```
 
-## 系统级别
-可以在配置文件./conf/flink-conf.yaml 中设置“parallelism.default”， 从而设置系统范围的默认并行度。
+{% endhighlight %}
+</div>
+<div data-lang="scala" markdown="1">
+{% highlight scala %}
+try {
+    PackagedProgram program = new PackagedProgram(file, args)
+    InetSocketAddress jobManagerAddress = RemoteExecutor.getInetFromHostport("localhost:6123")
+    Configuration config = new Configuration()
 
-<a href="#top">返回顶部</a>
+    Client client = new Client(jobManagerAddress, new Configuration(), program.getUserCodeClassLoader())
 
-<a name=“Execution-Plans”></a>
-# 执行计划
-根据各种参数，比如数据大小， 集群机器数， flink的优化器会自动选择执行策略。 很多情况下， 了解flink如何执行用户程序是很有帮助的。
+    // set the parallelism to 10 here
+    client.run(program, 10, true)
 
-## plan可视化工具
-flink自带执行计划可视化工具， 可视化工具位于tools/planVisualizer.html. 它接受代表任务执行计划的json， 并将它展示成一个带执行策略注释的图。
+} catch {
+    case e: Exception => e.printStackTrace
+}
+{% endhighlight %}
+</div>
+</div>
 
-下面代码展示如何打印执行计划json:
-```
+### 系统级别
+
+可以在配置文件 `./conf/flink-conf.yaml` 中设置 `parallelism.default`，从而设置系统范围的默认并行度。查看 [配置]({{ site.baseurl }}/setup/config.html) 文档了解更多。
+
+{% top %}
+
+
+执行计划
+---------------
+
+根据各种参数，比如数据大小、集群机器数，Flink 的优化器会自动为你的程序选择一种执行策略。在很多情况下，对于了解 Flink 究竟是如何执行你的程序是很有帮助的。
+
+
+__计划可视化工具__
+
+Flink 自带了执行计划的可视化工具，可视化工具位于 `tools/planVisualizer.html`。它接受一个代表任务执行计划的 JSON 数据，并将它展示成一个带执行策略注释的图。
+
+下面代码展示如何打印执行计划 JSON:
+
+<div class="codetabs" markdown="1">
+<div data-lang="java" markdown="1">
+{% highlight java %}
 final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
 ...
 
 System.out.println(env.getExecutionPlan());
-```
+{% endhighlight %}
+</div>
+<div data-lang="scala" markdown="1">
+{% highlight scala %}
+val env = ExecutionEnvironment.getExecutionEnvironment
 
-使用步骤：
-1. 在浏览器中打开planVisualizer.html
-2. 粘贴json 字符串
-3. 点击draw 按钮
+...
+
+println(env.getExecutionPlan())
+{% endhighlight %}
+</div>
+</div>
+
+要可视化执行计划，需要按以下步骤：
+
+1. **打开** 用浏览器打开 ```planVisualizer.html```,
+2. **粘贴** JSON 字符串到文本框中, 然后
+3. **点击** draw 按钮。
+
+之后，一个详细的执行计划图就会被展示出来
 
 <img alt="A flink job execution graph." src="fig/plan_visualizer.png" width="80%">
 
-## web接口
-flink提供web接口提交和执行任务。 如果用户选择使用web 接口提交打包的程序， 用户可以看得到plan 图。
 
-启动web 接口的脚步位于 bin/start-webclient.sh。 启动webclient（8080端口）后， 用户可以上传程序， 上传的程序会列在左边可使用的程序列表中。
+__Web 接口__
 
-用户也可以在页面底部的textbox中指定程序的参数。 在执行实际程序前，请检查可视化的执行计划。
+Flink提供 web 接口用来提交和执行任务。如果你选择使用 web 接口提交打包的程序，你可以选择看到计划图。
 
+启动 web 接口的脚本位于 `bin/start-webclient.sh`。启动 webclient（8080端口）后，你可以上传程序，上传的程序会列在左边可使用的程序列表中。
+
+你也可以在页面底部的文本框中指定程序的输入参数。选中了 plan visualization 选项框的话，在执行程序前，会展示执行计划图。
+
+{% top %}
