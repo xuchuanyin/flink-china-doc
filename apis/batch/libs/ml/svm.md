@@ -1,6 +1,6 @@
 ---
 mathjax: include
-title: SVM using CoCoA
+title: 支持向量机(SVM using CoCoA)
 # Sub navigation
 sub-nav-group: batch
 sub-nav-parent: flinkml
@@ -28,7 +28,6 @@ under the License.
 * This will be replaced by the TOC
 {:toc}
 
-## Description
 ## 描述
 
 
