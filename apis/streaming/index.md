@@ -1119,7 +1119,7 @@ someStream.map(...).disableChaining();
    <tr>
       <td>Set slot sharing group</td>
       <td>
-        <p>设置一个操作的 slot 共享组。Flink 会将相同 slot 共享组的操作都放到同一个 slot 中，而把没有 slot 共享组的操作放到其他 slots 上。这可以用来做 slots 隔离。如果所有的输入操作都在相同的 slot 共享组中，那么 slot 共享组会从输入操作中继承来的。默认的 slot 共享组名称是 "default"，操作（operations）可以通过调用 `slotSharingGroup("default")` 显示地将其置于该组中。
+        <p>设置一个操作的 slot 共享组。Flink 会将相同 slot 共享组的操作都放到同一个 slot 中，而把没有 slot 共享组的操作放到其他 slots 上。这可以用来做 slots 隔离。如果所有的输入操作都在相同的 slot 共享组中，那么 slot 共享组会从输入操作中继承来的。默认的 slot 共享组名称是 "default"，操作（operations）可以通过调用 slotSharingGroup("default") 显示地将其置于该组中。
 
 {% highlight java %}
 someStream.filter(...).slotSharingGroup("name");
@@ -1168,7 +1168,7 @@ someStream.map(...).disableChaining()
    <tr>
       <td>Set slot sharing group</td>
       <td>
-        <p>设置一个操作的 slot 共享组。Flink 会将相同 slot 共享组的操作都放到同一个 slot 中，而把没有 slot 共享组的操作放到其他 slots 上。这可以用来做 slots 隔离。如果所有的输入操作都在相同的 slot 共享组中，那么 slot 共享组会从输入操作中继承来的。默认的 slot 共享组名称是 "default"，操作（operations）可以通过调用 `slotSharingGroup("default")` 显示地将其置于该组中。
+        <p>设置一个操作的 slot 共享组。Flink 会将相同 slot 共享组的操作都放到同一个 slot 中，而把没有 slot 共享组的操作放到其他 slots 上。这可以用来做 slots 隔离。如果所有的输入操作都在相同的 slot 共享组中，那么 slot 共享组会从输入操作中继承来的。默认的 slot 共享组名称是 "default"，操作（operations）可以通过调用 slotSharingGroup("default") 显示地将其置于该组中。
 
 {% highlight scala %}
 someStream.filter(...).slotSharingGroup("name");

@@ -41,6 +41,8 @@ under the License.
           <ul class="nav navbar-nav">
             <li class="hidden-sm {% if page.url == '/' %}active{% endif %}"><a href="{{ site.baseurl}}/">中文文档 {{ site.version_short }}</a></li>
 
+            <li class="hidden-sm {% if page.url contains 'features' %}active{% endif %}"><a href="{{ site.baseurl}}/features.html">特性</a></li>
+
             <!-- Quickstart -->
             <li class="dropdown{% if page.url contains '/quickstart/' %} active{% endif %}">
               <a href="{{ quickstart }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">快速起步<span class="caret"></span></a>
@@ -83,7 +85,7 @@ under the License.
 
             <!-- Libraries -->
             <li class="dropdown{% if page.url contains '/libs/' %} active{% endif %}">
-              <a href="{{ libs }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">库 <span class="caret"></span></a>
+              <a href="{{ libs }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">类库 <span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu">
                   {% assign libs_group = (site.pages | where: "top-nav-group" , "libs" | sort: "top-nav-pos") %}
                   {% for libs_page in libs_group %}

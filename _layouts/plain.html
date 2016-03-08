@@ -110,6 +110,19 @@ The plain layout with a sub navigation.
 {% comment %}
 The plain layout without a sub navigation (only text).
 {% endcomment %}  
+  {% if page.url contains '/features' %}
+    <div class="row">
+      <div class="col-sm-10 col-sm-offset-1">
+          {{ content }}
+          <div class="footer">
+          发现错误？想参与编辑？
+              <a href="https://github.com/wuchong/flink-china-doc/edit/master/{{ page.path }}" target="_blank">
+            在 Github 上编辑此页！
+              </a>
+          </div>
+      </div>
+    </div>
+  {% else %}
   <div class="col-md-8 col-md-offset-2 text">
     <!-- Artifact name change warning. Remove for the 1.0 release. -->
     {% if page.url contains '/about/' %} 
@@ -128,6 +141,7 @@ The plain layout without a sub navigation (only text).
       </a>
     </div>
   </div>
+  {% endif %}
 {% endif %}
   {% if page.comment == true %}
   <!-- Removed until Robert complains... ;) -->
