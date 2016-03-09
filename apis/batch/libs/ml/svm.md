@@ -1,6 +1,6 @@
 ---
 mathjax: include
-title: 使用 CoCoA 的 SVM
+title: 支持向量机(SVM using CoCoA)
 # Sub navigation
 sub-nav-group: batch
 sub-nav-parent: flinkml
@@ -30,8 +30,7 @@ under the License.
 
 ## 描述
 
-
-使用具有合页损失函数（hinge-loss function）的分布式对偶坐标上升算法(COCOA)来实现软间隔（soft-margin）支持向量机。
+使用具有合页损失函数（hinge-loss function）的随机分布式对偶坐标上升算法(COCOA)来实现软间隔支持向量机。
 
 此算法解决了如下损失函数的最小化问题
 
@@ -40,19 +39,17 @@ $$\min_{\mathbf{w} \in \mathbb{R}^d} \frac{\lambda}{2} \left\lVert \mathbf{w} \r
 
 $\mathbf{w}$ 代表权值向量，$\lambda$ 代表正则常数。$$\mathbf{x}_i \in \mathbb{R}^d$$ 代表样本值$$l_{i}$$ 代表凸损失函数,并依赖于输出分类$$y_{i} \in \mathbb{R}$$.
 
-
 在当前的实现中正则化项为L2范数，损失函数为合页损失函数
 
   $$l_{i} = \max\left(0, 1 - y_{i} \mathbf{w}^T\mathbf{x}_i \right)$$
 
-基于前面的选择，问题的定义就等价于软间隔支持向量机(SVM)。极小值通过 SDCA 算法求得，为了让算法在分布式环境下更加高效，COCOA 算法首先在本地的一个数据块上计算若干次 SDCA 迭代，然后再将本地更新合并到有效全局状态中。
+基于前面的选择，问题的定义就等价于软间隔支持向量机(SVM)。最小值通过 SDCA 算法求得，为了让算法在分布式环境下更加高效，COCOA 算法首先在本地的一个数据块上计算若干次 SDCA 迭代，然后再将本地更新合并到有效全局状态中。
 
 全局状态被重新分配到下一轮本地 SDCA 迭代的数据分区，然后执行。
+因为只有外层迭代需要网络通信，外层迭代的次数和本地 SDCA 迭代决定了全部的网络消耗。一旦独立的数据分区分布在集群中时，本地 SDCA 是不容易并行的。
 
-因为只有外层迭代需要网络通信，外层迭代的次数和本地 SDCA 迭代决定了全部的网络消耗。一旦独立的数据分区分布在集群中本地 SDCA 是不容易并行的。
 
-算法实现基于如下链接
-[Jaggi et al.](http://arxiv.org/abs/1409.1458)
+算法实现基于如下链接 [Jaggi et al.](http://arxiv.org/abs/1409.1458)
 
 
 ## 操作
@@ -67,17 +64,19 @@ SVM 通过`LabeledVector`集合进行训练：
 
 ### 预测
 
+
 传入任意 FlinkML 的`Vector`子类，SVM会预测出相应的分类标签值。
 
 * `predict[T <: Vector]: DataSet[T] => DataSet[(T, Double)]`,  其中 `(T, Double)` 
   对应 (原始输入值, 预测的分类)
 
-如果想要对模型的预测结果进行评估，可以对已正确分类的样本集做预测（prediction)，传入`DataSet[(Vector, Double)]`，返回 `DataSet[(Double, Double)]`。返回结构的首元素为传入参数提供的真值，第二个元素为预测值，可以使用这个`(真值, 预测值)`集合来评估算法的准确率和执行情况：
+如果想要对模型的预测结果进行评估，可以对已正确分类的样本集做预测（prediction)，传入`DataSet[(Vector, Double)]`,返回`DataSet[(Double, Double)]`。返回结构的首元素为传入参数提供的真值，第二个元素为预测值，可以使用这个`(真值, 预测值)`集合来评估算法的准确率和执行情况：
 
 * `predict: DataSet[(Vector, Double)] => DataSet[(Double, Double)]`
 
 
 ## 参数
+
 
 SVM 的执行可以通过下面的参数进行控制：
 
@@ -191,20 +190,20 @@ val pathToTrainingFile: String = ???
 val pathToTestingFile: String = ???
 val env = ExecutionEnvironment.getExecutionEnvironment
 
-// Read the training data set, from a LibSVM formatted file
+// 从 LibSVM 格式的文件中读取训练数据集
 val trainingDS: DataSet[LabeledVector] = env.readLibSVM(pathToTrainingFile)
 
-// Create the SVM learner
+// 创建学习者
 val svm = SVM()
   .setBlocks(10)
 
-// Learn the SVM model
+// 学习SVM模型
 svm.fit(trainingDS)
 
-// Read the testing data set
+// 读取测试数据集
 val testingDS: DataSet[Vector] = env.readLibSVM(pathToTestingFile).map(_.vector)
 
-// Calculate the predictions for the testing data set
+// 对测试数据集进行预测
 val predictionDS: DataSet[(Vector, Double)] = svm.predict(testingDS)
 
 {% endhighlight %}
