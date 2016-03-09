@@ -31,11 +31,11 @@ under the License.
 
 ## 环境需求
 
-Flink 可以运行在 **Linux**，**Mac OS X** 和 **Windows** 上，仅要求 **Java 7.x** 或更高版本。 对于 Window 用户，请参考 [Flink on Windows]({{ site.baseurl }}/setup/local_setup.html#flink-on-windows)。
+Flink 可以运行在 **Linux**，**Mac OS X** 和 **Windows** 上，唯一要求是需要安装 **Java 7.x** 或更高版本。 对于 Window 用户，请参考 [Flink on Windows]({{ site.baseurl }}/setup/local_setup.html#flink-on-windows)。
 
 ## 下载
 
-下载所需的二进制包。如果你想要Flink和Hadoop一起用（如HDFS或者HBase），请**选择一个与你的Hadoop版本相匹配的Flink包**。当你不确定或者只是想运行在本地文件系统上，请选择Hadoop 1.2.x对应的包。
+下载所需的二进制包。如果你想要将Flink和Hadoop一起使用（如HDFS或者HBase），请**选择一个与你的Hadoop版本相匹配的Flink包**。如果不确定或者只是想运行在本地文件系统上，请选择Hadoop 1.2.x对应的包。
 
 <ul class="nav nav-tabs">
   <li class="active"><a href="#bin-hadoop1" data-toggle="tab">Hadoop 1.2</a></li>
@@ -66,7 +66,7 @@ $ cd flink-0.10.2
 $ bin/start-local.sh    # 运行 Flink
 ```
 
-打 UI [http://localhost:8081](http://localhost:8081) 检查 Jobmanager 和其他组件.
+打开web UI [http://localhost:8081](http://localhost:8081) 检查 Jobmanager 和其他组件是否正常运行。
 如果想打开流优化模式，可以调用 `bin/start-local-streaming.sh` 来替换 `bin/start-local.sh`。
 
 ## 运行例子
@@ -135,18 +135,17 @@ $ bin/stop-local.sh
 
 访问文档的[配置章节]({{ site.baseurl }}/setup/config.html)查看更多可用的配置项。为了使 Flink 更高效的运行，还需要设置一些配置项。
 
-尤其是，
+以下都是非常重要的配置项：
 
 - TaskManager 总共能使用的内存大小（`taskmanager.heap.mb`）
 - 每一台机器上能使用的 CPU 个数（`taskmanager.numberOfTaskSlots`）
 - 集群中的总 CPU 个数（`parallelism.default`）
 - 临时目录（`taskmanager.tmp.dirs`）
 
-是非常重要的配置项。
 
 ## Flink on YARN
 
-你可以很方便地部署 Flink 在现有的 **YARN 集群**上。
+你可以很方便地将 Flink 部署在现有的 **YARN 集群**上：
 
 1. 下载  __Flink Hadoop2 包__: [Flink with Hadoop 2]({{site.FLINK_DOWNLOAD_URL_HADOOP2_STABLE}})
 2. 确保你的 __HADOOP_HOME__ (或 _YARN_CONF_DIR_ 或 _HADOOP_CONF_DIR_) __环境变量__设置成你的 YARN 和 HDFS 配置。
