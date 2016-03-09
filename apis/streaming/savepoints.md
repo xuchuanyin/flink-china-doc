@@ -24,19 +24,24 @@ under the License.
 -->
 
 Programs written in the [Data Stream API](index.html) can resume execution from a **savepoint**. Savepoints allow both updating your programs and your Flink cluster without losing any state. This page covers all steps to trigger, restore, and dispose savepoints. For more details on how Flink handles state and failures, check out the [State in Streaming Programs](state_backends.html) and [Fault Tolerance](fault_tolerance.html) pages.
+程序写在 [Data Stream API](index.html) 可以从一个 **保存点** 恢复执行。保存点允许你更新程序，并且 Flink 集群不会丢失任何的运行状态数据。当前页面包含了所有到触发、还原、处理保存点的步骤。如果想了解更多关于 Flink 处理中间状态和错误的细节，请检出 [State in Streaming Programs](state_backends.html) 和 [Fault Tolerance](fault_tolerance.html) 页面。
 
 * toc
 {:toc}
 
 ## Overview
+## 概况
 
 Savepoints are **manually triggered checkpoints**, which take a snapshot of the program and write it out to a state backend. They rely on the regular checkpointing mechanism for this. During execution programs are periodically snapshotted on the worker nodes and produce checkpoints. For recovery only the last completed checkpoint is needed and older checkpoints can be safely discarded as soon as a new one is completed.
+保存点也叫手动触发检查点，它会对程序做一个镜像，并将它写出到带状态的后端。为此他们依靠定期检查点机制。在运行中，程序会定期在工作节点上做快照，并产生一些检查点。恢复时，只需要一个最近完成的检查点，在新检查点完成时，可以安全的删除旧的检查点。
 
 Savepoints are similar to these periodic checkpoints except that they are **triggered by the user** and **don't automatically expire** when newer checkpoints are completed.
+保存点和定期检查点是十分相似的，不同点是当新检查点完成之后，他们是 **用户触发** 和 **不自动过期** 。
 
 <img src="fig/savepoints-overview.png" class="center" />
 
 In the above example the workers produce checkpoints **c<sub>1</sub>**, **c<sub>2</sub>**, **c<sub>3</sub>**, and **c<sub>4</sub>** for job *0xA312Bc*. Periodic checkpoints **c<sub>1</sub>** and **c<sub>3</sub>** have already been *discarded* and **c<sub>4</sub>** is the *latest checkpoint*. **c<sub>2</sub> is special**. It is the state associated with the savepoint **s<sub>1</sub>** and has been triggered by the user and it doesn't expire automatically (as c<sub>1</sub> and c<sub>3</sub> did after the completion of newer checkpoints).
+在以下的例子中，工作节点为  *0xA312Bc* 创建了以下检查点：**c<sub>1</sub>**, **c<sub>2</sub>**, **c<sub>3</sub>**, and **c<sub>4</sub>** 。定期的检查点 **c<sub>1</sub>** 和 **c<sub>3</sub>** 已经被 *丢弃* ，检查点 **c<sub>4</sub>** 是 *最新的检查点*。 **c<sub>2</sub> 是特殊的检查点**. 和保存点相关的检查点 **s<sub>1</sub>** 已经被用户触发，然而并没有自动过期 (当 c<sub>1</sub> 和 c<sub>3</sub> 这两个检查点完成后新建检查点后才去执行过期操作)。
 
 Note that **s<sub>1</sub>** is only a **pointer to the actual checkpoint data c<sub>2</sub>**. This means that the actual state is *not copied* for the savepoint and periodic checkpoint data is kept around.
 
