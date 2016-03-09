@@ -1,6 +1,6 @@
 ---
 mathjax: include
-title: SVM using CoCoA
+title: 使用 CoCoA 的 SVM
 # Sub navigation
 sub-nav-group: batch
 sub-nav-parent: flinkml
@@ -31,7 +31,8 @@ under the License.
 ## 描述
 
 
-使用具有合页损失函数的分布式对偶坐标上升算法(COCOA)来实现软间隔支持向量机
+使用具有合页损失函数（hinge-loss function）的分布式对偶坐标上升算法(COCOA)来实现软间隔（soft-margin）支持向量机。
+
 此算法解决了如下损失函数的最小化问题
 
 $$\min_{\mathbf{w} \in \mathbb{R}^d} \frac{\lambda}{2} \left\lVert \mathbf{w} \right\rVert^2 + \frac{1}{n} \sum_{i=1}^n l_{i}\left(\mathbf{w}^T\mathbf{x}_i\right)$$

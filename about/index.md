@@ -32,7 +32,7 @@ Flink 中文文档网站是 [Apache Flink 官方文档](https://ci.apache.org/pr
 
 <a id="thanks"></a>
 
-# 感谢
+# 致谢
 
 特别感谢以下人员对本站翻译和校对工作的贡献。
 
