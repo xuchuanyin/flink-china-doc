@@ -1,11 +1,11 @@
 ---
 mathjax: include
-title: MinMax Scaler
+title: MinMax标准化
 
 # Sub navigation
 sub-nav-group: batch
 sub-nav-parent: flinkml
-sub-nav-title: MinMax Scaler
+sub-nav-title: MinMax标准化
 ---
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
@@ -29,52 +29,51 @@ under the License.
 * This will be replaced by the TOC
 {:toc}
 
-## Description
+## 描述
 
- The MinMax scaler scales the given data set, so that all values will lie between a user specified range [min,max].
- In case the user does not provide a specific minimum and maximum value for the scaling range, the MinMax scaler transforms the features of the input data set to lie in the [0,1] interval.
- Given a set of input data $x_1, x_2,... x_n$, with minimum value:
+ MinMax标准化通过对给定数据集进行缩放，使得所有值都落在指定的区间[min,max]内。
+ 如果用户没有指定区间的最大和最小值，则MinMax标准化将会把输入特征缩放到[0,1]区间内。
+ 给定输入数据集：$x_1, x_2,... x_n$，其中最小值为：
 
  $$x_{min} = min({x_1, x_2,..., x_n})$$
 
- and maximum value:
+ 最大值为：
 
  $$x_{max} = max({x_1, x_2,..., x_n})$$
 
-The scaled data set $z_1, z_2,...,z_n$ will be:
+ 则经过缩放的数据集$z_1, z_2,...,z_n$为：
 
  $$z_{i}= \frac{x_{i} - x_{min}}{x_{max} - x_{min}} \left ( max - min \right ) + min$$
 
-where $\textit{min}$ and $\textit{max}$ are the user specified minimum and maximum values of the range to scale.
+ 其中$\textit{min}$和$\textit{max}$为用户指定的最小值和最大值。
 
-## Operations
+## 操作
 
-`MinMaxScaler` is a `Transformer`.
-As such, it supports the `fit` and `transform` operation.
+`MinMaxScaler`是`Transformer`，因此支持训练和转换操作。
 
-### Fit
+### 训练
 
-MinMaxScaler is trained on all subtypes of `Vector` or `LabeledVector`:
+MinMaxScaler可以在所有`Vector`或`LabeledVector`的子类型上进行训练：
 
 * `fit[T <: Vector]: DataSet[T] => Unit`
 * `fit: DataSet[LabeledVector] => Unit`
 
-### Transform
+### 转换
 
-MinMaxScaler transforms all subtypes of `Vector` or `LabeledVector` into the respective type:
+MinMaxScaler将`Vector`或`LabeledVector`的子类型数据集转换到对应的相同类型的数据集：
 
 * `transform[T <: Vector]: DataSet[T] => DataSet[T]`
 * `transform: DataSet[LabeledVector] => DataSet[LabeledVector]`
 
-## Parameters
+## 参数
 
-The MinMax scaler implementation can be controlled by the following two parameters:
+MinMax标准化可由下列参数进行控制：
 
  <table class="table table-bordered">
   <thead>
     <tr>
-      <th class="text-left" style="width: 20%">Parameters</th>
-      <th class="text-center">Description</th>
+      <th class="text-left" style="width: 20%">参数</th>
+      <th class="text-center">说明</th>
     </tr>
   </thead>
 
@@ -83,7 +82,8 @@ The MinMax scaler implementation can be controlled by the following two paramete
       <td><strong>Min</strong></td>
       <td>
         <p>
-          The minimum value of the range for the scaled data set. (Default value: <strong>0.0</strong>)
+        目标缩放区间的最小值
+        (默认值：<strong>0.0</strong>)
         </p>
       </td>
     </tr>
@@ -91,14 +91,15 @@ The MinMax scaler implementation can be controlled by the following two paramete
       <td><strong>Max</strong></td>
       <td>
         <p>
-          The maximum value of the range for the scaled data set. (Default value: <strong>1.0</strong>)
+        目标缩放区间的最大值
+        (默认值：<strong>1.0</strong>)
         </p>
       </td>
     </tr>
   </tbody>
 </table>
 
-## Examples
+## 代码示例
 
 {% highlight scala %}
 // Create MinMax scaler transformer
