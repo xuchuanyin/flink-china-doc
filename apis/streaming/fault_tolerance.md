@@ -142,7 +142,7 @@ env.getCheckpointConfig.setMaxConcurrentCheckpoints(1)
   </tbody>
 </table>
 
-为了确保端对端恰好一次消息传递(除了恰好一次状态语义),data sink需要加入检查点执行过程。下列表格列出了和 Flink 绑定的sink传递保证(假设恰好一次更新)
+为了确保端到端恰好一次消息传递(除了恰好一次状态语义),data sink需要加入检查点执行过程。下列表格列出了和 Flink 绑定的sink传递保证(假设恰好一次更新)
 
 <table class="table table-bordered">
   <thead>
@@ -327,7 +327,7 @@ job运行失败且不尝试重启。
 restart-strategy: none
 ~~~
 
-不重启策略用编程方式声明:
+不重启策略可以用编程方式声明:
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
