@@ -26,9 +26,9 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Connectors provide code for interfacing with various third-party systems.
+连接器（connector）提供了对接各种第三方系统的代码。
 
-Currently these systems are supported:
+当前支持以下这些系统：
 
  * [Apache Kafka](https://kafka.apache.org/) (sink/source)
  * [Elasticsearch](https://elastic.co/) (sink)
@@ -36,7 +36,4 @@ Currently these systems are supported:
  * [RabbitMQ](http://www.rabbitmq.com/) (sink/source)
  * [Twitter Streaming API](https://dev.twitter.com/docs/streaming-apis) (source)
 
-To run an application using one of these connectors, additional third party
-components are usually required to be installed and launched, e.g. the servers
-for the message queues. Further instructions for these can be found in the
-corresponding subsections.
+要使用这些连接器来运行应用程序，一般都需要先安装并启动第三方的组件，例如消息队列服务器。你可以在对应的章节中找到更详细的指引。
