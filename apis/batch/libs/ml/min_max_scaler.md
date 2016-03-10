@@ -1,11 +1,11 @@
 ---
 mathjax: include
-title: MinMax标准化
+title: MinMax 标准化
 
 # Sub navigation
 sub-nav-group: batch
 sub-nav-parent: flinkml
-sub-nav-title: MinMax标准化
+sub-nav-title: MinMax 标准化
 ---
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
@@ -31,8 +31,8 @@ under the License.
 
 ## 描述
 
- MinMax标准化通过对给定数据集进行缩放，使得所有值都落在指定的区间[min,max]内。
- 如果用户没有指定区间的最大和最小值，则MinMax标准化将会把输入特征缩放到[0,1]区间内。
+ MinMax 标准化通过对给定数据集进行缩放，使得所有值都落在指定的区间[min,max]内。
+ 如果用户没有指定区间的最大和最小值，则 MinMax 标准化将会把输入特征缩放到[0,1]区间内。
  给定输入数据集：$x_1, x_2,... x_n$，其中最小值为：
 
  $$x_{min} = min({x_1, x_2,..., x_n})$$
@@ -53,21 +53,21 @@ under the License.
 
 ### 训练
 
-MinMaxScaler可以在所有`Vector`或`LabeledVector`的子类型上进行训练：
+MinMaxScaler 可以在所有`Vector`或`LabeledVector`的子类型上进行训练：
 
 * `fit[T <: Vector]: DataSet[T] => Unit`
 * `fit: DataSet[LabeledVector] => Unit`
 
 ### 转换
 
-MinMaxScaler将`Vector`或`LabeledVector`的子类型数据集转换到对应的相同类型的数据集：
+MinMaxScaler 将 `Vector` 或 `LabeledVector` 的子类型数据集转换到对应的相同类型的数据集：
 
 * `transform[T <: Vector]: DataSet[T] => DataSet[T]`
 * `transform: DataSet[LabeledVector] => DataSet[LabeledVector]`
 
 ## 参数
 
-MinMax标准化可由下列参数进行控制：
+MinMax 标准化可由下列参数进行控制：
 
  <table class="table table-bordered">
   <thead>

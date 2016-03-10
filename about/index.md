@@ -51,10 +51,35 @@ Flink 中文文档网站是 [Apache Flink 官方文档](https://ci.apache.org/pr
     <td class="text-center"><a href="http://github.com/wuchong" target="_blank">@wuchong</a></td>
   </tr>
   <tr>
-    <td class="text-center"><img alt="@wuchong" height="48" src="https://avatars2.githubusercontent.com/u/374091?v=3&s=96" width="48"></td>
+    <td class="text-center"><img alt="@longdafeng" height="48" src="https://avatars2.githubusercontent.com/u/374091?v=3&s=96" width="48"></td>
     <td class="text-center">封仲淹</td>
     <td class="text-center">Admin</td>
     <td class="text-center"><a href="https://github.com/longdafeng" target="_blank">@longdafeng</a></td>
   </tr>
+  <tr>
+    <td class="text-center"><img alt="@unsleepy22" height="48" src="https://avatars2.githubusercontent.com/u/631361?v=3&s=96" width="48"></td>
+    <td class="text-center">王逸</td>
+    <td class="text-center">Admin</td>
+    <td class="text-center"><a href="https://github.com/unsleepy22" target="_blank">@unsleepy22</a></td>
+  </tr>
+  <tr>
+    <td class="text-center"><img alt="@hustfxj" height="48" src="https://avatars2.githubusercontent.com/u/7270212?v=3&s=96" width="48"></td>
+    <td class="text-center">方孝健</td>
+    <td class="text-center">Admin</td>
+    <td class="text-center"><a href="https://github.com/hustfxj" target="_blank">@hustfxj</a></td>
+  </tr>
+  <tr>
+    <td class="text-center"><img alt="@fengjian428" height="48" src="https://avatars2.githubusercontent.com/u/4403474?v=3&s=96" width="48"></td>
+    <td class="text-center">冯健</td>
+    <td class="text-center">Admin</td>
+    <td class="text-center"><a href="https://github.com/fengjian428" target="_blank">@fengjian428</a></td>
+  </tr>
+  <tr>
+    <td class="text-center"><img alt="@litongbupt" height="48" src="https://avatars2.githubusercontent.com/u/5283573?v=3&s=96" width="48"></td>
+    <td class="text-center">李彤</td>
+    <td class="text-center">Contributor</td>
+    <td class="text-center"><a href="https://github.com/litongbupt" target="_blank">@litongbupt</a></td>
+  </tr>
   </tbody>
 </table>
+

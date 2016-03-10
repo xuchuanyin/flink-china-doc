@@ -45,7 +45,7 @@ FlinkML currently supports the following algorithms:
 
 ### Supervised Learning
 
-* [SVM using Communication efficient distributed dual coordinate ascent (CoCoA)](svm.html)
+* [支持向量机（SVM using CoCoA）](svm.html)
 * [多元线性回归](multiple_linear_regression.html)
 * [Optimization Framework](optimization.html)
 
@@ -53,7 +53,7 @@ FlinkML currently supports the following algorithms:
 
 * [Polynomial Features](polynomial_features.html)
 * [Standard Scaler](standard_scaler.html)
-* [MinMax Scaler](min_max_scaler.html)
+* [MinMax 标准化](min_max_scaler.html)
 
 ### Recommendation
 
