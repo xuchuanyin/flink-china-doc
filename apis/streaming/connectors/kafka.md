@@ -191,5 +191,5 @@ stream.addSink(new FlinkKafkaProducer08[String]("localhost:9092", "my-topic", ne
 
 **注意**：默认情况下，重试次数被设为 “0”。也就是说生产者在发生错误后会立即失败，包括 leader 改变。默认设置为“0”，是为了避免目标 topic 中出现重复消息。对于大多数生产环境来说（一般都有频繁的 broker 切换），我们建议将重试次数的值调大。
 
-目前还没有事务性的 Kafka 生产者，所以 Flink 还不能保证发送到 Kafka topic 的 exactly-once 传递。
+目前还没有事务性的 Kafka 生产者，所以 Flink 还不能保证以 exactly-once 的语义将消息投递到Kafka topic中。
 

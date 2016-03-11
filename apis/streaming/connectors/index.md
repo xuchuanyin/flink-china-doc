@@ -26,7 +26,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Connectors 提供了对接各种第三方系统的代码。
+Connector 提供了对接各种第三方系统的代码。
 
 当前支持以下这些系统：
 
@@ -36,4 +36,4 @@ Connectors 提供了对接各种第三方系统的代码。
  * [RabbitMQ](http://www.rabbitmq.com/) (sink/source)
  * [Twitter Streaming API](https://dev.twitter.com/docs/streaming-apis) (source)
 
-当我们在应用里使用这些 connectors 的时候，首先需要确保对应的第三方组件已经被正确的安装并处于服务状态，比如消息队列服务器。详细的说明请参照对应的章节。
+当我们在应用里使用这些 connector 的时候，首先需要确保对应的第三方组件已经被正确的安装并处于服务状态，比如消息队列服务器。详细的说明请参照对应的章节。
