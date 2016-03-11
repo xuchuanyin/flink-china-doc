@@ -26,25 +26,22 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-This connector provides access to event streams served by [Apache Kafka](https://kafka.apache.org/).
+该 connector 可以访问由 [Apache Kafka](https://kafka.apache.org/) 提供的事件流。
 
-Flink provides special Kafka Connectors for reading and writing data from/to Kafka topics.
-The Flink Kafka Consumer integrates with Flink's checkpointing mechanism to provide
-exactly-once processing semantics. To achieve that, Flink does not purely rely on Kafka's consumer group
-offset tracking, but tracks and checkpoints these offsets internally as well.
+Flink 提供了专门的的 Kafka connector，用来从 Kafka topic 中读写数据。Flink Kafka Consumer 中整合了 Flink 的 checkpoint 机制，以提供只处理一次（exactly-once）的语义。为了实现这个功能，Flink 并不是简单地依赖 Kafka 的 offset 机制，而是在内部也会对相应的 offset 做状态存储和跟踪。
 
-Please pick a package (maven artifact id) and class name for your use-case and environment.
-For most users, the `FlinkKafkaConsumer08` (part of `flink-connector-kafka`) is appropriate.
+请根据你的使用场景和环境来选择对应的包（maven artifact id）和类名。对于大多数用户来说，`FlinkKafkaConsumer08`（在 `flink-connector-kafka` 中）相对比较适用。
+
 
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th class="text-left">Maven Dependency</th>
-      <th class="text-left">Supported since</th>
-      <th class="text-left">Consumer and <br>
-      Producer Class name</th>
-      <th class="text-left">Kafka version</th>
-      <th class="text-left">Notes</th>
+      <th class="text-left">Maven 依赖</th>
+      <th class="text-left">支持自</th>
+      <th class="text-left">Consumer 和 <br>
+      Producer 类名</th>
+      <th class="text-left">Kafka 版本</th>
+      <th class="text-left">注意</th>
     </tr>
   </thead>
   <tbody>
@@ -54,7 +51,7 @@ For most users, the `FlinkKafkaConsumer08` (part of `flink-connector-kafka`) is 
         <td>FlinkKafkaConsumer082<br>
         FlinkKafkaProducer</td>
         <td>0.8.x</td>
-        <td>Uses the <a href="https://cwiki.apache.org/confluence/display/KAFKA/0.8.0+SimpleConsumer+Example">SimpleConsumer</a> API of Kafka internally. Offsets are committed to ZK by Flink.</td>
+        <td>内部使用 Kafka 的 <a href="https://cwiki.apache.org/confluence/display/KAFKA/0.8.0+SimpleConsumer+Example">SimpleConsumer</a> API 。Flink 会存储相应的 offset 到 ZK 中。</td>
     </tr>
      <tr>
         <td>flink-connector-kafka-0.8{{ site.scala_version_suffix }}</td>
@@ -62,7 +59,7 @@ For most users, the `FlinkKafkaConsumer08` (part of `flink-connector-kafka`) is 
         <td>FlinkKafkaConsumer08<br>
         FlinkKafkaProducer08</td>
         <td>0.8.x</td>
-        <td>Uses the <a href="https://cwiki.apache.org/confluence/display/KAFKA/0.8.0+SimpleConsumer+Example">SimpleConsumer</a> API of Kafka internally. Offsets are committed to ZK by Flink.</td>
+        <td>内部使用 Kafka 的 <a href="https://cwiki.apache.org/confluence/display/KAFKA/0.8.0+SimpleConsumer+Example">SimpleConsumer</a> API 。Flink 会存储相应的 offset 到 ZK 中。</td>
     </tr>
      <tr>
         <td>flink-connector-kafka-0.9{{ site.scala_version_suffix }}</td>
@@ -70,12 +67,12 @@ For most users, the `FlinkKafkaConsumer08` (part of `flink-connector-kafka`) is 
         <td>FlinkKafkaConsumer09<br>
         FlinkKafkaProducer09</td>
         <td>0.9.x</td>
-        <td>Uses the new <a href="http://kafka.apache.org/documentation.html#newconsumerapi">Consumer API</a> Kafka.</td>
+        <td>使用新的 Kafka <a href="http://kafka.apache.org/documentation.html#newconsumerapi">Consumer API</a></td>
     </tr>
   </tbody>
 </table>
 
-Then, import the connector in your maven project:
+然后，将 connector 导入到你的 maven 工程中：
 
 {% highlight xml %}
 <dependency>
@@ -85,29 +82,29 @@ Then, import the connector in your maven project:
 </dependency>
 {% endhighlight %}
 
-Note that the streaming connectors are currently not part of the binary distribution. See how to link with them for cluster execution [here]({{ site.baseurl}}/apis/cluster_execution.html#linking-with-modules-not-contained-in-the-binary-distribution).
+注意 streaming connector 目前还不是二进制发布包中的一部分。请查阅 [这里]({{ site.baseurl}}/apis/cluster_execution.html#linking-with-modules-not-contained-in-the-binary-distribution) 了解如何在集群环境中关联它们。
 
-#### Installing Apache Kafka
+#### 安装 Apache Kafka
 
-* Follow the instructions from [Kafka's quickstart](https://kafka.apache.org/documentation.html#quickstart) to download the code and launch a server (launching a Zookeeper and a Kafka server is required every time before starting the application).
-* On 32 bit computers [this](http://stackoverflow.com/questions/22325364/unrecognized-vm-option-usecompressedoops-when-running-kafka-from-my-ubuntu-in) problem may occur.
-* If the Kafka and Zookeeper servers are running on a remote machine, then the `advertised.host.name` setting in the `config/server.properties` file must be set to the machine's IP address.
+* 按照 [Kafka's quickstart](https://kafka.apache.org/documentation.html#quickstart) 的指引下载并启动服务（在启动应用程序之前，必须先启动一个 Zookeeper 和 一个 Kafka 服务）。
+* 在 32 位的机器上，[这个问题](http://stackoverflow.com/questions/22325364/unrecognized-vm-option-usecompressedoops-when-running-kafka-from-my-ubuntu-in) 可能会发生。
+* 如果 Kafka 和 Zookeeper 服务运行在远程机器上，那么 `config/server.properties` 中的 `advertised.host.name` 配置必须设置成机器的 IP 地址。
 
 #### Kafka Consumer
 
-Flink's Kafka consumer is called `FlinkKafkaConsumer08` (or `09`). It provides access to one or more Kafka topics.
+Flink 的 Kafka consumer 称作 `FlinkKafkaConsumer08` (或 `09`)。它提供了访问一个或多个 Kafka topic 的功能。
 
-The constructor accepts the following arguments:
+该类的构造器需要接受如下的参数：
 
-1. The topic name / list of topic names
-2. A DeserializationSchema / KeyedDeserializationSchema for deserializing the data from Kafka
-3. Properties for the Kafka consumer.
-  The following properties are required:
-  - "bootstrap.servers" (comma separated list of Kafka brokers)
-  - "zookeeper.connect" (comma separated list of Zookeeper servers) (**only required for Kafka 0.8**)
-  - "group.id" the id of the consumer group
+1.  topic 名 /  topic 列表
+2. 一个 `DeserializationSchema` / `KeyedDeserializationSchema` 用来反序列化从 Kafka 获得的数据。
+3. Kafka consumer 的 `Properties`（属性）：
+  下面的属性是必须的：
+  - "bootstrap.servers" (逗号分隔的 Kafka brokers 列表)
+  - "zookeeper.connect" (逗号分隔的 Zookeeper servers 列表) (**只有 Kafka 0.8 才需要**)
+  - "group.id" 消费组的 id
 
-Example:
+示例：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -137,27 +134,19 @@ stream = env
 </div>
 
 
-##### The `DeserializationSchema`
+##### `DeserializationSchema`
 
-The `FlinkKafkaConsumer08` needs to know how to turn the data in Kafka into Java objects. The 
-`DeserializationSchema` allows users to specify such a schema. The `T deserialize(byte[] message)`
-method gets called for each Kafka message, passing the value from Kafka.
-For accessing both the key and value of the Kafka message, the `KeyedDeserializationSchema` has
-the following deserialize method ` T deserialize(byte[] messageKey, byte[] message, String topic, int partition, long offset)`.
+`FlinkKafkaConsumer08` 需要知道如何将 Kafka 中的数据转成 Java 对象。`DeserializationSchema` 允许用户指定这样的一个 schema。Kafka 的每条消息都会调用 `T deserialize(byte[] message)` 方法，传入来自 Kafka 的值作为参数。要同时获得 Kafka 消息中的键和值，可以使用 `KeyedDeserializationSchema` 的反序列化方法 `T deserialize(byte[] messageKey, byte[] message, String topic, int partition, long offset)`。
 
-For convenience, Flink provides a `TypeInformationSerializationSchema` (and `TypeInformationKeyValueSerializationSchema`) 
-which creates a schema based on a Flink `TypeInformation`.
+为了方便，Flink 提供了 `TypeInformationSerializationSchema` (和 `TypeInformationKeyValueSerializationSchema`) ，用来创建基于 Flink `TypeInformation` 的 schema。
 
-#### Kafka Consumers and Fault Tolerance
+#### Kafka Consumer 和容错
 
-With Flink's checkpointing enabled, the Flink Kafka Consumer will consume records from a topic and periodically checkpoint all
-its Kafka offsets, together with the state of other operations, in a consistent manner. In case of a job failure, Flink will restore
-the streaming program to the state of the latest checkpoint and re-consume the records from Kafka, starting from the offsets that where
-stored in the checkpoint.
+当 Flink 的 checkpoint 开启时，Flink Kafka Consumer 会从 topic 中消费记录，并以一致性的方式，周期性地 checkpoint 它的 Kafka offsets，以及其他操作中的状态。当作业失败了，Flink 会恢复流程序到最后一个 checkpoint 的状态，然后重新从保存在 checkpoint 中的 offset 处开始消费 Kafka 记录。
 
-The interval of drawing checkpoints therefore defines how much the program may have to go back at most, in case of a failure.
+因此在故障情况下，写 checkpoint 的间隔决定了程序最多可能需要回退多少。
 
-To use fault tolerant Kafka Consumers, checkpointing of the topology needs to be enabled at the execution environment:
+要使用 Kafka Consumers 的容错，需要在 execution environment 上打开拓扑的 checkpoint：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -174,18 +163,16 @@ env.enableCheckpointing(5000) // checkpoint every 5000 msecs
 </div>
 </div>
 
-Also note that Flink can only restart the topology if enough processing slots are available to restart the topology.
-So if the topology fails due to loss of a TaskManager, there must still be enough slots available afterwards.
-Flink on YARN supports automatic restart of lost YARN containers.
+另外注意 Flink 只有在还有足够的 slots 数的时候，才能够重启拓扑。所以如果是由于 TaskManager 挂了导致拓扑失败，那集群中必须仍有足够的 slots 才行。Flink on YARN 支持了对 YARN 容器的自动重启。
 
-If checkpointing is not enabled, the Kafka consumer will periodically commit the offsets to Zookeeper.
+如果没有开启 checkpoint，那么 Kafka consumer 会周期性地将 offset 写到 Zookeeper 中。
 
 #### Kafka Producer
 
-The `FlinkKafkaProducer08` writes data to a Kafka topic. The producer can specify a custom partitioner that assigns
-records to partitions.
+`FlinkKafkaProducer08` 能将数据写入到 Kafka topic 中。生产者可以指定一个自定义的 partitioner，以决定如何将数据写到对应的分区中。
 
-Example:
+
+示例:
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -200,15 +187,9 @@ stream.addSink(new FlinkKafkaProducer08[String]("localhost:9092", "my-topic", ne
 </div>
 </div>
 
-You can also define a custom Kafka producer configuration for the KafkaSink with the constructor. Please refer to
-the [Apache Kafka documentation](https://kafka.apache.org/documentation.html) for details on how to configure
-Kafka Producers.
+你可以使用这个构造器为 KafkaSink 定义一个自定义的 Kafka producer 配置。请查阅 [Apache Kafka 文档](https://kafka.apache.org/documentation.html) 更详细地了解关于如何配置 Kafka Producers。
 
-**Note**: By default, the number of retries is set to "0". This means that the producer fails immediately on errors,
-including leader changes. The value is set to "0" by default to avoid duplicate messages in the target topic.
-For most production environments with frequent broker changes, we recommend setting the number of retries to a 
-higher value.
+**注意**：默认情况下，重试次数被设为 “0”。也就是说生产者在发生错误后会立即失败，包括 leader 改变。默认设置为“0”，是为了避免目标 topic 中出现重复消息。对于大多数生产环境来说（一般都有频繁的 broker 切换），我们建议将重试次数的值调大。
 
-There is currently no transactional producer for Kafka, so Flink can not guarantee exactly-once delivery
-into a Kafka topic.
+目前还没有事务性的 Kafka 生产者，所以 Flink 还不能保证以 exactly-once 的语义将消息投递到Kafka topic中。
 
