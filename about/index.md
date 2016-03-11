@@ -75,6 +75,12 @@ Flink 中文文档网站是 [Apache Flink 官方文档](https://ci.apache.org/pr
     <td class="text-center"><a href="https://github.com/fengjian428" target="_blank">@fengjian428</a></td>
   </tr>
   <tr>
+    <td class="text-center"><img alt="@bastiliu" height="48" src="https://avatars2.githubusercontent.com/u/7921256?v=3&s=96" width="48"></td>
+    <td class="text-center">刘键</td>
+    <td class="text-center">Admin</td>
+    <td class="text-center"><a href="https://github.com/bastiliu" target="_blank">@bastiliu</a></td>
+  </tr>
+  <tr>
     <td class="text-center"><img alt="@litongbupt" height="48" src="https://avatars2.githubusercontent.com/u/5283573?v=3&s=96" width="48"></td>
     <td class="text-center">李彤</td>
     <td class="text-center">Contributor</td>

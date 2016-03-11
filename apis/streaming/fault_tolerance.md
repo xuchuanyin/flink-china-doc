@@ -37,9 +37,9 @@ Streaming 容错机制
 
 Flink checkpoint 机制能够在程序失败之后恢复任务。checkpoint 机制依赖需要依赖于如 Apache Kafka 这样的*可持久化* 并且能重放历史数据的数据源。
 
-checkpoint 机制存储了data sources 和 data sinks 的处理进度, windows状态和用户定义状态(见[Working with State](state.html)) 以保证仅仅执行一次的语义。根据[state backend](state_backends.html)的配置，checkpoint 可以存储在 JobManager 内存, 文件系统以及数据库中。
+checkpoint机制存储了 data sources 和 data sinks 的处理进度、window 的状态、以及用户自定义的状态(见[Working with State](state.html)) ，以保证只处理一次的语义。根据[state backend](state_backends.html)的配置，checkpoint 可以存储在 JobManager 内存, 文件系统以及数据库中。
 
-[streaming fault tolerance文档]({{ site.baseurl }}/internals/stream_checkpointing.html) 描述了 Flink streaming 容错机制技术细节.
+[streaming 容错文档]({{ site.baseurl }}/internals/stream_checkpointing.html) 描述了 Flink streaming 容错机制的技术细节.
 
 `StreamExecutionEnvironment` 上调用 `enableCheckpointing(n)` 开启 checkpoint 机制 , *n* 是 checkpoint 毫秒时间间隔。
 
@@ -49,7 +49,8 @@ checkpoint 其他参数包括:
 
 - *exactly-once vs. at-least-once*: 可以通过调用 `enableCheckpointing(n)` 方法在两个一致性级别之间选择其中之一。Exactly-once 更适合大多数程序。 At-least-once 适用于极低延迟 (几毫秒) 的应用.
 
-- *number of concurrent checkpoints*: 默认情况下, 当有一个 checkpoint 在运行时，系统不会触发另一个checkpoint程序。这可以确保 topology 不会在 checkpoint 上花费过多时间和处理数据流。可以允许多个 checkpoint 相互重叠，这对于有确定延迟的处理流程是有意义的。(举个例子，调用外部服务需要一定响应时间) 但频繁的建立 checkpoint (100ms) 会导致少量的 checkpoint 失败
+- *number of concurrent checkpoints*: 默认情况下, 当有一个 checkpoint 在运行时，系统不会触发另一个 checkpoint。这可以确保 topology 不会在 checkpoint 上花费过多时间和处理数据流。然而，有时仍然需要允许多个重叠的 checkpoint 操作，这对于有确定延迟（如调用需要一定响应时间的外部服务）但又想频繁地做 checkpoint（百毫秒级别，为了在失败情况下重新处理尽量少的数据量）的处理流程是有意义的。
+
 
 - *checkpoint 超时*: 如果 checkpoint 在该时间内还未完成，则正在进行中的 checkpoint 会被中断。
 
@@ -98,7 +99,7 @@ env.getCheckpointConfig.setMaxConcurrentCheckpoints(1)
 
 ### Data Source 和 Sink 容错保证
 
-当 source 执行快照时，Flink 可以确保执行一次状态更新到用户状态。目前Kafka source (和内部序列生成器) 可以保证，但其他source不能保证。下表列出了Flink source 状态更新保证：
+只有当数据源参与了快照机制，Flink 才能保证只对用户状态更新一次（exactly-once）。目前 Kafka source (和内部序列生成器) 可以保证，但其他 source 不能保证。下表列出了Flink source 状态更新保证：
 
 <table class="table table-bordered">
   <thead>
@@ -142,7 +143,7 @@ env.getCheckpointConfig.setMaxConcurrentCheckpoints(1)
   </tbody>
 </table>
 
-为了确保端到端恰好一次消息传递(除了恰好一次状态语义),data sink需要加入检查点执行过程。下列表格列出了和 Flink 绑定的sink传递保证(假设恰好一次更新)
+为了确保端到端的 exactly-once 消息传递(除了 exactly-once 状态语义)，data sink 也需要参与 checkpoint 机制。下表列出了和 Flink 绑定的 sink 的传递保证（假设状态是 exactly-once 更新了）：
 
 <table class="table table-bordered">
   <thead>
@@ -156,7 +157,7 @@ env.getCheckpointConfig.setMaxConcurrentCheckpoints(1)
     <tr>
         <td>HDFS rolling sink</td>
         <td>exactly once</td>
-        <td>Implementation depends on Hadoop version</td>
+        <td>是否实现取决于 Hadoop 版本</td>
     </tr>
     <tr>
         <td>Elasticsearch</td>
@@ -199,8 +200,8 @@ Flink提供多种不同重启策略用于控制job在失败时如何重启。当
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th class="text-left" style="width: 50%">Restart Strategy</th>
-      <th class="text-left">Value for restart-strategy</th>
+      <th class="text-left" style="width: 50%">重启策略</th>
+      <th class="text-left">restart-strategy 的值</th>
     </tr>
   </thead>
   <tbody>
@@ -247,7 +248,7 @@ env.setRestartStrategy(RestartStrategies.fixedDelay(
 
 固定延迟重启策略会在指定次数之内重启重启job。如果超过最大重启次数，job被认定为最终失败。两次连续重启尝试之间，等待一个固定时间间隔。
 
-这个策略是通过在 `flink-conf.yaml` 中设置下列参数设置启用的：
+这个策略是通过在 `flink-conf.yaml` 中设置下列参数来启用的：
 
 ~~~
 restart-strategy: fixed-delay
@@ -256,9 +257,9 @@ restart-strategy: fixed-delay
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th class="text-left" style="width: 40%">Configuration Parameter</th>
-      <th class="text-left" style="width: 40%">Description</th>
-      <th class="text-left">Default Value</th>
+      <th class="text-left" style="width: 40%">配置参数</th>
+      <th class="text-left" style="width: 40%">描述</th>
+      <th class="text-left">默认值</th>
     </tr>
   </thead>
   <tbody>
@@ -280,7 +281,7 @@ restart-strategy.fixed-delay.attempts: 3
 restart-strategy.fixed-delay.delay: 10 s
 ~~~
 
-重启延迟也可以通过程序指定:
+重启延迟也可以通过编程方式指定:
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -315,13 +316,13 @@ env.setRestartStrategy(RestartStrategies.fixedDelay(
 
 当程序与外部系统交互时，延迟重试会很有用，例如连接或等待中的事务达到了超时时间。
 
-默认值是*akka.ask.timeout* 的值。
+默认值是 *akka.ask.timeout* 的值。
 
 {% top %}
 
 ### 不重启策略
 
-job运行失败且不尝试重启。
+job 运行失败且不尝试重启。
 
 ~~~
 restart-strategy: none

@@ -50,22 +50,22 @@ Flink 工程可以用不同的构建工具构建。
 
 <div class="tab-content">
     <div class="tab-pane active" id="giter8">
-    {% highlight bash %}
-    $ g8 tillrohrmann/flink-project
-    {% endhighlight %}
+{% highlight bash %}
+$ g8 tillrohrmann/flink-project
+{% endhighlight %}
     这将在 <strong>指定</strong> 的工程目录下，从 <a href="https://github.com/tillrohrmann/flink-project.g8">flink-project 模版</a> 创建一个 Flink 工程。
     如果你没有安装 <a href="https://github.com/n8han/giter8">giter8</a>, 请参照此 <a href="https://github.com/n8han/giter8#installation">安装指南</a>。
     </div>
     <div class="tab-pane" id="clone-repository">
-    {% highlight bash %}
-    $ git clone https://github.com/tillrohrmann/flink-project.git
-    {% endhighlight %}
+{% highlight bash %}
+$ git clone https://github.com/tillrohrmann/flink-project.git
+{% endhighlight %}
     这将在 <strong>flink-project</strong> 目录下创建 Flink 工程。
     </div>
     <div class="tab-pane" id="quickstart-script-sbt">
-    {% highlight bash %}
-    $ bash <(curl https://flink.apache.org/q/sbt-quickstart.sh)
-    {% endhighlight %}
+{% highlight bash %}
+$ bash <(curl https://flink.apache.org/q/sbt-quickstart.sh)
+{% endhighlight %}
     这将在 <strong>指定</strong> 的工程目录下创建 Flink 工程
     </div>
 </div>
@@ -134,12 +134,12 @@ addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "4.0.0")
 
 <div class="tab-content">
     <div class="tab-pane active" id="maven-archetype">
-    {% highlight bash %}
-    $ mvn archetype:generate                               \
-      -DarchetypeGroupId=org.apache.flink              \
-      -DarchetypeArtifactId=flink-quickstart-scala     \
-      -DarchetypeVersion={{site.version}}
-    {% endhighlight %}
+{% highlight bash %}
+$ mvn archetype:generate                               \
+  -DarchetypeGroupId=org.apache.flink              \
+  -DarchetypeArtifactId=flink-quickstart-scala     \
+  -DarchetypeVersion={{site.version}}
+{% endhighlight %}
     这种创建方式允许你 <strong>给新创建的工程命名</strong>。它会提示你输入 groupId、 artifactId， 以及 package name。
     </div>
     <div class="tab-pane" id="quickstart-script">
