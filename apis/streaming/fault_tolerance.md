@@ -25,37 +25,33 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Flink's fault tolerance mechanism recovers programs in the presence of failures and
-continues to execute them. Such failures include machine hardware failures, network failures,
-transient program failures, etc.
+
+Flink容错机制能够在程序出现异常状态时恢复并继续运行。故障包括机器硬件故障，网络故障和程序异常中断等。
 
 * This will be replaced by the TOC
 {:toc}
 
 
-Streaming Fault Tolerance
+Streaming 容错机制
 -------------------------
 
-Flink has a checkpointing mechanism that recovers streaming jobs after failues. The checkpointing mechanism requires a *persistent* (or *durable*) source that
-can be asked for prior records again (Apache Kafka is a good example of such a source).
+Flink checkpoint 机制能够在程序失败之后恢复任务。checkpoint 机制依赖需要依赖于如 Apache Kafka 这样的*可持久化* 并且能重放历史数据的数据源。
 
-The checkpointing mechanism stores the progress in the data sources and data sinks, the state of windows, as well as the user-defined state (see [Working with State](state.html)) consistently to provide *exactly once* processing semantics. Where the checkpoints are stored (e.g., JobManager memory, file system, database) depends on the configured [state backend](state_backends.html).
+checkpoint 机制存储了data sources 和 data sinks 的处理进度, windows状态和用户定义状态(见[Working with State](state.html)) 以保证仅仅执行一次的语义。根据[state backend](state_backends.html)的配置，checkpoint 可以存储在 JobManager 内存, 文件系统以及数据库中。
 
-The [docs on streaming fault tolerance]({{ site.baseurl }}/internals/stream_checkpointing.html) describe in detail the technique behind Flink's streaming fault tolerance mechanism.
+[streaming fault tolerance文档]({{ site.baseurl }}/internals/stream_checkpointing.html) 描述了 Flink streaming 容错机制技术细节.
 
-To enable checkpointing, call `enableCheckpointing(n)` on the `StreamExecutionEnvironment`, where *n* is the checkpoint interval in milliseconds.
+`StreamExecutionEnvironment` 上调用 `enableCheckpointing(n)` 开启 checkpoint 机制 , *n* 是 checkpoint 毫秒时间间隔。
 
-Other parameters for checkpointing include:
+checkpoint 其他参数包括:
 
-- *Number of retries*: The `setNumberOfExecutionRerties()` method defines how many times the job is restarted after a failure.
-  When checkpointing is activated, but this value is not explicitly set, the job is restarted infinitely often.
+- *Number of retries*: `setNumberOfExecutionRerties()`方法定义了job失败后的重试次数。当checkpoint 机制开启的时候,且这个值没有显式指定时，job会无限重试。
 
-- *exactly-once vs. at-least-once*: You can optionally pass a mode to the `enableCheckpointing(n)` method to choose between the two guarantee levels.
-  Exactly-once is preferrable for most applications. At-least-once may be relevant for certain super-low-latency (consistently few milliseconds) applications.
+- *exactly-once vs. at-least-once*: 可以通过调用 `enableCheckpointing(n)` 方法在两个一致性级别之间选择其中之一。Exactly-once 更适合大多数程序。 At-least-once 适用于极低延迟 (几毫秒) 的应用.
 
-- *number of concurrent checkpoints*: By default, the system will not trigger another checkpoint while one is still in progress. This ensures that the topology does not spend too much time on checkpoints and not make progress with processing the streams. It is possible to allow for multiple overlapping checkpoints, which is interesting for pipelines that have a certain processing delay (for example because the functions call external services that need some time to respond) but that still want to do very frequent checkpoints (100s of milliseconds) to re-process very little upon failures.
+- *number of concurrent checkpoints*: 默认情况下, 当有一个 checkpoint 在运行时，系统不会触发另一个checkpoint程序。这可以确保 topology 不会在 checkpoint 上花费过多时间和处理数据流。可以允许多个 checkpoint 相互重叠，这对于有确定延迟的处理流程是有意义的。(举个例子，调用外部服务需要一定响应时间) 但频繁的建立 checkpoint (100ms) 会导致少量的 checkpoint 失败
 
-- *checkpoint timeout*: The time after which a checkpoint-in-progress is aborted, if it did not complete until then.
+- *checkpoint 超时*: 如果 checkpoint 在该时间内还未完成，则正在进行中的 checkpoint 会被中断。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -100,11 +96,9 @@ env.getCheckpointConfig.setMaxConcurrentCheckpoints(1)
 
 {% top %}
 
-### Fault Tolerance Guarantees of Data Sources and Sinks
+### Data Source 和 Sink 容错保证
 
-Flink can guarantee exactly-once state updates to user-defined state only when the source participates in the
-snapshotting mechanism. This is currently guaranteed for the Kafka source (and internal number generators), but
-not for other sources. The following table lists the state update guarantees of Flink coupled with the bundled sources:
+当 source 执行快照时，Flink 可以确保执行一次状态更新到用户状态。目前Kafka source (和内部序列生成器) 可以保证，但其他source不能保证。下表列出了Flink source 状态更新保证：
 
 <table class="table table-bordered">
   <thead>
@@ -118,7 +112,7 @@ not for other sources. The following table lists the state update guarantees of 
         <tr>
             <td>Apache Kafka</td>
             <td>exactly once</td>
-            <td>Use the appropriate Kafka connector for your version</td>
+            <td>使用与你Apache Kafka 版本相匹配的连接器</td>
         </tr>
         <tr>
             <td>RabbitMQ</td>
@@ -138,7 +132,7 @@ not for other sources. The following table lists the state update guarantees of 
         <tr>
             <td>Files</td>
             <td>at least once</td>
-            <td>At failure the file will be read from the beginning</td>
+            <td>失败时，会从文件开始处继续读取</td>
         </tr>
         <tr>
             <td>Sockets</td>
@@ -148,9 +142,7 @@ not for other sources. The following table lists the state update guarantees of 
   </tbody>
 </table>
 
-To guarantee end-to-end exactly-once record delivery (in addition to exactly-once state semantics), the data sink needs
-to take part in the checkpointing mechanism. The following table lists the delivery guarantees (assuming exactly-once
-state updates) of Flink coupled with bundled sinks:
+为了确保端到端恰好一次消息传递(除了恰好一次状态语义),data sink需要加入检查点执行过程。下列表格列出了和 Flink 绑定的sink传递保证(假设恰好一次更新)
 
 <table class="table table-bordered">
   <thead>
@@ -196,20 +188,13 @@ state updates) of Flink coupled with bundled sinks:
 
 {% top %}
 
-## Restart Strategies
+## 重启策略
 
-Flink supports different restart strategies which control how the jobs are restarted in case of a failure.
-The cluster can be started with a default restart strategy which is always used when no job specific restart strategy has been defined.
-In case that the job is submitted with a restart strategy, this strategy overrides the cluster's default setting.
+Flink提供多种不同重启策略用于控制job在失败时如何重启。当没有指定 job 的重启策略时，集群会使用默认的重启策略。如果job提交时指定了重启策略，会覆盖集群默认重启策略。
  
-The default restart strategy is set via Flink's configuration file `flink-conf.yaml`.
-The configuration parameter *restart-strategy* defines which strategy is taken.
-Per default, the no-restart strategy is used.
-See the following list of available restart strategies to learn what values are supported.
+默认重启策略由 Flink 配置文件 `flink-conf.yaml` 所指定。配置参数 *restart-strategy* 定义了使用策略。默认情况下，不重启策略会被使用。下列列出了可用的重启策略。
 
-Each restart strategy comes with its own set of parameters which control its behaviour.
-These values are also set in the configuration file.
-The description of each restart strategy contains more information about the respective configuration values.
+每个重启策略都有一套自己的参数用来控制他的行为。这些参数也在配置文件中指定。每一个重启策略的描述含有更多关于配置值的信息。
 
 <table class="table table-bordered">
   <thead>
@@ -220,22 +205,20 @@ The description of each restart strategy contains more information about the res
   </thead>
   <tbody>
     <tr>
-        <td>Fixed delay</td>
+        <td>固定延迟</td>
         <td>fixed-delay</td>
     </tr>
     <tr>
-        <td>No restart</td>
+        <td>不重启</td>
         <td>none</td>
     </tr>
   </tbody>
 </table>
 
-Apart from defining a default restart strategy, it is possible to define for each Flink job a specific restart strategy.
-This restart strategy is set programmatically by calling the `setRestartStrategy` method on the `ExecutionEnvironment`.
-Note that this also works for the `StreamExecutionEnvironment`.
 
-The following example shows how we can set a fixed delay restart strategy for our job.
-In case of a failure the system tries to restart the job 3 times and waits 10 seconds in-between successive restart attempts.
+除了默认重启策略，每个Flink job也可以指定各自重启策略。重启策略由 `ExecutionEnvironment` 中`setRestartStrategy` 方法指定。注意这对 `StreamExecutionEnvironment` 也是生效的。
+下面的例子展示了如何在job中设置固定延迟的重启策略。在失败的情况下，系统会重试3次，每次之间间隔10秒。
+
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -260,13 +243,11 @@ env.setRestartStrategy(RestartStrategies.fixedDelay(
 
 {% top %}
 
-### Fixed Delay Restart Strategy
+### 固定延迟重启策略
 
-The fixed delay restart strategy attempts a given number of times to restart the job.
-If the maximum number of attempts is exceeded, the job eventually fails.
-In-between two consecutive restart attempts, the restart strategy waits a fixed amount of time.
+固定延迟重启策略会在指定次数之内重启重启job。如果超过最大重启次数，job被认定为最终失败。两次连续重启尝试之间，等待一个固定时间间隔。
 
-This strategy is enabled as default by setting the following configuration parameter in `flink-conf.yaml`.
+这个策略是通过在 `flink-conf.yaml` 中设置下列参数设置启用的：
 
 ~~~
 restart-strategy: fixed-delay
@@ -283,12 +264,12 @@ restart-strategy: fixed-delay
   <tbody>
     <tr>
         <td><it>restart-strategy.fixed-delay.attempts</it></td>
-        <td>Number of restart attempts</td>
+        <td>重启尝试次数</td>
         <td>1</td>
     </tr>
     <tr>
         <td><it>restart-strategy.fixed-delay.delay</it></td>
-        <td>Delay between two consecutive restart attempts</td>
+        <td>两次重启尝试之间的延迟时间</td>
         <td><it>akka.ask.timeout</it></td>
     </tr>
   </tbody>
@@ -299,7 +280,7 @@ restart-strategy.fixed-delay.attempts: 3
 restart-strategy.fixed-delay.delay: 10 s
 ~~~
 
-The fixed delay restart strategy can also be set programmatically:
+重启延迟也可以通过程序指定:
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -322,31 +303,31 @@ env.setRestartStrategy(RestartStrategies.fixedDelay(
 </div>
 </div>
 
-#### Restart Attempts
+#### 重启尝试次数
 
-The number of times that Flink retries the execution before the job is declared as failed is configurable via the *restart-strategy.fixed-delay.attempts* parameter.
+在 job 被宣告失败前，Flink 重试执行的次数可以通过 *restart-strategy.fixed-delay.attempts* 参数来配置。
 
-The default value is **1**.
+默认为 **1**.
 
-#### Retry Delays
+#### 重试间隔
 
-Execution retries can be configured to be delayed. Delaying the retry means that after a failed execution, the re-execution does not start immediately, but only after a certain delay.
+执行重试可配置间隔时间。 重试间隔意味着在一次执行失败之后，并不是立即重新执行，而是延迟一段时间之后。
 
-Delaying the retries can be helpful when the program interacts with external systems where for example connections or pending transactions should reach a timeout before re-execution is attempted.
+当程序与外部系统交互时，延迟重试会很有用，例如连接或等待中的事务达到了超时时间。
 
-The default value is the value of *akka.ask.timeout*.
+默认值是*akka.ask.timeout* 的值。
 
 {% top %}
 
-### No Restart Strategy
+### 不重启策略
 
-The job fails directly and no restart is attempted.
+job运行失败且不尝试重启。
 
 ~~~
 restart-strategy: none
 ~~~
 
-The no restart strategy can also be set programmatically:
+不重启策略可以用编程方式声明:
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
