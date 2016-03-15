@@ -156,7 +156,7 @@ Flink 基于 Scala *2.10* 版本开发且额外经过 Scala *2.11* 版本测试�
 
 {% top %}
 
-## 内部
+## 内部细节
 
 [properties](http://maven.apache.org/pom.html#Properties) 和 [build profiles](http://maven.apache.org/guides/introduction/introduction-to-profiles.html) 用来控制Maven 的构建流程。 Flink 有两个profile，分别用来控制Hadoop 1 和 Hadoop 2。在 `hadoop2` 配置打开启的情况下（默认开启），系统会构建 YARN 客户端。  
 
