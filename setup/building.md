@@ -1,8 +1,8 @@
 ---
-title: Build Flink from Source
+title: 从源码构建 Flink
 top-nav-group: setup
 top-nav-pos: 1
-top-nav-title: Build Flink from Source
+top-nav-title: 构建 Flink
 ---
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
@@ -54,7 +54,7 @@ mvn clean install -DskipTests
 
 ## Hadoop 版本
 
-{% info %} 大多数用户并不需要手动执行此操作。 [download page]({{ site.download_url }})  含有常见Hadoop 版本的 Flink 二进制包。
+{% info %} 大多数用户并不需要手动执行此操作。 [下载页面]({{ site.download_url }}) 包含常见 Hadoop 版本对应的 Flink 二进制包。
 
 Flink 所依赖的 HDFS 和 YARN 均来自于[Apache Hadoop](http://hadoop.apache.org)。目前存在多个不同Hadoop版本（包括上游项目及不同Hadoop发行版）。如果使用错误的版本组合，可能会导致异常。
 
@@ -141,7 +141,7 @@ Flink 基于 Scala *2.10* 版本开发且额外经过 Scala *2.11* 版本测试�
 
 ## 加密文件系统
 
-如果你的 home 目录是加密文件系统可能会发生 `java.io.IOException: File name too long` 异常. 一些加密文件系统，比如Ubuntu所使用的encfs，不允许长文件名，这会导致这种错误。
+如果你的 home 目录是加密的，则可能会遇到 `java.io.IOException: File name too long` 异常. 一些加密文件系统，比如 Ubuntu 所使用的 encfs，不允许长文件名，这会导致这种错误。
 
 修改办法是添加如下配置:
 
@@ -158,7 +158,7 @@ Flink 基于 Scala *2.10* 版本开发且额外经过 Scala *2.11* 版本测试�
 
 ## 内部细节
 
-[properties](http://maven.apache.org/pom.html#Properties) 和 [build profiles](http://maven.apache.org/guides/introduction/introduction-to-profiles.html) 用来控制Maven 的构建流程。 Flink 有两个profile，分别用来控制Hadoop 1 和 Hadoop 2。在 `hadoop2` 配置打开启的情况下（默认开启），系统会构建 YARN 客户端。  
+[properties](http://maven.apache.org/pom.html#Properties) 和 [build profiles](http://maven.apache.org/guides/introduction/introduction-to-profiles.html) 用来控制Maven 的构建流程。 Flink 有两个profile，分别用来控制Hadoop 1 和 Hadoop 2。在 `hadoop2` 配置打开启的情况下（默认开启），系统会构建 YARN 客户端。
 
 构建时设置 `-Dhadoop.profile=1` 将使用 `hadoop1` profile。根据 profile ，可以设置两个Hadoop版本。对于 `hadoop1` 默认使用 1.2.1版本，`hadoop2` 默认使用2.3.0版本。
 
