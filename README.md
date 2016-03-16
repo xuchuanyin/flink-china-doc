@@ -58,12 +58,15 @@ cd flink-china-doc/docker
 
 ## 术语翻译对照
 
-transformations 转换/转换操作
-lazy evaluation 延迟计算
+- transformations 转换/转换操作
+- lazy evaluation 延迟计算 
+- exactly-once    只处理一次
+- at-least-once   至少处理一次
+- at-most-once    最多处理一次
 
 ## 不翻译的术语
 
-DataSet, DataStream, sink, operator。
+DataSet, DataStream, sink, operator, connector。
 
 
 # 写作指南
