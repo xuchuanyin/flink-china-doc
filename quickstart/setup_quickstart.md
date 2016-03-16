@@ -63,7 +63,7 @@ $ bin/start-local.sh    # 运行 Flink
 * 首先，我们使用 **netcat** 来启动本地服务器：
 
   ~~~bash
-  $ nc -l -p 9000
+  $ nc -l 9000
   ~~~ 
 
 * 提交 Flink 程序：
@@ -96,7 +96,7 @@ $ bin/start-local.sh    # 运行 Flink
 * 计数会打印到标准输出 `stdout`。监控 JobManager 的输出文件(`.out`文件)，并在 `nc` 中敲入一些单词：
 
   ~~~bash
-  $ nc -l -p 9000
+  $ nc -l 9000
   lorem ipsum
   ipsum ipsum ipsum
   bye
