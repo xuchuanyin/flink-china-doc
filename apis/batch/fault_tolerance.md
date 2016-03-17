@@ -24,9 +24,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Flink's fault tolerance mechanism recovers programs in the presence of failures and
-continues to execute them. Such failures include machine hardware failures, network failures,
-transient program failures, etc.
+flink 的容错机制保障出错时恢复程序并继续执行。 这些错误包括机器硬件错误，网络错误，程序错误等。
 
 * This will be replaced by the TOC
 {:toc}
@@ -34,14 +32,9 @@ transient program failures, etc.
 Batch Processing Fault Tolerance (DataSet API)
 ----------------------------------------------
 
-Fault tolerance for programs in the *DataSet API* works by retrying failed executions.
-The number of time that Flink retries the execution before the job is declared as failed is configurable
-via the *execution retries* parameter. A value of *0* effectively means that fault tolerance is deactivated.
 
-To activate the fault tolerance, set the *execution retries* to a value larger than zero. A common choice is a value
-of three.
-
-This example shows how to configure the execution retries for a Flink DataSet program.
+*DataSet API* 程序的容错就是重试失败的任务。 在定义任务前， flink 会设置重试的最大次数通过*execution retries* 参数。 
+*0* 表示关掉容错， 如果想要打开容错， *execution retries*  这个值必须设置大于0， 一半会设置为3.
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -59,8 +52,7 @@ env.setNumberOfExecutionRetries(3)
 </div>
 
 
-You can also define default values for the number of execution retries and the retry delay in the `flink-conf.yaml`:
-
+其实可以在`flink-conf.yaml`设置默认的重试次数
 ~~~
 execution-retries.default: 3
 ~~~
@@ -69,12 +61,11 @@ execution-retries.default: 3
 Retry Delays
 ------------
 
-Execution retries can be configured to be delayed. Delaying the retry means that after a failed execution, the re-execution does not start
-immediately, but only after a certain delay.
+重试执行可以被配置延迟执行。 这意味着当发生失败时，不是立即重新执行，而是等待一段时间。
 
-Delaying the retries can be helpful when the program interacts with external systems where for example connections or pending transactions should reach a timeout before re-execution is attempted.
+等待一段时间非常有用， 当程序同外部系统交互式或者堆积的事物需要一个timeout在重新运行前。
 
-You can set the retry delay for each program as follows (the sample shows the DataStream API - the DataSet API works similarly):
+可以在每个程序里面设置delay时间（例子是使用DataStream， DataSet其实是类似的）：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -91,7 +82,7 @@ env.getConfig.setExecutionRetryDelay(5000) // 5000 milliseconds delay
 </div>
 </div>
 
-You can also define the default value for the retry delay in the `flink-conf.yaml`:
+同样可以在`flink-conf.yaml`中设置系统默认的延迟时间：
 
 ~~~
 execution-retries.delay: 10 s
