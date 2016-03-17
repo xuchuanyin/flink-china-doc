@@ -37,7 +37,7 @@ Flink 中所有的转换操作看起来都像是函数调用（函数式处理�
 默认情况下，状态的 checkpoint 会被保存在 JobManager 的内存中。对于较大的状态，Flink 也支持将 checkpoint 保存在文件系统中
 （如HDFS、S3或任意挂载的 POSIX 文件系统），可以通过 `flink-conf.yaml` 配置文件或者 `StreamExecutionEnvironment.setStateBackend(…)`
 代码来配置如何存储checkpoint。
-[state backends]({{ site.baseurl }}/apis/streaming/state_backends.html) 描述了可用的状态存储后台以及如何配置它们。
+[state backends]({{ site.baseurl }}/apis/streaming/state_backends.html) 描述了可用的状态存储后端以及如何配置它们。
 
 * ToC
 {:toc}
