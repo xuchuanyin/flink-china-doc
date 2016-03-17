@@ -1,5 +1,5 @@
 ---
-title: "Fault Tolerance"
+title: "容错"
 is_beta: false
 
 sub-nav-group: streaming
@@ -35,21 +35,21 @@ Flink容错机制能够在程序出现异常状态时恢复并继续运行。故
 Streaming 容错机制
 -------------------------
 
-Flink checkpoint 机制能够在程序失败之后恢复任务。checkpoint 机制依赖需要依赖于如 Apache Kafka 这样的*可持久化* 并且能重放历史数据的数据源。
+Flink checkpoint 机制能够在程序失败之后恢复任务。checkpoint 机制需要依赖于如 Apache Kafka 这样的*可持久化* 并且能重放历史数据的数据源。
 
-checkpoint机制存储了 data sources 和 data sinks 的处理进度、window 的状态、以及用户自定义的状态(见[Working with State](state.html)) ，以保证只处理一次的语义。根据[state backend](state_backends.html)的配置，checkpoint 可以存储在 JobManager 内存, 文件系统以及数据库中。
+Checkpoint 机制存储了 data sources 和 data sinks 的处理进度、window 的状态、以及用户自定义的状态(见[Working with State](state.html)) ，以保证只处理一次的语义。根据[state backend](state_backends.html)的配置，checkpoint 可以存储在 JobManager 内存, 文件系统以及数据库中。
 
-[streaming 容错文档]({{ site.baseurl }}/internals/stream_checkpointing.html) 描述了 Flink streaming 容错机制的技术细节.
+[Streaming 容错文档]({{ site.baseurl }}/internals/stream_checkpointing.html) 描述了 Flink streaming 容错机制的技术细节.
 
-`StreamExecutionEnvironment` 上调用 `enableCheckpointing(n)` 开启 checkpoint 机制 , *n* 是 checkpoint 毫秒时间间隔。
+在 `StreamExecutionEnvironment` 上调用 `enableCheckpointing(n)` 可以开启 checkpoint 机制 , *n* 是 checkpoint 毫秒时间间隔。
 
 checkpoint 其他参数包括:
 
-- *Number of retries*: `setNumberOfExecutionRerties()`方法定义了job失败后的重试次数。当checkpoint 机制开启的时候,且这个值没有显式指定时，job会无限重试。
+- *Number of retries*: `setNumberOfExecutionRerties()`方法定义了job失败后的重试次数。当 checkpoint 机制开启的时候,且这个值没有显式指定时，job会无限重试。
 
-- *exactly-once vs. at-least-once*: 可以通过调用 `enableCheckpointing(n)` 方法在两个一致性级别之间选择其中之一。Exactly-once 更适合大多数程序。 At-least-once 适用于极低延迟 (几毫秒) 的应用.
+- *exactly-once vs. at-least-once*: 可以通过调用 `setCheckpointingMode()` 方法在两个一致性级别之间选择其中之一。Exactly-once 更适合大多数程序。 At-least-once 适用于极低延迟 (几毫秒) 的应用.
 
-- *number of concurrent checkpoints*: 默认情况下, 当有一个 checkpoint 在运行时，系统不会触发另一个 checkpoint。这可以确保 topology 不会在 checkpoint 上花费过多时间和处理数据流。然而，有时仍然需要允许多个重叠的 checkpoint 操作，这对于有确定延迟（如调用需要一定响应时间的外部服务）但又想频繁地做 checkpoint（百毫秒级别，为了在失败情况下重新处理尽量少的数据量）的处理流程是有意义的。
+- *number of concurrent checkpoints*: 默认情况下, 当有一个 checkpoint 在运行时，系统不会触发另一个 checkpoint。这可以确保 topology 不会在 checkpoint 上花费过多时间并且不会与数据流的处理竞争资源。然而，有时仍然需要允许多个重叠的 checkpoint 操作，这对于有确定延迟（如调用需要一定响应时间的外部服务）但又想频繁地做 checkpoint（百毫秒级别，为了在失败情况下重新处理尽量少的数据量）的处理流程是有意义的。
 
 
 - *checkpoint 超时*: 如果 checkpoint 在该时间内还未完成，则正在进行中的 checkpoint 会被中断。
@@ -113,7 +113,7 @@ env.getCheckpointConfig.setMaxConcurrentCheckpoints(1)
         <tr>
             <td>Apache Kafka</td>
             <td>exactly once</td>
-            <td>使用与你Apache Kafka 版本相匹配的连接器</td>
+            <td>使用与你Apache Kafka 版本相匹配的 connector</td>
         </tr>
         <tr>
             <td>RabbitMQ</td>

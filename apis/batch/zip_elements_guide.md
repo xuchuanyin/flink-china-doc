@@ -25,14 +25,18 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-In certain algorithms, one may need to assign unique identifiers to data set elements.
-This document shows how {% gh_link /flink-java/src/main/java/org/apache/flink/api/java/utils/DataSetUtils.java "DataSetUtils" %} can be used for that purpose.
+
+在一些特定的算法中， 用户可能需要分配一个唯一的id给data set元素。
+本文档展示如何使用{% gh_link /flink-java/src/main/java/org/apache/flink/api/java/utils/DataSetUtils.java "DataSetUtils" %}来达到这个目的
 
 * This will be replaced by the TOC
 {:toc}
 
 ### Zip with a Dense Index
-For assigning consecutive labels to the elements, the `zipWithIndex` method should be called. It receives a data set as input and returns a new data set of unique id, initial value tuples.
+
+
+想要分配连续的label给元素， 将调用`zipWithIndex` 函数。 它接受一个data set， 返回一个带唯一id， 初始值的新的data set
+
 For example, the following code:
 
 <div class="codetabs" markdown="1">
@@ -66,13 +70,16 @@ env.execute()
 
 </div>
 
-will yield the tuples: (0,A), (1,B), (2,C), (3,D), (4,E), (5,F)
+tuple 字段将是: (0,A), (1,B), (2,C), (3,D), (4,E), (5,F)
 
 [Back to top](#top)
 
 ### Zip with an Unique Identifier
-In many cases, one may not need to assign consecutive labels.
-`zipWIthUniqueId` works in a pipelined fashion, speeding up the label assignment process. This method receives a data set as input and returns a new data set of unique id, initial value tuples.
+
+
+在一些情况下， 用户可能不需要分配连续的labels。 `zipWIthUniqueId`将以pipeline形式来执行， 加速分配label的过程。 
+这个函数接收一个data set， 返回一个带唯一id， 初始值 tuple的新的data set。
+
 For example, the following code:
 
 <div class="codetabs" markdown="1">

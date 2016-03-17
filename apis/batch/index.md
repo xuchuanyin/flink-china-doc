@@ -32,21 +32,10 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-DataSet programs in Flink are regular programs that implement transformations on data sets
-(e.g., filtering, mapping, joining, grouping). The data sets are initially created from certain
-sources (e.g., by reading files, or from local collections). Results are returned via sinks, which may for
-example write the data to (distributed) files, or to standard output (for example the command line
-terminal). Flink programs run in a variety of contexts, standalone, or embedded in other programs.
-The execution can happen in a local JVM, or on clusters of many machines.
 
-Please see [basic concepts]({{ site.baseurl }}/apis/common/index.html) for an introduction
-to the basic concepts of the Flink API.
+DataSet 程序是flink中常用程序，这些程序一般会对数据集执行转换操作，比如filtering／mapping／joining／grouping。 这些数据集一般从特定的source（文件或本地collection集合）中创建出来，通过sink输出结果，比如写数据到（分布式）文件中，或标准输出。 flink运行在各种context下，standalone或嵌入到其他程序中。可能在本地jvm中或多个机器的集群中执行。
 
-In order to create your own Flink DataSet program, we encourage you to start with the
-[anatomy of a Flink Program]({{ site.baseurl }}/apis/common/index.html#anatomy-of-a-flink-program)
-and gradually add your own
-[transformations](#dataset-transformations). The remaining sections act as references for additional
-operations and advanced features.
+如果想要学习DataSet,建议从[basic concepts]({{ site.baseurl }}/apis/common/index.html)和[anatomy of a Flink Program]({{ site.baseurl }}/apis/common/index.html#anatomy-of-a-flink-program)开始入手，并逐步增加自己的[transformations](#dataset-transformations)操作。其他章节讲介绍额外的操作或高级特性。
 
 * This will be replaced by the TOC
 {:toc}
@@ -54,10 +43,8 @@ operations and advanced features.
 Example Program
 ---------------
 
-The following program is a complete, working example of WordCount. You can copy &amp; paste the code
-to run it locally. You only have to include the correct Flink's library into your project
-(see Section [Linking with Flink](#linking-with-flink)) and specify the imports. Then you are ready
-to go!
+
+下面是一个完整的wordcount例子。 只需要把flink library加入到项目中即可（参考[Linking with Flink](#linking-with-flink)）
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -122,12 +109,9 @@ object WordCount {
 DataSet Transformations
 -----------------------
 
-Data transformations transform one or more DataSets into a new DataSet. Programs can combine
-multiple transformations into sophisticated assemblies.
 
-This section gives a brief overview of the available transformations. The [transformations
-documentation](dataset_transformations.html) has a full description of all transformations with
-examples.
+Transformations 是将一个或多个DataSet转化为一个新的DataSet。 程序将巧妙的把多个transformations打包在一起。 这里给一个简单的介绍，详情可以参考[transformations
+documentation](dataset_transformations.html)， 那里会有详细介绍并给出example.
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -174,7 +158,7 @@ data.flatMap(new FlatMapFunction<String, String>() {
     <tr>
       <td><strong>MapPartition</strong></td>
       <td>
-        <p>Transforms a parallel partition in a single function call. The function get the partition
+        <p>在一个函数内对一个分区进行transform。Transforms a parallel partition in a single function call. The function get the partition
         as an `Iterable` stream and can produce an arbitrary number of result values. The number of
         elements in each partition depends on the degree-of-parallelism and previous operations.</p>
 {% highlight java %}
@@ -194,7 +178,7 @@ data.mapPartition(new MapPartitionFunction<String, Long>() {
     <tr>
       <td><strong>Filter</strong></td>
       <td>
-        <p>Evaluates a boolean function for each element and retains those for which the function
+        <p>执行过滤操作， 对每个元素进行判断， 函数返回为true的元素会加入到新的DataSet中。Evaluates a boolean function for each element and retains those for which the function
         returns true.<br/>
 
         <strong>IMPORTANT:</strong> The system assumes that the function does not modify the elements on which the predicate is applied. Violating this assumption
@@ -211,7 +195,7 @@ data.filter(new FilterFunction<Integer>() {
     <tr>
       <td><strong>Reduce</strong></td>
       <td>
-        <p>Combines a group of elements into a single element by repeatedly combining two elements
+        <p>将一组元素合并为一个单个元素，通过不断重复执行合并2个元素到一个元素的操作。Combines a group of elements into a single element by repeatedly combining two elements
         into one. Reduce may be applied on a full data set, or on a grouped data set.</p>
 {% highlight java %}
 data.reduce(new ReduceFunction<Integer> {
@@ -224,7 +208,7 @@ data.reduce(new ReduceFunction<Integer> {
     <tr>
       <td><strong>ReduceGroup</strong></td>
       <td>
-        <p>Combines a group of elements into one or more elements. ReduceGroup may be applied on a
+        <p>将一组元素合并为一个或多个元素。Combines a group of elements into one or more elements. ReduceGroup may be applied on a
         full data set, or on a grouped data set.</p>
 {% highlight java %}
 data.reduceGroup(new GroupReduceFunction<Integer, Integer> {
@@ -243,7 +227,7 @@ data.reduceGroup(new GroupReduceFunction<Integer, Integer> {
     <tr>
       <td><strong>Aggregate</strong></td>
       <td>
-        <p>Aggregates a group of values into a single value. Aggregation functions can be thought of
+        <p>将一组值合并为一个值中。Aggregates a group of values into a single value. Aggregation functions can be thought of
         as built-in reduce functions. Aggregate may be applied on a full data set, or on a grouped
         data set.</p>
 {% highlight java %}
@@ -261,7 +245,7 @@ DataSet<Tuple3<Integer, String, Double>> output = input.sum(0).andMin(2);
     <tr>
       <td><strong>Distinct</strong></td>
       <td>
-        <p>Returns the distinct elements of a data set. It removes the duplicate entries
+        <p>对一个DataSet 去掉重复元素。Returns the distinct elements of a data set. It removes the duplicate entries
         from the input DataSet, with respect to all fields of the elements, or a subset of fields.</p>
     {% highlight java %}
         data.distinct();
@@ -272,7 +256,7 @@ DataSet<Tuple3<Integer, String, Double>> output = input.sum(0).andMin(2);
     <tr>
       <td><strong>Join</strong></td>
       <td>
-        Joins two data sets by creating all pairs of elements that are equal on their keys.
+        对2个data set进行join， 基于相同key生成pairs。Joins two data sets by creating all pairs of elements that are equal on their keys.
         Optionally uses a JoinFunction to turn the pair of elements into a single element, or a
         FlatJoinFunction to turn the pair of elements into arbitrarily many (including none)
         elements. See the <a href="#specifying-keys">keys section</a> to learn how to define join keys.
@@ -301,7 +285,7 @@ result = input1.join(input2, JoinHint.BROADCAST_HASH_FIRST)
     <tr>
       <td><strong>OuterJoin</strong></td>
       <td>
-        Performs a left, right, or full outer join on two data sets. Outer joins are similar to regular (inner) joins and create all pairs of elements that are equal on their keys. In addition, records of the "outer" side (left, right, or both in case of full) are preserved if no matching key is found in the other side. Matching pairs of elements (or one element and a `null` value for the other input) are given to a JoinFunction to turn the pair of elements into a single element, or to a FlatJoinFunction to turn the pair of elements into arbitrarily many (including none)         elements. See the <a href="#specifying-keys">keys section</a> to learn how to define join keys.
+        对2个data set进行left／right／full－outer join， 类似join函数（inner join），基于相同key生成pairs。Performs a left, right, or full outer join on two data sets. Outer joins are similar to regular (inner) joins and create all pairs of elements that are equal on their keys. In addition, records of the "outer" side (left, right, or both in case of full) are preserved if no matching key is found in the other side. Matching pairs of elements (or one element and a `null` value for the other input) are given to a JoinFunction to turn the pair of elements into a single element, or to a FlatJoinFunction to turn the pair of elements into arbitrarily many (including none)         elements. See the <a href="#specifying-keys">keys section</a> to learn how to define join keys.
 {% highlight java %}
 input1.leftOuterJoin(input2) // rightOuterJoin or fullOuterJoin for right or full outer joins
       .where(0)              // key of the first input (tuple field 0)
@@ -321,7 +305,7 @@ input1.leftOuterJoin(input2) // rightOuterJoin or fullOuterJoin for right or ful
     <tr>
       <td><strong>CoGroup</strong></td>
       <td>
-        <p>The two-dimensional variant of the reduce operation. Groups each input on one or more
+        <p>对两维数据进行reduce操作， 对一个或多个filed进行group操作，然后进行join这些group。The two-dimensional variant of the reduce operation. Groups each input on one or more
         fields and then joins the groups. The transformation function is called per pair of groups.
         See the <a href="#specifying-keys">keys section</a> to learn how to define coGroup keys.</p>
 {% highlight java %}
@@ -340,7 +324,7 @@ data1.coGroup(data2)
     <tr>
       <td><strong>Cross</strong></td>
       <td>
-        <p>Builds the Cartesian product (cross product) of two inputs, creating all pairs of
+        <p>对2个输入进行cros操作，创建元素的所有pair。Builds the Cartesian product (cross product) of two inputs, creating all pairs of
         elements. Optionally uses a CrossFunction to turn the pair of elements into a single
         element</p>
 {% highlight java %}
@@ -354,7 +338,7 @@ DataSet<Tuple2<Integer, String>> result = data1.cross(data2);
     <tr>
       <td><strong>Union</strong></td>
       <td>
-        <p>Produces the union of two data sets. This operation happens implicitly if more than one
+        <p>当一个dataset不能满足数据需求时，需要加入其他data set的数据。Produces the union of two data sets. This operation happens implicitly if more than one
         data set is used for a specific function input.</p>
 {% highlight java %}
 DataSet<String> data1 = // [...]
@@ -366,7 +350,7 @@ DataSet<String> result = data1.union(data2);
     <tr>
       <td><strong>Rebalance</strong></td>
       <td>
-        <p>Evenly rebalances the parallel partitions of a data set to eliminate data skew. Only Map-like transformations may follow a rebalance transformation.</p>
+        <p>主要是解决在多分区情况下，数据倾斜问题。Evenly rebalances the parallel partitions of a data set to eliminate data skew. Only Map-like transformations may follow a rebalance transformation.</p>
 {% highlight java %}
 DataSet<String> in = // [...]
 DataSet<String> result = in.rebalance()
@@ -377,7 +361,7 @@ DataSet<String> result = in.rebalance()
     <tr>
       <td><strong>Hash-Partition</strong></td>
       <td>
-        <p>Hash-partitions a data set on a given key. Keys can be specified as position keys, expression keys, and key selector functions.</p>
+        <p>在某个key上执行hash partitions。Hash-partitions a data set on a given key. Keys can be specified as position keys, expression keys, and key selector functions.</p>
 {% highlight java %}
 DataSet<Tuple2<String,Integer>> in = // [...]
 DataSet<Integer> result = in.partitionByHash(0)
@@ -388,7 +372,7 @@ DataSet<Integer> result = in.partitionByHash(0)
     <tr>
       <td><strong>Range-Partition</strong></td>
       <td>
-        <p>Range-partitions a data set on a given key. Keys can be specified as position keys, expression keys, and key selector functions.</p>
+        <p>在某个key上range partition。 Range-partitions a data set on a given key. Keys can be specified as position keys, expression keys, and key selector functions.</p>
 {% highlight java %}
 DataSet<Tuple2<String,Integer>> in = // [...]
 DataSet<Integer> result = in.partitionByRange(0)
@@ -399,7 +383,7 @@ DataSet<Integer> result = in.partitionByRange(0)
     <tr>
       <td><strong>Custom Partitioning</strong></td>
       <td>
-        <p>Manually specify a partitioning over the data.
+        <p>自定义parition操作。Manually specify a partitioning over the data.
           <br/>
           <i>Note</i>: This method works only on single field keys.</p>
 {% highlight java %}
@@ -411,7 +395,7 @@ DataSet<Integer> result = in.partitionCustom(Partitioner<K> partitioner, key)
     <tr>
       <td><strong>Sort Partition</strong></td>
       <td>
-        <p>Locally sorts all partitions of a data set on a specified field in a specified order.
+        <p>在某个字段上本地sort 所有分区的数据。Locally sorts all partitions of a data set on a specified field in a specified order.
           Fields can be specified as tuple positions or field expressions.
           Sorting on multiple fields is done by chaining sortPartition() calls.</p>
 {% highlight java %}
@@ -424,7 +408,7 @@ DataSet<Integer> result = in.sortPartition(1, Order.ASCENDING)
     <tr>
       <td><strong>First-n</strong></td>
       <td>
-        <p>Returns the first n (arbitrary) elements of a data set. First-n can be applied on a regular data set, a grouped data set, or a grouped-sorted data set. Grouping keys can be specified as key-selector functions or field position keys.</p>
+        <p>返回一个data set的前n个元素。 Returns the first n (arbitrary) elements of a data set. First-n can be applied on a regular data set, a grouped data set, or a grouped-sorted data set. Grouping keys can be specified as key-selector functions or field position keys.</p>
 {% highlight java %}
 DataSet<Tuple2<String,Integer>> in = // [...]
 // regular data set
@@ -457,7 +441,7 @@ The following transformations are available on data sets of Tuples:
    <tr>
       <td><strong>Project</strong></td>
       <td>
-        <p>Selects a subset of fields from the tuples</p>
+        <p>选择tuple field子集组成新的data set。Selects a subset of fields from the tuples</p>
 {% highlight java %}
 DataSet<Tuple3<Integer, Double, String>> in = // [...]
 DataSet<Tuple2<String, Integer>> out = in.project(2,0);
@@ -483,7 +467,7 @@ DataSet<Tuple2<String, Integer>> out = in.project(2,0);
     <tr>
       <td><strong>Map</strong></td>
       <td>
-        <p>Takes one element and produces one element.</p>
+        <p>输入一个元素输出一个元素。 Takes one element and produces one element.</p>
 {% highlight scala %}
 data.map { x => x.toInt }
 {% endhighlight %}
@@ -493,7 +477,7 @@ data.map { x => x.toInt }
     <tr>
       <td><strong>FlatMap</strong></td>
       <td>
-        <p>Takes one element and produces zero, one, or more elements. </p>
+        <p>输入一个元素，产生0个或1个或多个元素。Takes one element and produces zero, one, or more elements. </p>
 {% highlight scala %}
 data.flatMap { str => str.split(" ") }
 {% endhighlight %}
@@ -503,7 +487,7 @@ data.flatMap { str => str.split(" ") }
     <tr>
       <td><strong>MapPartition</strong></td>
       <td>
-        <p>Transforms a parallel partition in a single function call. The function get the partition
+        <p>在一个函数内对一个分区进行transform。Transforms a parallel partition in a single function call. The function get the partition
         as an `Iterator` and can produce an arbitrary number of result values. The number of
         elements in each partition depends on the degree-of-parallelism and previous operations.</p>
 {% highlight scala %}
@@ -515,7 +499,7 @@ data.mapPartition { in => in map { (_, 1) } }
     <tr>
       <td><strong>Filter</strong></td>
       <td>
-        <p>Evaluates a boolean function for each element and retains those for which the function
+        <p>执行过滤操作， 对每个元素进行判断， 函数返回为true的元素会加入到新的DataSet中。Evaluates a boolean function for each element and retains those for which the function
         returns true.<br/>
         <strong>IMPORTANT:</strong> The system assumes that the function does not modify the element on which the predicate is applied.
         Violating this assumption can lead to incorrect results.</p>
@@ -528,7 +512,7 @@ data.filter { _ > 1000 }
     <tr>
       <td><strong>Reduce</strong></td>
       <td>
-        <p>Combines a group of elements into a single element by repeatedly combining two elements
+        <p>将一组元素合并为一个单个元素，通过不断重复执行合并2个元素到一个元素的操作。Combines a group of elements into a single element by repeatedly combining two elements
         into one. Reduce may be applied on a full data set, or on a grouped data set.</p>
 {% highlight scala %}
 data.reduce { _ + _ }
@@ -539,7 +523,7 @@ data.reduce { _ + _ }
     <tr>
       <td><strong>ReduceGroup</strong></td>
       <td>
-        <p>Combines a group of elements into one or more elements. ReduceGroup may be applied on a
+        <p>将一组元素合并为一个或多个元素。Combines a group of elements into one or more elements. ReduceGroup may be applied on a
         full data set, or on a grouped data set.</p>
 {% highlight scala %}
 data.reduceGroup { elements => elements.sum }
@@ -550,7 +534,7 @@ data.reduceGroup { elements => elements.sum }
     <tr>
       <td><strong>Aggregate</strong></td>
       <td>
-        <p>Aggregates a group of values into a single value. Aggregation functions can be thought of
+        <p>将一组值合并为一个值中。Aggregates a group of values into a single value. Aggregation functions can be thought of
         as built-in reduce functions. Aggregate may be applied on a full data set, or on a grouped
         data set.</p>
 {% highlight scala %}
@@ -568,7 +552,7 @@ val output: DataSet[(Int, String, Doublr)] = input.sum(0).min(2)
     <tr>
       <td><strong>Distinct</strong></td>
       <td>
-        <p>Returns the distinct elements of a data set. It removes the duplicate entries
+        <p>对一个DataSet 去掉重复元素。Returns the distinct elements of a data set. It removes the duplicate entries
         from the input DataSet, with respect to all fields of the elements, or a subset of fields.</p>
       {% highlight scala %}
          data.distinct()
@@ -579,7 +563,7 @@ val output: DataSet[(Int, String, Doublr)] = input.sum(0).min(2)
     </tr>
       <td><strong>Join</strong></td>
       <td>
-        Joins two data sets by creating all pairs of elements that are equal on their keys.
+        对2个data set进行join， 基于相同key生成pairs。Joins two data sets by creating all pairs of elements that are equal on their keys.
         Optionally uses a JoinFunction to turn the pair of elements into a single element, or a
         FlatJoinFunction to turn the pair of elements into arbitrarily many (including none)
         elements. See the <a href="#specifying-keys">keys section</a> to learn how to define join keys.
@@ -608,7 +592,7 @@ val result = input1.join(input2, JoinHint.BROADCAST_HASH_FIRST)
     <tr>
       <td><strong>OuterJoin</strong></td>
       <td>
-        Performs a left, right, or full outer join on two data sets. Outer joins are similar to regular (inner) joins and create all pairs of elements that are equal on their keys. In addition, records of the "outer" side (left, right, or both in case of full) are preserved if no matching key is found in the other side. Matching pairs of elements (or one element and a `null` value for the other input) are given to a JoinFunction to turn the pair of elements into a single element, or to a FlatJoinFunction to turn the pair of elements into arbitrarily many (including none)         elements. See the <a href="#specifying-keys">keys section</a> to learn how to define join keys.
+        对2个data set进行left／right／full－outer join， 类似join（inner），基于相同key生成pairs。Performs a left, right, or full outer join on two data sets. Outer joins are similar to regular (inner) joins and create all pairs of elements that are equal on their keys. In addition, records of the "outer" side (left, right, or both in case of full) are preserved if no matching key is found in the other side. Matching pairs of elements (or one element and a `null` value for the other input) are given to a JoinFunction to turn the pair of elements into a single element, or to a FlatJoinFunction to turn the pair of elements into arbitrarily many (including none)         elements. See the <a href="#specifying-keys">keys section</a> to learn how to define join keys.
 {% highlight scala %}
 val joined = left.leftOuterJoin(right).where(0).equalTo(1) {
    (left, right) =>
@@ -622,7 +606,7 @@ val joined = left.leftOuterJoin(right).where(0).equalTo(1) {
     <tr>
       <td><strong>CoGroup</strong></td>
       <td>
-        <p>The two-dimensional variant of the reduce operation. Groups each input on one or more
+        <p>对两维数据进行reduce操作， 对一个或多个filed进行group操作，然后进行join这些group。The two-dimensional variant of the reduce operation. Groups each input on one or more
         fields and then joins the groups. The transformation function is called per pair of groups.
         See the <a href="#specifying-keys">keys section</a> to learn how to define coGroup keys.</p>
 {% highlight scala %}
@@ -634,7 +618,7 @@ data1.coGroup(data2).where(0).equalTo(1)
     <tr>
       <td><strong>Cross</strong></td>
       <td>
-        <p>Builds the Cartesian product (cross product) of two inputs, creating all pairs of
+        <p>基于两个输入做cross操作。Builds the Cartesian product (cross product) of two inputs, creating all pairs of
         elements. Optionally uses a CrossFunction to turn the pair of elements into a single
         element</p>
 {% highlight scala %}
@@ -648,7 +632,7 @@ val result: DataSet[(Int, String)] = data1.cross(data2)
     <tr>
       <td><strong>Union</strong></td>
       <td>
-        <p>Produces the union of two data sets.</p>
+        <p>合并2个data set。Produces the union of two data sets.</p>
 {% highlight scala %}
 data.union(data2)
 {% endhighlight %}
@@ -657,7 +641,7 @@ data.union(data2)
     <tr>
       <td><strong>Rebalance</strong></td>
       <td>
-        <p>Evenly rebalances the parallel partitions of a data set to eliminate data skew. Only Map-like transformations may follow a rebalance transformation.</p>
+        <p>主要是解决在多分区情况下，数据倾斜问题。Evenly rebalances the parallel partitions of a data set to eliminate data skew. Only Map-like transformations may follow a rebalance transformation.</p>
 {% highlight scala %}
 val data1: DataSet[Int] = // [...]
 val result: DataSet[(Int, String)] = data1.rebalance().map(...)
@@ -667,7 +651,7 @@ val result: DataSet[(Int, String)] = data1.rebalance().map(...)
     <tr>
       <td><strong>Hash-Partition</strong></td>
       <td>
-        <p>Hash-partitions a data set on a given key. Keys can be specified as position keys, expression keys, and key selector functions.</p>
+        <p>在某个key上执行hash partitions。Hash-partitions a data set on a given key. Keys can be specified as position keys, expression keys, and key selector functions.</p>
 {% highlight scala %}
 val in: DataSet[(Int, String)] = // [...]
 val result = in.partitionByHash(0).mapPartition { ... }
@@ -677,7 +661,7 @@ val result = in.partitionByHash(0).mapPartition { ... }
     <tr>
       <td><strong>Range-Partition</strong></td>
       <td>
-        <p>Range-partitions a data set on a given key. Keys can be specified as position keys, expression keys, and key selector functions.</p>
+        <p>在一个指定的key上作range parition。Range-partitions a data set on a given key. Keys can be specified as position keys, expression keys, and key selector functions.</p>
 {% highlight scala %}
 val in: DataSet[(Int, String)] = // [...]
 val result = in.partitionByRange(0).mapPartition { ... }
@@ -688,7 +672,7 @@ val result = in.partitionByRange(0).mapPartition { ... }
     <tr>
       <td><strong>Custom Partitioning</strong></td>
       <td>
-        <p>Manually specify a partitioning over the data.
+        <p>自定义partition。Manually specify a partitioning over the data.
           <br/>
           <i>Note</i>: This method works only on single field keys.</p>
 {% highlight scala %}
@@ -701,7 +685,7 @@ val result = in
     <tr>
       <td><strong>Sort Partition</strong></td>
       <td>
-        <p>Locally sorts all partitions of a data set on a specified field in a specified order.
+        <p>在某个字段上本地sort 所有分区的数据。Locally sorts all partitions of a data set on a specified field in a specified order.
           Fields can be specified as tuple positions or field expressions.
           Sorting on multiple fields is done by chaining sortPartition() calls.</p>
 {% highlight scala %}
@@ -713,7 +697,7 @@ val result = in.sortPartition(1, Order.ASCENDING).mapPartition { ... }
     <tr>
       <td><strong>First-n</strong></td>
       <td>
-        <p>Returns the first n (arbitrary) elements of a data set. First-n can be applied on a regular data set, a grouped data set, or a grouped-sorted data set. Grouping keys can be specified as key-selector functions,
+        <p>返回一个data set的first n个元素。Returns the first n (arbitrary) elements of a data set. First-n can be applied on a regular data set, a grouped data set, or a grouped-sorted data set. Grouping keys can be specified as key-selector functions,
         tuple positions or case class fields.</p>
 {% highlight scala %}
 val in: DataSet[(Int, String)] = // [...]
@@ -732,11 +716,10 @@ val result3 = in.groupBy(0).sortGroup(1, Order.ASCENDING).first(3)
 </div>
 </div>
 
-The [parallelism](#parallel-execution) of a transformation can be defined by `setParallelism(int)` while
-`name(String)` assigns a custom name to a transformation which is helpful for debugging. The same is
-possible for [Data Sources](#data-sources) and [Data Sinks](#data-sinks).
 
-`withParameters(Configuration)` passes Configuration objects, which can be accessed from the `open()` method inside the user function.
+当对一个transformation自定义一个名字时， 可以通过`setParallelism(int)`来设置transformation的[parallelism](#parallel-execution), 这种方式可以帮组debug。 DataSource/DataSinks 都可以使用。
+
+传递给`withParameters(Configuration)`的configuration对象， 可以在用户函数内的open函数中被访问。
 
 {% top %}
 
@@ -746,16 +729,14 @@ Data Sources
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
 
-Data sources create the initial data sets, such as from files or from Java collections. The general
-mechanism of creating data sets is abstracted behind an
-{% gh_link /flink-core/src/main/java/org/apache/flink/api/common/io/InputFormat.java "InputFormat"%}.
-Flink comes
-with several built-in formats to create data sets from common file formats. Many of them have
-shortcut methods on the *ExecutionEnvironment*.
+
+Data sources 从文件或java collection中创建初始的data set。 背后的机制请参考{% gh_link /flink-core/src/main/java/org/apache/flink/api/common/io/InputFormat.java "InputFormat"%}.
+
+Flink 内建了常见文件格式。 可以从*ExecutionEnvironment*函数直接使用。
 
 File-based:
 
-- `readTextFile(path)` / `TextInputFormat` - Reads files line wise and returns them as Strings.
+- `readTextFile(path)` / `TextInputFormat` - 按行读取文件并返回strings. Reads files line wise and returns them as Strings.
 
 - `readTextFileWithValue(path)` / `TextValueInputFormat` - Reads files line wise and returns them as
   StringValues. StringValues are mutable strings.
@@ -859,7 +840,7 @@ DataSet<Tuple2<String, Integer> dbData =
 
 #### Configuring CSV Parsing
 
-Flink offers a number of configuration options for CSV parsing:
+Flink 提供一些csv解析的配置:
 
 - `types(Class ... types)` specifies the types of the fields to parse. **It is mandatory to configure the types of the parsed fields.**
   In case of the type class Boolean.class, "True" (case-insensitive), "False" (case-insensitive), "1" and "0" are treated as booleans.
@@ -881,7 +862,9 @@ Flink offers a number of configuration options for CSV parsing:
 
 #### Recursive Traversal of the Input Path Directory
 
-For file-based inputs, when the input path is a directory, nested files are not enumerated by default. Instead, only the files inside the base directory are read, while nested files are ignored. Recursive enumeration of nested files can be enabled through the `recursive.file.enumeration` configuration parameter, like in the following example.
+
+遍历一个目录。对于基于文件的输入， 如果输入的是一个目录， 默认不会遍历子目录的文件。默认，只会读取第一层目录的文件， 而忽略子目录的文件。 可以通过设置`recursive.file.enumeration`来打开遍历子目录的设置。
+
 
 {% highlight java %}
 // enable recursive enumeration of nested input files
@@ -901,12 +884,10 @@ DataSet<String> logs = env.readTextFile("file:///path/with.nested/files")
 </div>
 <div data-lang="scala" markdown="1">
 
-Data sources create the initial data sets, such as from files or from Java collections. The general
-mechanism of creating data sets is abstracted behind an
-{% gh_link /flink-core/src/main/java/org/apache/flink/api/common/io/InputFormat.java "InputFormat"%}.
-Flink comes
-with several built-in formats to create data sets from common file formats. Many of them have
-shortcut methods on the *ExecutionEnvironment*.
+
+Data sources 从文件或java collection中创建初始的data set。 背后的机制请参考{% gh_link /flink-core/src/main/java/org/apache/flink/api/common/io/InputFormat.java "InputFormat"%}.
+
+Flink 内建了常见文件格式。 可以从*ExecutionEnvironment*函数直接使用。
 
 File-based:
 
@@ -999,7 +980,9 @@ val tuples = env.readSequenceFile(classOf[IntWritable], classOf[Text],
 
 #### Configuring CSV Parsing
 
-Flink offers a number of configuration options for CSV parsing:
+
+Flink 提供一些csv 解析的配置参数：
+
 
 - `lineDelimiter: String` specifies the delimiter of individual records. The default line delimiter is the new-line character `'\n'`.
 
@@ -1019,7 +1002,8 @@ Flink offers a number of configuration options for CSV parsing:
 
 #### Recursive Traversal of the Input Path Directory
 
-For file-based inputs, when the input path is a directory, nested files are not enumerated by default. Instead, only the files inside the base directory are read, while nested files are ignored. Recursive enumeration of nested files can be enabled through the `recursive.file.enumeration` configuration parameter, like in the following example.
+
+遍历一个目录。对于基于文件的输入， 如果输入的是一个目录， 默认不会遍历子目录的文件。默认，只会读取第一层目录的文件， 而忽略子目录的文件。 可以通过设置`recursive.file.enumeration`来打开遍历子目录的设置。
 
 {% highlight scala %}
 // enable recursive enumeration of nested input files
@@ -1040,9 +1024,8 @@ env.readTextFile("file:///path/with.nested/files").withParameters(parameters)
 
 ### Read Compressed Files
 
-Flink currently supports transparent decompression of input files if these are marked with an appropriate file extension. In particular, this means that no further configuration of the input formats is necessary and any `FileInputFormat` support the compression, including custom input formats. Please notice that compressed files might not be read in parallel, thus impacting job scalability.
 
-The following table lists the currently supported compression methods.
+flink对于一些扩展名确定的压缩文件自动解压。 也就是说不需要配置input format和 `FileInputFormat`来做压缩。 注意， 并不能并行来读取压缩文件，这样会影响scalability。
 
 <br />
 
@@ -1078,11 +1061,10 @@ Data Sinks
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
 
-Data sinks consume DataSets and are used to store or return them. Data sink operations are described
-using an
-{% gh_link /flink-core/src/main/java/org/apache/flink/api/common/io/OutputFormat.java "OutputFormat" %}.
-Flink comes with a variety of built-in output formats that are encapsulated behind operations on the
-DataSet:
+
+Data sinks 消费DataSets, 存储并返回他们。Data sink的操作可以用{% gh_link /flink-core/src/main/java/org/apache/flink/api/common/io/OutputFormat.java "OutputFormat" %}来描叙。 
+flink 内建了一些output format：
+
 
 - `writeAsText()` / `TextOuputFormat` - Writes elements line-wise as Strings. The Strings are
   obtained by calling the *toString()* method of each element.
@@ -1099,12 +1081,12 @@ greater than 1, the output will also be prepended with the identifier of the tas
 - `output()`/ `OutputFormat` - Most generic output method, for data sinks that are not file based
   (such as storing the result in a database).
 
-A DataSet can be input to multiple operations. Programs can write or print a data set and at the
-same time run additional transformations on them.
+
+一个Dataset可以输出多个操作， 程序可以写或打印一个data set，并同时运行transform。
 
 **Examples**
 
-Standard data sink methods:
+标准data sink 函数：
 
 {% highlight java %}
 // text data
@@ -1135,7 +1117,7 @@ values.writeAsFormattedText("file:///path/to/the/result/file",
     });
 {% endhighlight %}
 
-Using a custom output format:
+使用一个自定义的output format
 
 {% highlight java %}
 DataSet<Tuple3<String, Integer, Double>> myResult = [...]
@@ -1153,9 +1135,9 @@ myResult.output(
 
 #### Locally Sorted Output
 
-The output of a data sink can be locally sorted on specified fields in specified orders using [tuple field positions](#define-keys-for-tuples) or [field expressions](#define-keys-using-field-expressions). This works for every output format.
 
-The following examples show how to use this feature:
+data sink的output 能够在某些field 上基于某个顺序做本地sort， 通过[tuple field positions](#define-keys-for-tuples)
+ or [field expressions](#define-keys-using-field-expressions)。
 
 {% highlight java %}
 
@@ -1180,15 +1162,14 @@ sData.sortPartition("*", Order.DESCENDING).writeAsText(...);
 
 {% endhighlight %}
 
-Globally sorted output is not supported yet.
+然而还不支持全局sort output。
 
 </div>
 <div data-lang="scala" markdown="1">
-Data sinks consume DataSets and are used to store or return them. Data sink operations are described
-using an
-{% gh_link /flink-core/src/main/java/org/apache/flink/api/common/io/OutputFormat.java "OutputFormat" %}.
-Flink comes with a variety of built-in output formats that are encapsulated behind operations on the
-DataSet:
+
+Data sinks 消费DataSets, 存储并返回他们。Data sink的操作可以用
+{% gh_link /flink-core/src/main/java/org/apache/flink/api/common/io/OutputFormat.java "OutputFormat" %}来描叙。 
+flink 内建了一些output format：
 
 - `writeAsText()` / `TextOuputFormat` - Writes elements line-wise as Strings. The Strings are
   obtained by calling the *toString()* method of each element.
@@ -1206,7 +1187,7 @@ same time run additional transformations on them.
 
 **Examples**
 
-Standard data sink methods:
+标准data sink 函数：
 
 {% highlight scala %}
 // text data
@@ -1236,9 +1217,8 @@ values map { tuple => tuple._1 + " - " + tuple._2 }
 
 #### Locally Sorted Output
 
-The output of a data sink can be locally sorted on specified fields in specified orders using [tuple field positions](#define-keys-for-tuples) or [field expressions](#define-keys-using-field-expressions). This works for every output format.
-
-The following examples show how to use this feature:
+data sink的output 能够在某些field 上基于某个顺序做本地sort， 通过[tuple field positions](#define-keys-for-tuples)
+ or [field expressions](#define-keys-using-field-expressions)。
 
 {% highlight scala %}
 
@@ -1282,25 +1262,25 @@ into the next iteration. There are two types of iterations in Flink: **BulkItera
 This section provides quick examples on how to use both operators. Check out the [Introduction to
 Iterations](iterations.html) page for a more detailed introduction.
 
+迭代实现flink程序里面的循环。 迭代操作封装部分程序，并重复执行， 将依次迭代的结果输入到下一次迭代中。 
+flink中有2种迭代**BulkIteration** 和**DeltaIteration**
+
+本章提供这2种迭代的example， 详情可以参考Check out the [Introduction toIterations](iterations.html) 
+
+
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
 
 #### Bulk Iterations
 
-To create a BulkIteration call the `iterate(int)` method of the DataSet the iteration should start
-at. This will return an `IterativeDataSet`, which can be transformed with the regular operators. The
-single argument to the iterate call specifies the maximum number of iterations.
+可以通过dataset的`iterate(int)`来创建一个BulkIteration, 它会返回`IterativeDataSet`， 这个`IterativeDataSet` 
+可以用来执行常见的transformation。 唯一的参数表示执行迭代的最大次数。
 
-To specify the end of an iteration call the `closeWith(DataSet)` method on the `IterativeDataSet` to
-specify which transformation should be fed back to the next iteration. You can optionally specify a
-termination criterion with `closeWith(DataSet, DataSet)`, which evaluates the second DataSet and
-terminates the iteration, if this DataSet is empty. If no termination criterion is specified, the
-iteration terminates after the given maximum number iterations.
+在`IterativeDataSet`上调用`closeWith(DataSet)`来设定迭代的结束， 并会确定哪个transformation会反馈给下一次迭代。
+有一种可选方式是通过`closeWith(DataSet, DataSet)`， 当第一个dataset 为空时，它会结束迭代并evaluate 第二个dataset
+如果结束条件没有触发， 迭代会执行最大次数后再结束。
 
-The following example iteratively estimates the number Pi. The goal is to count the number of random
-points, which fall into the unit circle. In each iteration, a random point is picked. If this point
-lies inside the unit circle, we increment the count. Pi is then estimated as the resulting count
-divided by the number of iterations multiplied by 4.
+下例展示了如何计算pi. 
 
 {% highlight java %}
 final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
@@ -1331,32 +1311,27 @@ count.map(new MapFunction<Integer, Double>() {
 env.execute("Iterative Pi Example");
 {% endhighlight %}
 
-You can also check out the
+可以checkout 
 {% gh_link /flink-examples/flink-examples-batch/src/main/java/org/apache/flink/examples/java/clustering/KMeans.java "K-Means example" %},
-which uses a BulkIteration to cluster a set of unlabeled points.
+来查看更多BulkIteration操作
+
 
 #### Delta Iterations
 
-Delta iterations exploit the fact that certain algorithms do not change every data point of the
-solution in each iteration.
 
-In addition to the partial solution that is fed back (called workset) in every iteration, delta
-iterations maintain state across iterations (called solution set), which can be updated through
-deltas. The result of the iterative computation is the state after the last iteration. Please refer
-to the [Introduction to Iterations](iterations.html) for an overview of the basic principle of delta
-iterations.
 
-Defining a DeltaIteration is similar to defining a BulkIteration. For delta iterations, two data
-sets form the input to each iteration (workset and solution set), and two data sets are produced as
-the result (new workset, solution set delta) in each iteration.
+delta 迭代解决了这种场景， 每一次迭代并不是改变数据的每一点。
 
-To create a DeltaIteration call the `iterateDelta(DataSet, int, int)` (or `iterateDelta(DataSet,
-int, int[])` respectively). This method is called on the initial solution set. The arguments are the
-initial delta set, the maximum number of iterations and the key positions. The returned
-`DeltaIteration` object gives you access to the DataSets representing the workset and solution set
-via the methods `iteration.getWorkset()` and `iteration.getSolutionSet()`.
+在每一次迭代中，返回部分方案(称为workset)， delta 迭代维护跨迭代的状态(称为solution set), 这些状态通过deltas来更新。
+迭代计算的结果就是最后迭代后的结果。 如果想了解delta 迭代的基本原则，请参考[Introduction to Iterations](iterations.html)。
 
-Below is an example for the syntax of a delta iteration
+定义DeltaIteration方式和定义BulkIteration 很类似。 对于delta迭代， 2个data set（workset和solution set）组成了
+每一次迭代的输入， 新的workset和新的soution set做为每次迭代的输出。
+
+调用`iterateDelta(DataSet, int, int)` 或 `iterateDelta(DataSet, int, int[])` 来创建一个DeltaIteration。
+在最开始的solution set上调用这个函数。 参数是起始data set， 最大迭代次数和key的position。 返回`DeltaIteration`， 
+可以通过`iteration.getWorkset()` and `iteration.getSolutionSet()` 来拿到workset和solution set。
+
 
 {% highlight java %}
 // read the initial data sets
@@ -1391,19 +1366,14 @@ iteration.closeWith(deltas, nextWorkset)
 <div data-lang="scala" markdown="1">
 #### Bulk Iterations
 
-To create a BulkIteration call the `iterate(int)` method of the DataSet the iteration should start
-at and also specify a step function. The step function gets the input DataSet for the current
-iteration and must return a new DataSet. The parameter of the iterate call is the maximum number
-of iterations after which to stop.
+可以通过dataset的`iterate(int)`来创建一个BulkIteration, 它会返回`IterativeDataSet`， 这个`IterativeDataSet` 
+可以用来执行常见的transformation。 唯一的参数表示执行迭代的最大次数。
 
-There is also the `iterateWithTermination(int)` function that accepts a step function that
-returns two DataSets: The result of the iteration step and a termination criterion. The iterations
-are stopped once the termination criterion DataSet is empty.
+在`IterativeDataSet`上调用`closeWith(DataSet)`来设定迭代的结束， 并会确定哪个transformation会反馈给下一次迭代。
+有一种可选方式是通过`closeWith(DataSet, DataSet)`， 当第一个dataset 为空时，它会结束迭代并evaluate 第二个dataset
+如果结束条件没有触发， 迭代会执行最大次数后再结束。
 
-The following example iteratively estimates the number Pi. The goal is to count the number of random
-points, which fall into the unit circle. In each iteration, a random point is picked. If this point
-lies inside the unit circle, we increment the count. Pi is then estimated as the resulting count
-divided by the number of iterations multiplied by 4.
+下例展示了如何计算pi. 
 
 {% highlight scala %}
 val env = ExecutionEnvironment.getExecutionEnvironment()
@@ -1427,30 +1397,24 @@ result.print()
 env.execute("Iterative Pi Example");
 {% endhighlight %}
 
-You can also check out the
-{% gh_link /flink-examples/flink-examples-batch/src/main/scala/org/apache/flink/examples/scala/clustering/KMeans.scala "K-Means example" %},
-which uses a BulkIteration to cluster a set of unlabeled points.
+
+可以checkout 
+{% gh_link /flink-examples/flink-examples-batch/src/main/java/org/apache/flink/examples/java/clustering/KMeans.java "K-Means example" %},
+来查看更多BulkIteration操作
 
 #### Delta Iterations
 
-Delta iterations exploit the fact that certain algorithms do not change every data point of the
-solution in each iteration.
+delta 迭代解决了这种场景， 每一次迭代并不是改变数据的每一点。
 
-In addition to the partial solution that is fed back (called workset) in every iteration, delta
-iterations maintain state across iterations (called solution set), which can be updated through
-deltas. The result of the iterative computation is the state after the last iteration. Please refer
-to the [Introduction to Iterations](iterations.html) for an overview of the basic principle of delta
-iterations.
+在每一次迭代中，返回部分方案(称为workset)， delta 迭代维护跨迭代的状态(称为solution set), 这些状态通过deltas来更新。
+迭代计算的结果就是最后迭代后的结果。 如果想了解delta 迭代的基本原则，请参考[Introduction to Iterations](iterations.html)。
 
-Defining a DeltaIteration is similar to defining a BulkIteration. For delta iterations, two data
-sets form the input to each iteration (workset and solution set), and two data sets are produced as
-the result (new workset, solution set delta) in each iteration.
+定义DeltaIteration方式和定义BulkIteration 很类似。 对于delta迭代， 2个data set（workset和solution set）组成了
+每一次迭代的输入， 新的workset和新的soution set做为每次迭代的输出。
 
-To create a DeltaIteration call the `iterateDelta(initialWorkset, maxIterations, key)` on the
-initial solution set. The step function takes two parameters: (solutionSet, workset), and must
-return two values: (solutionSetDelta, newWorkset).
-
-Below is an example for the syntax of a delta iteration
+调用`iterateDelta(DataSet, int, int)` 或 `iterateDelta(DataSet, int, int[])` 来创建一个DeltaIteration。
+在最开始的solution set上调用这个函数。 参数是起始data set， 最大迭代次数和key的position。 返回`DeltaIteration`， 
+可以通过`iteration.getWorkset()` and `iteration.getSolutionSet()` 来拿到workset和solution set。
 
 {% highlight scala %}
 // read the initial data sets
@@ -1484,15 +1448,19 @@ env.execute()
 Operating on data objects in functions
 --------------------------------------
 
-Flink's runtime exchanges data with user functions in form of Java objects. Functions receive input objects from the runtime as method parameters and return output objects as result. Because these objects are accessed by user functions and runtime code, it is very important to understand and follow the rules about how the user code may access, i.e., read and modify, these objects.
- 
-User functions receive objects from Flink's runtime either as regular method parameters (like a `MapFunction`) or through an `Iterable` parameter (like a `GroupReduceFunction`). We refer to objects that the runtime passes to a user function as *input objects*. User functions can emit objects to the Flink runtime either as a method return value (like a `MapFunction`) or through a `Collector` (like a `FlatMapFunction`). We refer to objects which have been emitted by the user function to the runtime as *output objects*.
- 
-Flink's DataSet API features two modes that differ in how Flink's runtime creates or reuses input objects. This behavior affects the guarantees and constraints for how user functions may interact with input and output objects. The following sections define these rules and give coding guidelines to write safe user function code. 
+flink的runtime 在用户函数内以java对象的方式来交换数据。 函数从runtime从参数中接受输入数据， 返回结果作为输出。 因为在用户函数可以访问这些对象， 必须注意用户代码访问，比如
+读，修改这些对象的方式。
+
+用户从flink runtime接收对象，可以像普通函数参数（`MapFunction`）或通过`Iterable`参数（像`GroupReduceFunction`）。 我们称runtime传来的object为*input objects*。 
+用户函数可以通过函数返回值（比如`MapFunction`）或`Collector` (像`FlatMapFunction`)来emit对象。 我们称这些emitted的对象为*output objects*.
+
+flik DataSet api 设定2种模式， 它会导致runtime 创建或reuse input object的方式不同。 它同样影响了用户代码如何和输入object和输出object 交互的方式。下面章节将介绍这些
+限制并展示如何实现一个安全的用户函数。
 
 ### Object-Reuse Disabled (DEFAULT)
 
-By default, Flink operates in object-reuse disabled mode. This mode ensures that functions always receive new input objects within a function call. The object-reuse disabled mode gives better guarantees and is safer to use. However, it comes with a certain processing overhead and might cause higher Java garbage collection activity. The following table explains how user functions may access input and output objects in object-reuse disabled mode.
+
+默认， flink 会禁止reuse object。 这种模式会保证在调用一个函数时，这个函数始终接收到新的对象。 这种禁止reuse方式会更安全使用。， 但会带来一定处理开销并引起更多的gc操作。 
 
 <table class="table table-bordered">
   <thead>
@@ -1505,41 +1473,43 @@ By default, Flink operates in object-reuse disabled mode. This mode ensures that
    <tr>
       <td><strong>Reading Input Objects</strong></td>
       <td>
-        Within a method call it is guaranteed that the value of an input object does not change. This includes objects served by an Iterable. For example it is safe to collect input objects served by an Iterable in a List or Map. Note that objects may be modified after the method call is left. It is <strong>not safe</strong> to remember objects across function calls.
+        在函数内部， 它可以保证input object值不会变化。 这些包含的object 由一个iterable来提供。 举例来说， 收集iterable内的对象到一个list或map中是很安全的。注意， 这些对象可能在函数调用完被修改。所以跨函数调用时，
+        记住这些历史对象是不安全的。
       </td>
    </tr>
    <tr>
       <td><strong>Modifying Input Objects</strong></td>
-      <td>You may modify input objects.</td>
+      <td>可以修改输入的对象</td>
    </tr>
    <tr>
       <td><strong>Emitting Input Objects</strong></td>
       <td>
-        You may emit input objects. The value of an input object may have changed after it was emitted. It is <strong>not safe</strong> to read an input object after it was emitted.
+        可以emit 输入的对象。 输入的对象值可能在emit后发生变化。 所以读取一个已经emitted的输入对象是不安全的。
       </td>
    </tr>
    <tr>
       <td><strong>Reading Output Objects</strong></td>
       <td>
-        An object that was given to a Collector or returned as method result might have changed its value. It is <strong>not safe</strong> to read an output object.
+        传给collector的对象或函数返回值有可能发生变化， 因此读取一个output 对象是不安全的。
       </td>
    </tr>
    <tr>
       <td><strong>Modifying Output Objects</strong></td>
-      <td>You may modify an object after it was emitted and emit it again.</td>
+      <td>可以modify一个emitted的对象，然后再emit一次</td>
    </tr>
   </tbody>
 </table>
 
-**Coding guidelines for the object-reuse disabled (default) mode:**
+**disable reuse 模式的原则:**
 
-- Do not remember and read input objects across method calls.
-- Do not read objects after you emitted them.
+- 跨函数调用时， 不要remember和读取输入对象。
+- 不要在emit完对象后，再读取它。
 
 
 ### Object-Reuse Enabled
 
-In object-reuse enabled mode, Flink's runtime minimizes the number of object instantiations. This can improve the performance and can reduce the Java garbage collection pressure. The object-reuse enabled mode is activated by calling `ExecutionConfig.enableObjectReuse()`. The following table explains how user functions may access input and output objects in object-reuse enabled mode.
+
+在reuse 模式下， flink runtime 最小化对象的实例化次数。 这样可以提高性能和减少gc压力。 可以通过`ExecutionConfig.enableObjectReuse()`来打开reuse模式。 
 
 <table class="table table-bordered">
   <thead>
@@ -1550,67 +1520,62 @@ In object-reuse enabled mode, Flink's runtime minimizes the number of object ins
   </thead>
   <tbody>
    <tr>
-      <td><strong>Reading input objects received as regular method parameters</strong></td>
+      <td><strong>读取普通函数参数作为输入对象</strong></td>
       <td>
-        Input objects received as regular method arguments are not modified within a function call. Objects may be modified after method call is left. It is <strong>not safe</strong> to remember objects across function calls.
+        普通函数的参数作为输入对象时， 这些对象在函数内没有被修改，但函数调用完可能被修改， 因此跨函数调用时记住这些对象是不安全的。
       </td>
    </tr>
    <tr>
-      <td><strong>Reading input objects received from an Iterable parameter</strong></td>
+      <td><strong>读取从迭代参数作为输入对象</strong></td>
       <td>
-        Input objects received from an Iterable are only valid until the next() method is called. An Iterable or Iterator may serve the same object instance multiple times. It is <strong>not safe</strong> to remember input objects received from an Iterable, e.g., by putting them in a List or Map.
+        当输入数据来自迭代器时， 输入对象仅仅当next（）函数被调用时有效。 一个iterable或iterator可能操作相同的对象很多次。 把葱iterable输入的数据放到一个list或map中是不安全的。
       </td>
    </tr>
    <tr>
-      <td><strong>Modifying Input Objects</strong></td>
-      <td>You <strong>must not</strong> modify input objects, except for input objects of MapFunction, FlatMapFunction, MapPartitionFunction, GroupReduceFunction, GroupCombineFunction, CoGroupFunction, and InputFormat.next(reuse).</td>
+      <td><strong>修改输入数据</strong></td>
+      <td>千万不要修改输入的数据， 除非输入数据来自MapFunction, FlatMapFunction, MapPartitionFunction, GroupReduceFunction, GroupCombineFunction, CoGroupFunction, and InputFormat.next(reuse)</td>
    </tr>
    <tr>
-      <td><strong>Emitting Input Objects</strong></td>
+      <td><strong>发送输入对象</strong></td>
       <td>
-        You <strong>must not</strong> emit input objects, except for input objects of MapFunction, FlatMapFunction, MapPartitionFunction, GroupReduceFunction, GroupCombineFunction, CoGroupFunction, and InputFormat.next(reuse).</td>
+        千万不要发送输入数据，除非输入数据来自MapFunction, FlatMapFunction, MapPartitionFunction, GroupReduceFunction, GroupCombineFunction, CoGroupFunction, and InputFormat.next(reuse).</td>
       </td>
    </tr>
    <tr>
-      <td><strong>Reading Output Objects</strong></td>
+      <td><strong>读取输出对象</strong></td>
       <td>
-        An object that was given to a Collector or returned as method result might have changed its value. It is <strong>not safe</strong> to read an output object.
+        丢给collector或作为函数结果返回的对象可能会被修改， 因此读取一个output对象是不安全的。
       </td>
    </tr>
    <tr>
-      <td><strong>Modifying Output Objects</strong></td>
-      <td>You may modify an output object and emit it again.</td>
+      <td><strong>修改输出对象</strong></td>
+      <td>用户可以修改一个output对象并再次emit</td>
    </tr>
   </tbody>
 </table>
 
-**Coding guidelines for object-reuse enabled:**
+**object reuse的原则:**
 
-- Do not remember input objects received from an `Iterable`.
-- Do not remember and read input objects across method calls.
-- Do not modify or emit input objects, except for input objects of `MapFunction`, `FlatMapFunction`, `MapPartitionFunction`, `GroupReduceFunction`, `GroupCombineFunction`, `CoGroupFunction`, and `InputFormat.next(reuse)`.
-- To reduce object instantiations, you can always emit a dedicated output object which is repeatedly modified but never read.
+- 不要保留来自`Iterable`的输入对象.
+- 在跨函数调用时，不要保留并读取输入对象.
+- 不要修改或发送输入对象，除非输入对象来自`MapFunction`, `FlatMapFunction`, `MapPartitionFunction`, `GroupReduceFunction`, `GroupCombineFunction`, `CoGroupFunction`, and `InputFormat.next(reuse)`.
+- 为了减少对象实例化次数， 用户可以一直发送一个专用的输出对象， 并且这个对象重复被修改但从不读取.
 
 {% top %}
 
 Debugging
 ---------
 
-Before running a data analysis program on a large data set in a distributed cluster, it is a good
-idea to make sure that the implemented algorithm works as desired. Hence, implementing data analysis
-programs is usually an incremental process of checking results, debugging, and improving.
 
-Flink provides a few nice features to significantly ease the development process of data analysis
-programs by supporting local debugging from within an IDE, injection of test data, and collection of
-result data. This section give some hints how to ease the development of Flink programs.
+在分布式集群运行一个大型数据分析程序前， 最好是可以确认实现的算法能按预期的工作。 因此通常做法是，通过检查结果， debuggin和修正 不断逐步演进的过程。
+
+flink 有个很好的简化开发数据分析程序的特性， 这个特性就是它制成在一个ide内本地调试程序， 注入测试程序，收集结果。
 
 ### Local Execution Environment
 
-A `LocalEnvironment` starts a Flink system within the same JVM process it was created in. If you
-start the LocalEnvironement from an IDE, you can set breakpoints in your code and easily debug your
-program.
 
-A LocalEnvironment is created and used as follows:
+`LocalEnvironment` 会在一个单jvm 进程内启动flink系统。 如果用户是在ide里面启动LocalEnvironement， 用户就可以设置断点并轻松调试程序
+
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -1638,10 +1603,9 @@ env.execute();
 
 ### Collection Data Sources and Sinks
 
-Providing input for an analysis program and checking its output is cumbersome when done by creating
-input files and reading output files. Flink features special data sources and sinks which are backed
-by Java collections to ease testing. Once a program has been tested, the sources and sinks can be
-easily replaced by sources and sinks that read from / write to external data stores such as HDFS.
+通过创建输入文件并读取输出文件来提供分析程序的输入和检查结果有些笨重。 flink 可以提供一些特别的data source和data sink
+，它们依赖java collection可以简化测试过程。 一旦一个程序完成测试， 它的source和sink可以很轻松被从外部存储比如hdfs上的
+读取或写入 source和sink替换。
 
 Collection data sources can be used as follows:
 
@@ -1671,7 +1635,7 @@ List<Tuple2<String, Integer>> outData = new ArrayList<Tuple2<String, Integer>>()
 myResult.output(new LocalCollectionOutputFormat(outData));
 {% endhighlight %}
 
-**Note:** Currently, the collection data sink is restricted to local execution, as a debugging tool.
+**Note:** 目前， coolection data sink只能在本地模式下使用，作为一个debug 工具
 
 </div>
 <div data-lang="scala" markdown="1">
@@ -1692,67 +1656,62 @@ val myLongs = env.fromCollection(longIt)
 </div>
 </div>
 
-**Note:** Currently, the collection data source requires that data types and iterators implement
-`Serializable`. Furthermore, collection data sources can not be executed in parallel (
-parallelism = 1).
+**Note:** 目前， collection data source 要求数据类型或iterator 实现`Serializable`。 更进一步说，
+collection data sources不能够并行执行（parallelism 被限制为1）
 
 {% top %}
 
 Semantic Annotations
 -----------
 
-Semantic annotations can be used to give Flink hints about the behavior of a function.
-They tell the system which fields of a function's input the function reads and evaluates and
-which fields it unmodified forwards from its input to its output.
-Semantic annotations are a powerful means to speed up execution, because they
-allow the system to reason about reusing sort orders or partitions across multiple operations. Using
-semantic annotations may eventually save the program from unnecessary data shuffling or unnecessary
-sorts and significantly improve the performance of a program.
 
-**Note:** The use of semantic annotations is optional. However, it is absolutely crucial to
-be conservative when providing semantic annotations!
-Incorrect semantic annotations will cause Flink to make incorrect assumptions about your program and
-might eventually lead to incorrect results.
-If the behavior of an operator is not clearly predictable, no annotation should be provided.
-Please read the documentation carefully.
+可用用语法注解来提示flink 一个函数的行为特征。 它可用告诉系统输入数据的哪些field 被读取并evaluate， 哪些字段不经修改就直接发送到输出。
 
-The following semantic annotations are currently supported.
+语法注解是一个加速执行的有效途径， 因为它允许系统去判断重复使用排序顺序或者在多个操作之间进行partition。 使用语法注解可以节省程序
+不必要的shuffle和不必要的sort，显著提高性能。
+
+**注意** 使用语法注解是可选的。 保守提供语法注解非常重要。不正确的语法注解会让flink做出错误判断并导致错误结果。
+如果一个操作的行为不是很清晰的提起预判， 不要提供语法注解。 请仔细阅读文档。
+
+目前，下面的语法注解是支持的。
 
 #### Forwarded Fields Annotation
 
-Forwarded fields information declares input fields which are unmodified forwarded by a function to the same position or to another position in the output.
-This information is used by the optimizer to infer whether a data property such as sorting or
-partitioning is preserved by a function.
-For functions that operate on groups of input elements such as `GroupReduce`, `GroupCombine`, `CoGroup`, and `MapPartition`, all fields that are defined as forwarded fields must always be jointly forwarded from the same input element. The forwarded fields of each element that is emitted by a group-wise function may originate from a different element of the function's input group.
+转发字段注解。 转发字段注解定义了输入对象中哪些字段是在函数中不会被修改，直接转发到output中相同位置或其他位置。
 
-Field forward information is specified using [field expressions](#define-keys-using-field-expressions).
-Fields that are forwarded to the same position in the output can be specified by their position.
-The specified position must be valid for the input and output data type and have the same type.
-For example the String `"f2"` declares that the third field of a Java input tuple is always equal to the third field in the output tuple.
+这些信息可用来优化判断在sorting或partition中的数据属性在函数中保留下来。
 
-Fields which are unmodified forwarded to another position in the output are declared by specifying the
-source field in the input and the target field in the output as field expressions.
-The String `"f0->f2"` denotes that the first field of the Java input tuple is
-unchanged copied to the third field of the Java output tuple. The wildcard expression `*` can be used to refer to a whole input or output type, i.e., `"f0->*"` denotes that the output of a function is always equal to the first field of its Java input tuple.
+对于像输入数据像组数据的函数，比如`GroupReduce`, `GroupCombine`, `CoGroup`, and `MapPartition`， 定义为转发的所有字段必须在相同的输入元素内联合转发。 
+由组操作（group-wise）函数发送的每个元素的的转发字段可以由函数的输入group的不同元素来组成。
 
-Multiple forwarded fields can be declared in a single String by separating them with semicolons as `"f0; f2->f1; f3->f2"` or in separate Strings `"f0", "f2->f1", "f3->f2"`. When specifying forwarded fields it is not required that all forwarded fields are declared, but all declarations must be correct.
+用[field expressions](#define-keys-using-field-expressions)来确定field转发信息。
+在output中转发位置相同的filed由它们的位置来确定。
+确定的位置必须是input中有效和houtput 中数据类型必须相同
+举例来说， “f2”定义了java input tuple中第三个字段， 它同样等同于output tuple中第三个字段。
 
-Forwarded field information can be declared by attaching Java annotations on function class definitions or
-by passing them as operator arguments after invoking a function on a DataSet as shown below.
+
+不做修改直接转发到其他位置的field， 通过“filed express”来定义。 比如"f0->f2"表示 java input tuple中第一个字段将不做修改直接copy到java 输出的第三个字段。 
+“＊”可以表示整个输入或输出， 比如"f0->*" 表示函数的输出就是等同于java 输入tuple的第一个字段。
+
+
+可以在一个string中定义多个字段转发 `"f0; f2->f1; f3->f2"`或者多个单独string比如`"f0", "f2->f1", "f3->f2"`。 
+注解转发字段并不要求所有的转发字段都被定义， 但所有的定义都必须是正确的。
+
+在函数定义前增加java注解可以用来定义转发字段，或者将它们作为函数参数。
 
 ##### Function Class Annotations
 
-* `@ForwardedFields` for single input functions such as Map and Reduce.
-* `@ForwardedFieldsFirst` for the first input of a functions with two inputs such as Join and CoGroup.
-* `@ForwardedFieldsSecond` for the second input of a functions with two inputs such as Join and CoGroup.
+* `@ForwardedFields` 用于单一输入的函数比如map或reduce
+* `@ForwardedFieldsFirst` 用于2个输入的函数比如join或cogroup的第一个输入
+* `@ForwardedFieldsSecond` 用于2个输入的函数比如join或cogroup的第二个输入
 
 ##### Operator Arguments
 
-* `data.map(myMapFnc).withForwardedFields()` for single input function such as Map and Reduce.
-* `data1.join(data2).where().equalTo().with(myJoinFnc).withForwardFieldsFirst()` for the first input of a function with two inputs such as Join and CoGroup.
-* `data1.join(data2).where().equalTo().with(myJoinFnc).withForwardFieldsSecond()` for the second input of a function with two inputs such as Join and CoGroup.
+* `data.map(myMapFnc).withForwardedFields()` 用于单一输入的函数比如map或reduce
+* `data1.join(data2).where().equalTo().with(myJoinFnc).withForwardFieldsFirst()` 用于2个输入的函数比如join或cogroup的第一个输入
+* `data1.join(data2).where().equalTo().with(myJoinFnc).withForwardFieldsSecond()` 用于2个输入的函数比如join或cogroup的第二个输入
 
-Please note that it is not possible to overwrite field forward information which was specified as a class annotation by operator arguments.
+注意， 不可能用函数参数的方式来覆盖class 注解定义的转发字段。
 
 ##### Example
 
@@ -1786,24 +1745,23 @@ class MyMap extends MapFunction[(Int, Int), (String, Int, Int)]{
 
 #### Non-Forwarded Fields
 
-Non-forwarded fields information declares all fields which are not preserved on the same position in a function's output.
-The values of all other fields are considered to be preserved at the same position in the output.
-Hence, non-forwarded fields information is inverse to forwarded fields information.
-Non-forwarded field information for group-wise operators such as `GroupReduce`, `GroupCombine`, `CoGroup`, and `MapPartition` must fulfill the same requirements as for forwarded field information.
 
-**IMPORTANT**: The specification of non-forwarded fields information is optional. However if used,
-**ALL!** non-forwarded fields must be specified, because all other fields are considered to be forwarded in place. It is safe to declare a forwarded field as non-forwarded.
+定义非转发字段表示这些字段在函数输出相同位置上不再保留。 
+其他字段将在输出的相同位置上保留。
+因此 非转发字段就是转发字段功能的相反。
+在一些组操作（group－wise）函数中，比如`GroupReduce`, `GroupCombine`, `CoGroup`, and `MapPartition` ， 非转发字段必须实现和转发字段相同的要求。
 
-Non-forwarded fields are specified as a list of [field expressions](#define-keys-using-field-expressions). The list can be either given as a single String with field expressions separated by semicolons or as multiple Strings.
-For example both `"f1; f3"` and `"f1", "f3"` declare that the second and fourth field of a Java tuple
-are not preserved in place and all other fields are preserved in place.
-Non-forwarded field information can only be specified for functions which have identical input and output types.
+**IMPORTANT** 非转发字段的定义是可选的， 然而， 如果一旦使用， 其他字段就会被定义为forward。 因此相对来说，将一个转发字段定义为非转发字段会更安全一点。
 
-Non-forwarded field information is specified as function class annotations using the following annotations:
 
-* `@NonForwardedFields` for single input functions such as Map and Reduce.
-* `@NonForwardedFieldsFirst` for the first input of a function with two inputs such as Join and CoGroup.
-* `@NonForwardedFieldsSecond` for the second input of a function with two inputs such as Join and CoGroup.
+用[field expressions](#define-keys-using-field-expressions) list来表示非转发字段。 可以是`"f1; f3"` 和 `"f1", "f3"`， 
+一个语句多个字段或多个独立语句组成。 非转发字段要求函数输入和输出类型相同。
+
+用类注解的方式定义非转发字段
+
+* `@NonForwardedFields` 用于单一输入的函数比如map或reduce
+* `@NonForwardedFieldsFirst` 用于2个输入的函数比如join或cogroup的第一个输入
+* `@NonForwardedFieldsSecond` 用于2个输入的函数比如join或cogroup的第二个输入
 
 ##### Example
 
@@ -1837,13 +1795,12 @@ class MyMap extends MapFunction[(Int, Int), (Int, Int)]{
 
 #### Read Fields
 
-Read fields information declares all fields that are accessed and evaluated by a function, i.e.,
-all fields that are used by the function to compute its result.
-For example, fields which are evaluated in conditional statements or used for computations must be marked as read when specifying read fields information.
-Fields which are only unmodified forwarded to the output without evaluating their values or fields which are not accessed at all are not considered to be read.
+定义一个函数将会访问并evaluate的读取字段， 举例 函数的所有字段都用来计算结果。
+在条件语句中evalue的字段或用来计算结果的字段必须标记为read，当确定读字段信息时。
+那些不做修改直接转发给输出的字段或者不访问的字段将不被考虑为读。
 
-**IMPORTANT**: The specification of read fields information is optional. However if used,
-**ALL!** read fields must be specified. It is safe to declare a non-read field as read.
+**IMPORTANT**: 
+定义读字段操作是可选的， 然而，一旦使用， 则所有的读字段必须明确。 定义一个非读字段为读其实会比较安全。
 
 Read fields are specified as a list of [field expressions](#define-keys-using-field-expressions). The list can be either given as a single String with field expressions separated by semicolons or as multiple Strings.
 For example both `"f1; f3"` and `"f1", "f3"` declare that the second and fourth field of a Java tuple are read and evaluated by the function.
@@ -1899,13 +1856,12 @@ class MyMap extends MapFunction[(Int, Int, Int, Int), (Int, Int)]{
 Broadcast Variables
 -------------------
 
-Broadcast variables allow you to make a data set available to all parallel instances of an
-operation, in addition to the regular input of the operation. This is useful for auxiliary data
-sets, or data-dependent parameterization. The data set will then be accessible at the operator as a
-Collection.
 
-- **Broadcast**: broadcast sets are registered by name via `withBroadcastSet(DataSet, String)`, and
-- **Access**: accessible via `getRuntimeContext().getBroadcastVariable(String)` at the target operator.
+广播变量允许用户在所有的并发实例的函数中操作一个data set。 这种特性对辅助的data set或数据依赖参数信息非常有用。
+这个data set在函数中可以成为一个collection。
+
+- **Broadcast**: 广播set通过`withBroadcastSet(DataSet, String)`来注册
+- **Access**: 在一个函数内通过`getRuntimeContext().getBroadcastVariable(String)`来访问 
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -1930,8 +1886,7 @@ data.map(new RichMapFunction<String, String>() {
 }).withBroadcastSet(toBroadcast, "broadcastSetName"); // 2. Broadcast the DataSet
 {% endhighlight %}
 
-Make sure that the names (`broadcastSetName` in the previous example) match when registering and
-accessing broadcasted data sets. For a complete example program, have a look at
+必须确保这个名字(在上一例子中`broadcastSetName` )在注册和使用中，二者是匹配的. 完整的例子可以参考
 {% gh_link /flink-examples/flink-examples-batch/src/main/java/org/apache/flink/examples/java/clustering/KMeans.java#L96 "K-Means Algorithm" %}.
 </div>
 <div data-lang="scala" markdown="1">
@@ -1956,24 +1911,24 @@ data.map(new RichMapFunction[String, String]() {
 }).withBroadcastSet(toBroadcast, "broadcastSetName") // 2. Broadcast the DataSet
 {% endhighlight %}
 
-Make sure that the names (`broadcastSetName` in the previous example) match when registering and
-accessing broadcasted data sets. For a complete example program, have a look at
-{% gh_link /flink-examples/flink-examples-batch/src/main/scala/org/apache/flink/examples/scala/clustering/KMeans.scala#L96 "KMeans Algorithm" %}.
+
+必须确保这个名字(在上一例子中`broadcastSetName` )在注册和使用中，二者是匹配的. 完整的例子可以参考
+{% gh_link /flink-examples/flink-examples-batch/src/main/java/org/apache/flink/examples/java/clustering/KMeans.java#L96 "K-Means Algorithm" %}.
 </div>
 </div>
 
-**Note**: As the content of broadcast variables is kept in-memory on each node, it should not become
-too large. For simpler things like scalar values you can simply make parameters part of the closure
-of a function, or use the `withParameters(...)` method to pass in a configuration.
+**Note**: 
+因为broadcaset 变量是维持在每个节点的内存中， 数据量不能太大。 对于一些简单的事情， 用户可以用将函数参数化， 或使用`withParameters(...)`来在配置中传递。
 
 {% top %}
 
 Passing Parameters to Functions
 -------------------
 
-Parameters can be passed to functions using either the constructor or the `withParameters(Configuration)` method. The parameters are serialized as part of the function object and shipped to all parallel task instances.
+传递给函数的参数可以使用构造函数或`withParameters(Configuration)` 。 这些参数被序列化作为函数对象的部分并被发送到每个task实例
 
-Check also the [best practices guide on how to pass command line arguments to functions]({{ site.baseurl }}/apis/best_practices.html#parsing-command-line-arguments-and-passing-them-around-in-your-flink-application).
+可以查看更多 [best practices guide on how to pass command line arguments to functions]({{ site.baseurl }}/apis/best_practices.html#parsing-command-line-arguments-and-passing-them-around-in-your-flink-application).
+
 
 #### Via Constructor
 
@@ -2016,8 +1971,8 @@ class MyFilter(limit: Int) extends FilterFunction[Int] {
 
 #### Via `withParameters(Configuration)`
 
-This method takes a Configuration object as an argument, which will be passed to the [rich function](#rich-functions)'s `open()`
-method. The Configuration object is a Map from String keys to different value types.
+这个函数用一个configuration对象作为参数， 它会被传递给[rich function](#rich-functions)'s `open()`。 configuration对象是一个map， 
+key类型是string，value是其他类型。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -2066,8 +2021,8 @@ toFilter.filter(new RichFilterFunction[Int]() {
 
 #### Globally via the `ExecutionConfig`
 
-Flink also allows to pass custom configuration values to the `ExecutionConfig` interface of the environment. Since the execution config is accessible in all (rich) user functions, the custom configuration will be available globally in all functions.
 
+flink 同样允许传递实现`ExecutionConfig`接口的自定义对象到环境中。 这个执行config在所有的rich 用户函数中都是可以访问的， 它是所有函数都可以获取。
 
 **Setting a custom global configuration**
 
@@ -2091,12 +2046,14 @@ env.getConfig.setGlobalJobParameters(conf)
 </div>
 </div>
 
-Please note that you can also pass a custom class extending the `ExecutionConfig.GlobalJobParameters` class as the global job parameters to the execution config. The interface allows to implement the `Map<String, String> toMap()` method which will in turn show the values from the configuration in the web frontend.
+
+可以通过一个继承`ExecutionConfig.GlobalJobParameters`类的自定义configuration。它的内容同样可以在web ui上显示
 
 
 **Accessing values from the global configuration**
 
-Objects in the global job parameters are accessible in many places in the system. All user functions implementing a `Rich*Function` interface have access through the runtime context.
+
+在系统中很多地方可以访问全局任务参数对象。 所有实现`Rich*Function` 接口的函数都可以访问这些对象通过runtime 的context。
 
 {% highlight java %}
 public static final class Tokenizer extends RichFlatMapFunction<String, Tuple2<String, Integer>> {

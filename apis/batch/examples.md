@@ -25,12 +25,11 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-The following example programs showcase different applications of Flink
-from simple word counting to graph algorithms. The code samples illustrate the
-use of [Flink's API](index.html).
 
-The full source code of the following and more examples can be found in the __flink-examples-batch__
-or __flink-examples-streaming__ module of the Flink source repository.
+本页介绍的example展示不同的flink应用， 从简单的wordcount到图算法。 展示了如何使用[Flink's API](index.html)。
+
+
+完整代码可以查看源码下面__flink-examples-batch__ or __flink-examples-streaming__模块。
 
 * This will be replaced by the TOC
 {:toc}
@@ -38,11 +37,11 @@ or __flink-examples-streaming__ module of the Flink source repository.
 
 ## Running an example
 
-In order to run a Flink example, we assume you have a running Flink instance available. The "Setup" tab in the navigation describes various ways of starting Flink.
+在运行example前， 得安装一套flink环境， 参考导航栏"Setup"了解如何启动flink。
 
-The easiest way is running the `./bin/start-local.sh` script, which will start a JobManager locally.
+最简单的方式是运行`./bin/start-local.sh`， 它将启动一个本地JobManager.
 
-Each binary release of Flink contains an `examples` directory with jar files for each of the examples on this page.
+每一个发行版flink都会自带example 目录， 含有本页列出的所有example。
 
 To run the WordCount example, issue the following command:
 
@@ -52,17 +51,16 @@ To run the WordCount example, issue the following command:
 
 The other examples can be started in a similar way.
 
-Note that many examples run without passing any arguments for them, by using build-in data. To run WordCount with real data, you have to pass the path to the data:
+注意， 有些example 运行时不需要输入参数，它们使用自带数据。想基于真实数据运行wordcount， 得传入数据的路径：
 
 ~~~bash
 ./bin/flink run ./examples/batch/WordCount.jar --input /path/to/some/text/data --output /path/to/result
 ~~~
 
-Note that non-local file systems require a schema prefix, such as `hdfs://`.
-
+注意：非本地文件系统会要求一个schema头，比如`hdfs://`.
 
 ## Word Count
-WordCount is the "Hello World" of Big Data processing systems. It computes the frequency of words in a text collection. The algorithm works in two steps: First, the texts are splits the text to individual words. Second, the words are grouped and counted.
+wordcount是大数据领域的"hello world". 它计算文本中word出现的频率。 这个算法分为2步： 文本被切分为独立的word， 第二步， 单词被grouped并count。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -99,7 +97,7 @@ public static class Tokenizer implements FlatMapFunction<String, Tuple2<String, 
 }
 ~~~
 
-The {% gh_link /flink-examples/flink-examples-batch/src/main/java/org/apache/flink/examples/java/wordcount/WordCount.java  "WordCount example" %} implements the above described algorithm with input parameters: `--input <path> --output <path>`. As test data, any text file will do.
+The {% gh_link /flink-examples/flink-examples-batch/src/main/java/org/apache/flink/examples/java/wordcount/WordCount.java  "WordCount example" %} 实现了上面的算法，但可以输入参数 `--input <path> --output <path>`. 任何text文本都可以做测试.
 
 </div>
 <div data-lang="scala" markdown="1">
@@ -118,7 +116,7 @@ val counts = text.flatMap { _.toLowerCase.split("\\W+") filter { _.nonEmpty } }
 counts.writeAsCsv(outputPath, "\n", " ")
 ~~~
 
-The {% gh_link /flink-examples/flink-exampls-batch/src/main/scala/org/apache/flink/examples/scala/wordcount/WordCount.scala  "WordCount example" %} implements the above described algorithm with input parameters: `--input <path> --output <path>`. As test data, any text file will do.
+The {% gh_link /flink-examples/flink-exampls-batch/src/main/scala/org/apache/flink/examples/scala/wordcount/WordCount.scala  "WordCount example" %} 实现了上面的算法，但可以输入参数 `--input <path> --output <path>`. 任何text文本都可以做测试.
 
 
 </div>
@@ -126,7 +124,9 @@ The {% gh_link /flink-examples/flink-exampls-batch/src/main/scala/org/apache/fli
 
 ## Page Rank
 
-The PageRank algorithm computes the "importance" of pages in a graph defined by links, which point from one pages to another page. It is an iterative graph algorithm, which means that it repeatedly applies the same computation. In each iteration, each page distributes its current rank over all its neighbors, and compute its new rank as a taxed sum of the ranks it received from its neighbors. The PageRank algorithm was popularized by the Google search engine which uses the importance of webpages to rank the results of search queries.
+
+
+pagerank 算法 计算图中页面的“重要性”，通过一个页面指向另一个页面的link。它是一个迭代图算法， 它意味着重复相同的计算。 在每一次迭代中， 每个页面发布它的当前rank 给它所有邻居， 并计算它的新rank，通过对它接收到邻居rank 求和。 google让pagerank算法流行起来， 它用页面的重要性对查询结果进行排序。  
 
 In this simple example, PageRank is implemented with a [bulk iteration](iterations.html) and a fixed number of iterations.
 
@@ -206,8 +206,8 @@ public static final class EpsilonFilter
 }
 ~~~
 
-The {% gh_link /flink-examples/flink-examples-batch/src/main/java/org/apache/flink/examples/java/graph/PageRank.java "PageRank program" %} implements the above example.
-It requires the following parameters to run: `--pages <path> --links <path> --output <path> --numPages <n> --iterations <n>`.
+The {% gh_link /flink-examples/flink-examples-batch/src/main/java/org/apache/flink/examples/java/graph/PageRank.java "PageRank program" %} 实现了上面的算法.
+但它要求输入一些参数： `--pages <path> --links <path> --output <path> --numPages <n> --iterations <n>`.
 
 </div>
 <div data-lang="scala" markdown="1">
@@ -273,24 +273,24 @@ val result = finalRanks
 result.writeAsCsv(outputPath, "\n", " ")
 ~~~
 
-he {% gh_link /flink-examples/flink-examples-batch/src/main/scala/org/apache/flink/examples/scala/graph/PageRankBasic.scala "PageRank program" %} implements the above example.
-It requires the following parameters to run: `--pages <path> --links <path> --output <path> --numPages <n> --iterations <n>`.
+he {% gh_link /flink-examples/flink-examples-batch/src/main/scala/org/apache/flink/examples/scala/graph/PageRankBasic.scala "PageRank program" %} 实现了上面的例子.
+但它要求输入一些参数： `--pages <path> --links <path> --output <path> --numPages <n> --iterations <n>`.
 </div>
 </div>
 
-Input files are plain text files and must be formatted as follows:
-- Pages represented as an (long) ID separated by new-line characters.
+输入的文件是plain text 文件，并且按如下格式：
+- 页面由long 的id 来表示， id由new-line 来切分。
     * For example `"1\n2\n12\n42\n63\n"` gives five pages with IDs 1, 2, 12, 42, and 63.
-- Links are represented as pairs of page IDs which are separated by space characters. Links are separated by new-line characters:
-    * For example `"1 2\n2 12\n1 12\n42 63\n"` gives four (directed) links (1)->(2), (2)->(12), (1)->(12), and (42)->(63).
+- link 由 pageid 对来表示， pageid 中间有空格， link之间由new-line来切分
+    * For example `"1 2\n2 12\n1 12\n42 63\n"` gives four (directed) links (1)->(2), (2)->(12),
 
-For this simple implementation it is required that each page has at least one incoming and one outgoing link (a page can point to itself).
+在这个例子中， 它要求每个页面至少有个incoming的link 和一个outgoing 的link， 页面可以指向页面自己。
 
 ## Connected Components
 
-The Connected Components algorithm identifies parts of a larger graph which are connected by assigning all vertices in the same connected part the same component ID. Similar to PageRank, Connected Components is an iterative algorithm. In each step, each vertex propagates its current component ID to all its neighbors. A vertex accepts the component ID from a neighbor, if it is smaller than its own component ID.
+连接组件算法 识别出一张大图中， 哪些点是是连起来的。 连接组件也是一个迭代算法。 在每一次迭代中， 每个点传播它的component id给它的所有邻居。假设邻居传来的componentid 比自己的component id还要小， 它就接收邻居传来的componentid。
 
-This implementation uses a [delta iteration](iterations.html): Vertices that have not changed their component ID do not participate in the next step. This yields much better performance, because the later iterations typically deal only with a few outlier vertices.
+这个实现使用[delta iteration](iterations.html)： 没有修改component id的点不回参与下一次迭代。 计算越到后越快， 因为参与计算的点越来越少。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -424,7 +424,8 @@ Input files are plain text files and must be formatted as follows:
 
 ## Relational Query
 
-The Relational Query example assumes two tables, one with `orders` and the other with `lineitems` as specified by the [TPC-H decision support benchmark](http://www.tpc.org/tpch/). TPC-H is a standard benchmark in the database industry. See below for instructions how to generate the input data.
+
+关联查询 假设2张表， 一张是`orders`， 另外一张是`lineitems` 由[TPC-H decision support benchmark](http://www.tpc.org/tpch/)定义的。 tpc-h是数据库领域一个标准benchamark。 下面展示如何生成输入数据。
 
 The example implements the following SQL query.
 

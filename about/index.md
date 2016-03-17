@@ -87,7 +87,7 @@ Flink 中文文档网站是 [Apache Flink 官方文档](https://ci.apache.org/pr
     <td class="text-center"><a href="https://github.com/litongbupt" target="_blank">@litongbupt</a></td>
   </tr>
   <tr>
-    <td class="text-center"><img alt="@darionyaphet" height="48" src="https://avatars1.githubusercontent.com/u/4414314?v=3&s=460" width="48"></td>
+    <td class="text-center"><img alt="@darionyaphet" height="48" src="https://avatars1.githubusercontent.com/u/4414314?v=3&s=96" width="48"></td>
     <td class="text-center">王辰光</td>
     <td class="text-center">Contributor</td>
     <td class="text-center"><a href="https://github.com/darionyaphet" target="_blank">@darionyaphet</a></td>
