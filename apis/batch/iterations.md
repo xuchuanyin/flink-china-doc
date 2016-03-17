@@ -24,11 +24,15 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Iterative algorithms occur in many domains of data analysis, such as *machine learning* or *graph analysis*. Such algorithms are crucial in order to realize the promise of Big Data to extract meaningful information out of your data. With increasing interest to run these kinds of algorithms on very large data sets, there is a need to execute iterations in a massively parallel fashion.
 
-Flink programs implement iterative algorithms by defining a **step function** and embedding it into a special iteration operator. There are two  variants of this operator: **Iterate** and **Delta Iterate**. Both operators repeatedly invoke the step function on the current iteration state until a certain termination condition is reached.
+迭代算法在数据分析很多领域都会出现， 比如*machine learning* or *graph analysis*。 在实现从大数据中抽取出有用的信息， 这种算法非常关键。 随着对这种超大型数据的算法的兴趣不断提高， 有必要用一种大规模并行方式来运行这些迭代。
 
-Here, we provide background on both operator variants and outline their usage. The [programming guide](index.html) explains how to implement the operators in both Scala and Java. We also support both **vertex-centric and gather-sum-apply iterations** through Flink's graph processing API, [Gelly]({{site.baseurl}}/libs/gelly_guide.html).
+
+flink程序通过定义**step function** 和嵌入**step function**到一个特定的迭代操作（iteration operator）来实现迭代算法。 
+由2种操作：**Iterate** and **Delta Iterate**。 2种操作都在当前迭代状态上重复调用step 函数直到结束条件触发。
+
+
+这里介绍这2种操作符和概述它们的用法。 [programming guide](index.html)里面介绍了如何用java或scala实现操作符。flink 通过图计算api [Gelly]({{site.baseurl}}/libs/gelly_guide.html) 支持**vertex-centric and gather-sum-apply iterations**。
 
 The following table provides an overview of both operators:
 
@@ -87,23 +91,25 @@ The following table provides an overview of both operators:
 Iterate Operator
 ----------------
 
-The **iterate operator** covers the *simple form of iterations*: in each iteration, the **step function** consumes the **entire input** (the *result of the previous iteration*, or the *initial data set*), and computes the **next version of the partial solution** (e.g. `map`, `reduce`, `join`, etc.).
+
+**iterate operator** 覆盖
+*simple form of iterations（简单迭代）*： 在每一次迭代中， **step function** 消费所有的输入（上一次迭代的结果或初始值）， 然后计算** 局部solution的下一个版本**（e.g. `map`, `reduce`, `join`, etc.）。
 
 <p class="text-center">
     <img alt="Iterate Operator" width="60%" src="fig/iterations_iterate_operator.png" />
 </p>
 
-  1. **Iteration Input**: Initial input for the *first iteration* from a *data source* or *previous operators*.
-  2. **Step Function**: The step function will be executed in each iteration. It is an arbitrary data flow consisting of operators like `map`, `reduce`, `join`, etc. and depends on your specific task at hand.
-  3. **Next Partial Solution**: In each iteration, the output of the step function will be fed back into the *next iteration*.
-  4. **Iteration Result**: Output of the *last iteration* is written to a *data sink* or used as input to the *following operators*.
+  1. **Iteration Input**:  输入就是上一次迭代的结果或初始值
+  2. **Step Function**: 在每一次迭代中，都会执行step 函数. 它是由操作像 `map`, `reduce`, `join`组成data flow 并依赖运行中的task.
+  3. **Next Partial Solution**: 在每一次迭代中，  step 函数的结果会反馈到下一次迭代中
+  4. **Iteration Result**:  最后一次迭代的输出会写到data sink中或被后面的操作使用。
 
-There are multiple options to specify **termination conditions** for an iteration:
+下面有一些可选的结束迭代的条件：
 
-  - **Maximum number of iterations**: Without any further conditions, the iteration will be executed this many times.
-  - **Custom aggregator convergence**: Iterations allow to specify *custom aggregators* and *convergence criteria* like sum aggregate the number of emitted records (aggregator) and terminate if this number is zero (convergence criterion).
+  - **最大迭代次数**: 如果没有其他终止条件， 迭代将执行这么多次。
+  - **自定义aggregator 收敛**: 迭代允许设定 *自定义aggregators* 和 *收敛准则* ，比如对emitted 数据进行求和(aggregator)然后终止当emit数据为0时 (收敛准则).
 
-You can also think about the iterate operator in pseudo-code:
+下面有些伪码：
 
 ~~~java
 IterationState state = getInitialState();
@@ -122,16 +128,16 @@ setFinalState(state);
 
 ### Example: Incrementing Numbers
 
-In the following example, we **iteratively incremenet a set numbers**:
+下面的例子中，我们 **迭代增加一组数字**:
 
 <p class="text-center">
     <img alt="Iterate Operator Example" width="60%" src="fig/iterations_iterate_operator_example.png" />
 </p>
 
-  1. **Iteration Input**: The inital input is read from a data source and consists of five single-field records (integers `1` to `5`).
-  2. **Step function**: The step function is a single `map` operator, which increments the integer field from `i` to `i+1`. It will be applied to every record of the input.
-  3. **Next Partial Solution**: The output of the step function will be the output of the map operator, i.e. records with incremented integers.
-  4. **Iteration Result**: After ten iterations, the initial numbers will have been incremented ten times, resulting in integers `11` to `15`.
+  1. **Iteration Input**: 从data source读取初始数据， 5个单字段record(integers `1` to `5`).
+  2. **Step function**: step function 是`map` , 它会增加 `i` to `i+1`. input的每个record都会执行这个操作。
+  3. **Next Partial Solution**: step function的输出就是map 的输出。 本例中， record自增1.
+  4. **Iteration Result**: 10次迭代后， 最初的值自增了10次， 结果是 `11` to `15`.
 
 ~~~
 // 1st           2nd                       10th
@@ -148,20 +154,25 @@ Note that **1**, **2**, and **4** can be arbitrary data flows.
 Delta Iterate Operator
 ----------------------
 
-The **delta iterate operator** covers the case of **incremental iterations**. Incremental iterations **selectively modify elements** of their **solution** and evolve the solution rather than fully recompute it.
+** delta 迭代操作**  包含** 增量迭代** 。 增量迭代 **  选择性修改元素**  演化solution 而不是全量计算。
 
-Where applicable, this leads to **more efficient algorithms**, because not every element in the solution set changes in each iteration. This allows to **focus on the hot parts** of the solution and leave the **cold parts untouched**. Frequently, the majority of the solution cools down comparatively fast and the later iterations operate only on a small subset of the data.
 
+这导致** 更高效的算法** , 在每一次迭代中，并不是solution的每个元素都变更。 这可以**专注在热点部分** 并放弃**冷数据部分**。 solution中大部分快速冷却下来然后后面的迭代仅仅在小的数据集赏进行操作。
 <p class="text-center">
     <img alt="Delta Iterate Operator" width="60%" src="fig/iterations_delta_iterate_operator.png" />
 </p>
 
-  1. **Iteration Input**: The initial workset and solution set are read from *data sources* or *previous operators* as input to the first iteration.
-  2. **Step Function**: The step function will be executed in each iteration. It is an arbitrary data flow consisting of operators like `map`, `reduce`, `join`, etc. and depends on your specific task at hand.
-  3. **Next Workset/Update Solution Set**: The *next workset* drives the iterative computation and will be fed back into the *next iteration*. Furthermore, the solution set will be updated and implicitly forwarded (it is not required to be rebuild). Both data sets can be updated by different operators of the step function.
-  4. **Iteration Result**: After the *last iteration*, the *solution set* is written to a *data sink* or used as input to the *following operators*.
+  1. **Iteration Input**: 初始的workset和solution set 从*data sources*中读取， 他们会做完第一次迭代的输入。
+  2. **Step Function**: 每一次迭代会执行step function. 有算子 `map`, `reduce`, `join` 等组成的随意数据流. 并且依赖具体的task上.
+  3. **Next Workset/Update Solution Set**: 
+  **下一次workset**驱动的迭代计算并且反馈给*下一次迭代*。
+  更近一步， solution set 会被更新并且暗暗的转发（并不要求重建）。 2个data set 在step function中会被不同的操作更新。
+  4. **Iteration Result**: 最后一次迭代结束后， *solution set*会被写入*data sink* 或者作为后续操作的输入。
 
-The default **termination condition** for delta iterations is specified by the **empty workset convergence criterion** and a **maximum number of iterations**. The iteration will terminate when a produced *next workset* is empty or when the maximum number of iterations is reached. It is also possible to specify a **custom aggregator** and **convergence criterion**.
+
+
+默认的delta 迭代的**结束条件**由 **空的workset 收敛条件**和**最大迭代次数**。 当*下一个workset*为空时或最大迭代次数到了时， 会结束迭代。 
+也可以设定一个**自定义aggregator** 和**收敛准则**.
 
 You can also think about the iterate operator in pseudo-code:
 
@@ -185,28 +196,34 @@ setFinalState(solution);
 
 ### Example: Propagate Minimum in Graph
 
-In the following example, every vertex has an **ID** and a **coloring**. Each vertex will propagate its vertex ID to neighboring vertices. The **goal** is to *assign the minimum ID to every vertex in a subgraph*. If a received ID is smaller then the current one, it changes to the color of the vertex with the received ID. One application of this can be found in *community analysis* or *connected components* computation.
+下面的例子中， 每个顶点 有一个**id**和一个**颜色**。 每一个顶点会传播它的顶点id给它的邻居。 目标是在一个字图中为每个顶点分配最小的id. 如果顶点接收的id小于自己的当前id时， 它会把顶点的颜色改成河接收id颜色一样（id也修改为接收的id）。 这种类型的应用常见于* community 分析 *和*连接组件*计算。 
 
 <p class="text-center">
     <img alt="Delta Iterate Operator Example" width="100%" src="fig/iterations_delta_iterate_operator_example.png" />
 </p>
 
-The **intial input** is set as **both workset and solution set.** In the above figure, the colors visualize the **evolution of the solution set**. With each iteration, the color of the minimum ID is spreading in the respective subgraph. At the same time, the amount of work (exchanged and compared vertex IDs) decreases with each iteration. This corresponds to the **decreasing size of the workset**, which goes from all seven vertices to zero after three iterations, at which time the iteration terminates. The **important observation** is that *the lower subgraph converges before the upper half* does and the delta iteration is able to capture this with the workset abstraction.
+初始值时workset和solutionset。 在上表中， 颜色展示了**solution set的演化过程**。 在每一次迭代中， 最小id的颜色会传播到各自的子图中。同时， 工作元素的数量会在每次迭代后减少。 这对应了**减少workset的数量**， 本例中， 3次迭代后， 7个顶点最后减为0， 这样迭代就结束了。  **重要的观察**是 小的子集覆盖了上面部分。 
+deleta 迭代能够用workset 抽象来捕获它。  
 
-In the upper subgraph **ID 1** (*orange*) is the **minimum ID**. In the **first iteration**, it will get propagated to vertex 2, which will subsequently change its color to orange. Vertices 3 and 4 will receive **ID 2** (in *yellow*) as their current minimum ID and change to yellow. Because the color of *vertex 1* didn't change in the first iteration, it can be skipped it in the next workset.
+上面子图**id 1** (*橙色*)是最小id， 在第一次迭代中，他会传播到vertex 2， 随后它也把自己的颜色修改为橙色。 顶点3 和顶点4 会接收到**id 2**(黄色) 作为当前最小id并修改为黄色。
+因为*顶点1*的颜色在第一次迭代中不会改变颜色，因此它在下一次迭代中跳过。 
 
-In the lower subgraph **ID 5** (*cyan*) is the **minimum ID**. All vertices of the lower subgraph will receive it in the first iteration. Again, we can skip the unchanged vertices (*vertex 5*) for the next workset.
+在下面的子图中**id 5**(*蓝绿色*)是最小的id， 所有的顶点在第一次迭代中都会收到它。 在下一次workset中， 可以跳过没有发生变化的顶点5.
 
 In the **2nd iteration**, the workset size has already decreased from seven to five elements (vertices 2, 3, 4, 6, and 7). These are part of the iteration and further propagate their current minimum IDs. After this iteration, the lower subgraph has already converged (**cold part** of the graph), as it has no elements in the workset, whereas the upper half needs a further iteration (**hot part** of the graph) for the two remaining workset elements (vertices 3 and 4).
 
-The iteration **terminates**, when the workset is empty after the **3rd iteration**.
+在**第二次迭代**，workset的大小以及从7个减少到5个，还是由部分迭代并进一步传播他们的最小值。 这次迭代后， 下面的子图议全部覆盖(图中**冷部分**)， 因为在workset中没有元素，
+然而上面部分需要进一步迭代(图中**hot 部分**) 还有2个workset元素（顶点3 和4）。 
+
+在3次迭代后， workset 为空了， 因此迭代结束了。
 
 <a href="#supersteps"></a>
 
 Superstep Synchronization
 -------------------------
 
-We referred to each execution of the step function of an iteration operator as *a single iteration*. In parallel setups, **multiple instances of the step function are evaluated in parallel** on different partitions of the iteration state. In many settings, one evaluation of the step function on all parallel instances forms a so called **superstep**, which is also the granularity of synchronization. Therefore, *all* parallel tasks of an iteration need to complete the superstep, before a next superstep will be initialized. **Termination criteria** will also be evaluated at superstep barriers.
+flink 认为 一个迭代操作中的step function是一个**单独操作**。 在并行设置下， 在迭代状态的不同分区上多个step function的instance 会并行evaluate 。 在一些设置下， 
+所有并行instance上的setp function的一个evalutation会被称为**superstep**, 它同时也是同步的粒度。 因此， 一个迭代的所有并行task 需要完成这个superstep， 在下一个superstep启动前。 **结束条件**也会在superstep barriers中进行评估。
 
 <p class="text-center">
     <img alt="Supersteps" width="50%" src="fig/iterations_supersteps.png" />
