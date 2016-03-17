@@ -34,15 +34,6 @@ under the License.
 
 Flink 中的 DataStream API 是对数据流进行转换操作（例如，过滤、更新状态、定义窗口、聚合）常用的方式。数据流可以从各种源（例如，消息队列、socket流、文件）创建而来。结果通过 sinks 操作返回，例如可能是将数据写入到文件，或者到标准输出（如命令行窗口）。Flink 程序可以运行在多样的环境下，standalone集群，或者嵌入其他程序中。执行过程可以发生在本地，也可以是由许多机器构成的集群上。
 
-Please see [basic concepts]({{ site.baseurl }}/apis/common/index.html) for an introduction
-to the basic concepts of the Flink API.
-
-In order to create your own Flink DataStream program, we encourage you to start with
-[anatomy of a Flink Program]({{ site.baseurl }}/apis/common/index.html#anatomy-of-a-flink-program)
-and gradually add your own
-[transformations](#datastream-transformations). The remaining sections act as references for additional
-operations and advanced features.
-
 请先阅读[基本概念]({{ site.baseurl }}/apis/common/index.html)了解下 Flink API 的基本概念。
 
 为了创建你的第一个 Flink DataStream 程序，我们鼓励你从 [剖析 Flink 程序]({{ site.baseurl }}/apis/common/index.html#anatomy-of-a-flink-program) 开始，然后逐步地增加你的 [转换操作](#datastream-transformations)。而剩余的章节主要作为额外操作(operations)和高级特性的一个参考。
