@@ -27,17 +27,16 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Analysis programs in Flink are regular programs that implement transformations on data sets
-(e.g., filtering, mapping, joining, grouping). The data sets are initially created from certain
-sources (e.g., by reading files, or from collections). Results are returned via sinks, which may for
-example write the data to (distributed) files, or to standard output (for example the command line
-terminal). Flink programs run in a variety of contexts, standalone, or embedded in other programs.
-The execution can happen in a local JVM, or on clusters of many machines.
 
-In order to create your own Flink program, we encourage you to start with the
-[program skeleton](#program-skeleton) and gradually add your own
-[transformations](#transformations). The remaining sections act as references for additional
-operations and advanced features.
+Flink 程序是在数据集上实现类似filtering, mapping, joining, grouping这种转换的普通程序。
+初始数据集从一些source（比如文件或collection）中创建出来。
+通过sink来返回结果， 它有可能把结果写到（分布式）文件或标准输出（比如命令行终端）。
+Flink运行在各种context中， 比如standalone， 或嵌入到其他程序中。
+可以在本地jvm或多机器的集群上运行flink 程序。
+
+
+建议从[program skeleton](#program-skeleton) 开始学习编写flink程序，并逐步增加自己的[transformations](#transformations)操作。
+本章剩下的部分会介绍额外的操作和高级特性。
 
 * This will be replaced by the TOC
 {:toc}
@@ -76,28 +75,30 @@ env.execute(local=True)
 Program Skeleton
 ----------------
 
-As we already saw in the example, Flink programs look like regular python programs. 
-Each program consists of the same basic parts:
 
-1. Obtain an `Environment`,
-2. Load/create the initial data,
-3. Specify transformations on this data,
-4. Specify where to put the results of your computations, and
-5. Execute your program.
+像例子中所示， flink 程序看起来像普通的python程序。
+每一个flink程序含有相同的基本部分：
 
-We will now give an overview of each of those steps but please refer to the respective sections for
-more details.
+1. 获得一个`Environment`
+2. 加载或创建初始数据
+3. 设定数据集上的transformation
+4. 设定计算结果存储到哪里
+5. 执行程序
+
+这里先概述这些步骤，然后更多细节请参考各自的章节
 
 
 The `Environment` is the basis for all Flink programs. You can
 obtain one using these static methods on class `Environment`:
 
+`Environment` 是flink程序的基本元素， 用户可以通过类`Environment`的静态函数来获取它：
+
 {% highlight python %}
 get_environment()
 {% endhighlight %}
 
-For specifying data sources the execution environment has several methods
-to read from files. To just read a text file as a sequence of lines, you can use:
+执行环境有几种方式去读取文件。
+如果仅仅按行读取文件， 可以类似下面：
 
 {% highlight python %}
 env = get_environment()
