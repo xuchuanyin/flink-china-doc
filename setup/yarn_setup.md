@@ -203,7 +203,7 @@ Exception in thread "main" org.apache.flink.compiler.CompilerException:
 ./bin/flink run -m yarn-cluster -yn 2 ./examples/batch/WordCount.jar
 ~~~
 
-YARN 会话的命令行选项也可以用在 `./bin/flink` 工具里。这些选项都带了一个 `y` 或 `yarn` （长参数选项）的前缀。
+通过运行 `./bin/flink`，也可以看到YARN会话的命令行选项。这些选项都带了一个 `y` 或 `yarn` （长参数选项）的前缀。
 
 注：通过为每个任务设置不同的环境变量 `FLINK_CONF_DIR`，可以为每个任务使用不同的配置目录。从 Flink 分发包中复制 `conf` 目录，然后修改配置，例如，每个任务不同的日志设置。
 
@@ -219,7 +219,7 @@ Flink 的 YARN 客户端有以下的配置参数来控制在容器故障情况�
 
 ## 调试失败的 YARN 会话
 
-有许多原因会导致 Flink YARN 会话部署失败。一个错误的 Hadoop 安装配置（HDFS 权限，YARN 配置），版本不兼容（在 Cloudera Hadoop 上，运行带有普通 Hadoop 依赖的 Flink），或是其他原因。
+有许多原因会导致 Flink YARN 会话部署失败，如一个错误的 Hadoop 安装配置（HDFS 权限，YARN 配置），版本不兼容（在 Cloudera Hadoop 上，运行带有普通 Hadoop 依赖的 Flink），或是其他原因。
 
 ### 日志文件
 
