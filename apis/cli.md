@@ -1,5 +1,5 @@
 ---
-title:  "命令行接口（CLI)"
+title:  "命令行接口（CLI）"
 # Top-level navigation
 top-nav-group: apis
 top-nav-pos: 5
@@ -23,7 +23,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Flink提供了一个命令行接口(CLI)用来运行打成JAR包的程序，并且可以控制程序的执行。
+Flink提供了一个命令行接口（CLI）用来运行打成JAR包的程序，并且可以控制程序的执行。
 命令行接口可以用于本地单节点或是分布式的部署安装，它是Flink安装工具的一个组件。
 这个工具位于 `<flink-home>/bin/flink`
 默认用于连接Flink已运行的Master (JobManager) 
