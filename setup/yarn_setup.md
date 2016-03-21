@@ -1,5 +1,5 @@
 ---
-title:  "YARN Setup"
+title:  "YARN 安装"
 top-nav-group: deployment
 top-nav-title: YARN
 top-nav-pos: 3
@@ -26,11 +26,11 @@ under the License.
 * This will be replaced by the TOC
 {:toc}
 
-## Quickstart
+## 快速起步
 
-### Start a long-running Flink cluster on YARN
+### 在 YARN 上启动一个 Flink 集群
 
-Start a YARN session with 4 Task Managers (each with 4 GB of Heapspace):
+启动一个有 4 个 TaskManager （每个都有 4GB 的堆内存）的 YARN 会话：
 
 ~~~bash
 # get the hadoop2 package from the Flink download page at
@@ -41,11 +41,11 @@ cd flink-{{ site.version }}/
 ./bin/yarn-session.sh -n 4 -jm 1024 -tm 4096
 ~~~
 
-Specify the `-s` flag for the number of processing slots per Task Manager. We recommend to set the number of slots to the number of processors per machine.
+`-s` 标记可以用来指定每个 TaskMangager 的 slot 个数。我们建议设置 slot 的个数为每个机器的核数。
 
-Once the session has been started, you can submit jobs to the cluster using the `./bin/flink` tool.
+当会话成功启动后，你就可以使用 `./bin/flink` 工具提交任务到集群了。
 
-### Run a Flink job on YARN
+### 在 YARN 上运行 Flink 任务
 
 ~~~bash
 # get the hadoop2 package from the Flink download page at
@@ -56,43 +56,43 @@ cd flink-{{ site.version }}/
 ./bin/flink run -m yarn-cluster -yn 4 -yjm 1024 -ytm 4096 ./examples/batch/WordCount.jar
 ~~~
 
-## Flink YARN Session
+## Flink YARN 会话
 
-Apache [Hadoop YARN](http://hadoop.apache.org/) is a cluster resource management framework. It allows to run various distributed applications on top of a cluster. Flink runs on YARN next to other applications. Users do not have to setup or install anything if there is already a YARN setup.
+Apache [Hadoop YARN](http://hadoop.apache.org/) 是一个集群资源管理框架。它允许在一个集群之上运行多种分布式应用。Flink 与其他应用程序一同运行在 YARN 之上。如果用户已经安装 YARN，就不需要安装其他东西了。
 
-**Requirements**
+**环境要求**
 
-- at least Apache Hadoop 2.2
-- HDFS (Hadoop Distributed File System) (or another distributed file system supported by Hadoop)
+- 至少 Apache Hadoop 2.2
+- HDFS (Hadoop Distributed File System) (或者 Hadoop 支持的其他的分布式文件系统)
 
-If you have troubles using the Flink YARN client, have a look in the [FAQ section](http://flink.apache.org/faq.html#yarn-deployment).
+如果你在使用 Flink YARN 客户端的过程中遇到了问题，请参考 [FAQ 章节](http://flink.apache.org/faq.html#yarn-deployment)。
 
-### Start Flink Session
+### 启动 Flink 会话
 
-Follow these instructions to learn how to launch a Flink Session within your YARN cluster.
+按照下面的操作指南学习如何在 YARN 集群中启动一个 Flink 会话。
 
-A session will start all required Flink services (JobManager and TaskManagers) so that you can submit programs to the cluster. Note that you can run multiple programs per session.
+会话会启动所有需要的 Flink 服务（JobManager 和 TaskManager），因此可以提交程序到集群中。注意每个会话都可以运行多个程序。
 
-#### Download Flink 
+#### 下载 Flink 
 
-Download a Flink package for Hadoop >= 2 from the [download page]({{ site.download_url }}). It contains the required files.
+从[下载页面]({{ site.download_url }}) 下载 Hadoop 版本 >= 2 对应的 Flink 包。这里面就包含了所需要的文件了。
 
-Extract the package using:
+解压压缩包：
 
 ~~~bash
 tar xvzf flink-{{ site.version }}-bin-hadoop2.tgz
 cd flink-{{site.version }}/
 ~~~
 
-#### Start a Session
+#### 启动会话
 
-Use the following command to start a session
+使用下面的命令启动一个会话：
 
 ~~~bash
 ./bin/yarn-session.sh
 ~~~
 
-This command will show you the following overview:
+这个命令会显示如下的概览：
 
 ~~~bash
 Usage:
@@ -109,47 +109,45 @@ Usage:
      -tm,--taskManagerMemory <arg>   Memory per TaskManager Container [in MB]
 ~~~
 
-Please note that the Client requires the `YARN_CONF_DIR` or `HADOOP_CONF_DIR` environment variable to be set to read the YARN and HDFS configuration.
+请注意客户端需要提前设置环境变量 `YARN_CONF_DIR` 或 `HADOOP_CONF_DIR`，用来读取 YARN 和 HDFS 配置。
 
-**Example:** Issue the following command to allocate 10 Task Managers, with 8 GB of memory and 32 processing slots each:
+**示例：** 执行下面的命令来分配 10 个 TaskManager，每个都拥有 8 GB 的内存和 32 个 slot。
 
 ~~~bash
 ./bin/yarn-session.sh -n 10 -tm 8192 -s 32
 ~~~
 
-The system will use the configuration in `conf/flink-config.yaml`. Please follow our [configuration guide](config.html) if you want to change something.
+系统会使用 `conf/flink-config.yaml` 中的配置。如果你想要更改配置，请参考 [配置指南](config.html)。
 
-Flink on YARN will overwrite the following configuration parameters `jobmanager.rpc.address` (because the JobManager is always allocated at different machines), `taskmanager.tmp.dirs` (we are using the tmp directories given by YARN) and `parallelism.default` if the number of slots has been specified.
+Flink on YARN 会覆盖这些配置参数 `jobmanager.rpc.address`（因为 JobManager 一直被分配在不同的机器上），`taskmanager.tmp.dirs`（我们使用 YARN 提供了的 tmp 目录）和 `parallelism.default`（如果指定了 slot 数目）。
 
-If you don't want to change the configuration file to set configuration parameters, there is the option to pass dynamic properties via the `-D` flag. So you can pass parameters this way: `-Dfs.overwrite-files=true -Dtaskmanager.network.numberOfBuffers=16368`.
+如果你不想通过修改配置文件的方法来设置配置参数，你可以通过 `-D` 标记传入动态属性。所以你可以这样传递参数：`-Dfs.overwrite-files=true -Dtaskmanager.network.numberOfBuffers=16368`
 
-The example invocation starts 11 containers, since there is one additional container for the ApplicationMaster and Job Manager.
+这个例子请求启动 11 个容器，因为对于 ApplicationMaster 和 JobManager 还需要一个额外的容器。
 
-Once Flink is deployed in your YARN cluster, it will show you the connection details of the Job Manager.
+一旦 Flink 在 YARN 集群中部署了，它会显示 JobManager 连接的详细信息。
 
-Stop the YARN session by stopping the unix process (using CTRL+C) or by entering 'stop' into the client.
+要停止 YARN 会话，可以通过结束 unix 进程（使用 CTRL+C）或者通过在客户端中输入 'stop'。
 
-#### Detached YARN Session
+#### 分离的 YARN 会话
 
-If you do not want to keep the Flink YARN client running all the time, its also possible to start a *detached* YARN session.
-The parameter for that is called `-d` or `--detached`.
+如果你不希望 Flink YARN 客户端一直在运行，也可以启动一个 **分离的** （detached）YARN 会话。只需要加上 `-d` 或 `--detached` 参数。
 
-In that case, the Flink YARN client will only submit Flink to the cluster and then close itself.
-Note that in this case its not possible to stop the YARN session using Flink.
+在这种情况下，Flink YARN 客户端只会提交 Flink 到集群中然后关闭自己。注意在这种情况下，不能像上面这样停止 YARN 会话了。
 
-Use the YARN utilities (`yarn application -kill <appId`) to stop the YARN session.
+使用 YARN utilities（`yarn application -kill <appId>`）来结束 YARN 会话。
 
-### Submit Job to Flink
+### 提交任务到 Flink
 
-Use the following command to submit a Flink program to the YARN cluster:
+使用下面的命令提交一个 Flink 程序到 YARN 集群：
 
 ~~~bash
 ./bin/flink
 ~~~
 
-Please refer to the documentation of the [commandline client]({{ site.baseurl }}/apis/cli.html).
+请参考 [命令行客户端]({{ site.baseurl }}/apis/cli.html) 文档。
 
-The command will show you a help menu like this:
+该命令会显示一个如下的帮助菜单：
 
 ~~~bash
 [...]
@@ -171,9 +169,9 @@ Action "run" compiles and runs a program.
                                       configuration
 ~~~
 
-Use the *run* action to submit a job to YARN. The client is able to determine the address of the JobManager. In the rare event of a problem, you can also pass the JobManager address using the `-m` argument. The JobManager address is visible in the YARN console.
+使用 *run* 操作来提交一个任务到 YARN。客户端自己就能确定 JobManager 的地址。在遇到罕见的问题时，你可以使用 `-m` 参数传入 JobManager 的地址。JobManager 的地址可以在 YARN 控制台找到。
 
-**Example**
+**示例**
 
 ~~~bash
 wget -O LICENSE-2.0.txt http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -182,112 +180,104 @@ hadoop fs -copyFromLocal LICENSE-2.0.txt hdfs:/// ...
         hdfs:///..../LICENSE-2.0.txt hdfs:///.../wordcount-result.txt
 ~~~
 
-If there is the following error, make sure that all TaskManagers started:
+如果遇到了下面的错误，请确保所有的 TaskManager 都已经启动了：
 
 ~~~bash
 Exception in thread "main" org.apache.flink.compiler.CompilerException:
     Available instances could not be determined from job manager: Connection timed out.
 ~~~
 
-You can check the number of TaskManagers in the JobManager web interface. The address of this interface is printed in the YARN session console.
+你可以在 JobManager 的 Web 界面上检查 TaskManager 的数目是否正确。JobManager 的地址会在 YARN 会话控制台中打印出来。
 
-If the TaskManagers do not show up after a minute, you should investigate the issue using the log files.
+如果一分钟后 TaskManager 还没有出现，你就需要通过日志文件查找问题原因了。
 
+## 在 YARN 上运行单个 Flink 任务
 
-## Run a single Flink job on YARN
+上文描述了如何在 Hadoop YARN 环境中启动一个 Flink 集群。另外，也可以在 YARN 中启动只执行单个任务的 Flink。
 
-The documentation above describes how to start a Flink cluster within a Hadoop YARN environment. It is also possible to launch Flink within YARN only for executing a single job.
+请注意该客户端需要提供 `-yn` 参数值（TaskManager 的数量）。
 
-Please note that the client then expects the `-yn` value to be set (number of TaskManagers).
-
-***Example:***
+***示例:***
 
 ~~~bash
 ./bin/flink run -m yarn-cluster -yn 2 ./examples/batch/WordCount.jar
 ~~~
 
-The command line options of the YARN session are also available with the `./bin/flink` tool. They are prefixed with a `y` or `yarn` (for the long argument options).
+通过运行 `./bin/flink`，也可以看到YARN会话的命令行选项。这些选项都带了一个 `y` 或 `yarn` （长参数选项）的前缀。
 
-Note: You can use a different configuration directory per job by setting the environment variable `FLINK_CONF_DIR`. To use this copy the `conf` directory from the Flink distribution and modify, for example, the logging settings on a per-job basis.
+注：通过为每个任务设置不同的环境变量 `FLINK_CONF_DIR`，可以为每个任务使用不同的配置目录。从 Flink 分发包中复制 `conf` 目录，然后修改配置，例如，每个任务不同的日志设置。
 
-Note: It is possible to combine `-m yarn-cluster` with a detached YARN submission (`-yd`) to "fire and forget" a Flink job to the YARN cluster. In this case, your application will not get any accumulator results or exceptions from the ExecutionEnvironment.execute() call!
+注：可以结合 `-m yarn-cluster` 和分离的 YARN 提交形式（`yd`）来“提交并遗忘”一个 Flink 任务给 YARN 集群。在这种情况下，你的应用程序将无法获得任何累加器的结果或者来自调用 `ExecutionEnvironment.execute()` 的异常。
 
-## Recovery behavior of Flink on YARN
+## Flink on YARN 的恢复机制
 
-Flink's YARN client has the following configuration parameters to control how to behave in case of container failures. These parameters can be set either from the `conf/flink-conf.yaml` or when starting the YARN session, using `-D` parameters.
+Flink 的 YARN 客户端有以下的配置参数来控制在容器故障情况下的行为。这些参数可以通过 `conf/flink-conf.yaml` 来设置，也可以通过启动 YARN 会话时加入 `-D` 参数来设置。
 
-- `yarn.reallocate-failed`: This parameter controls whether Flink should reallocate failed TaskManager containers. Default: true
-- `yarn.maximum-failed-containers`: The maximum number of failed containers the ApplicationMaster accepts until it fails the YARN session. Default: The number of initally requested TaskManagers (`-n`).
-- `yarn.application-attempts`: The number of ApplicationMaster (+ its TaskManager containers) attempts. If this value is set to 1 (default), the entire YARN session will fail when the Application master fails. Higher values specify the number of restarts of the ApplicationMaster by YARN.
+- `yarn.reallocate-failed`: 该参数控制了 Flink 是否该重新分配失败的 TaskManager 容器。默认：true。
+- `yarn.maximum-failed-containers`: ApplicationMaster 能接受最多的失败容器的数量，直到 YARN 会话失败。默认：初始请求的 TaskManager 个数（`-n`）。
+- `yarn.application-attempts`: ApplicationMaster（以及它的 TaskManager 容器）的尝试次数。默认值为 1， 当 ApplicationMaster 失败了，整个 YARN 会话也会失败。可以通过设置更大的值来更改 YARN 重启A pplicationMaster 的次数。
 
-## Debugging a failed YARN session
+## 调试失败的 YARN 会话
 
-There are many reasons why a Flink YARN session deployment can fail. A misconfigured Hadoop setup (HDFS permissions, YARN configuration), version incompatibilities (running Flink with vanilla Hadoop dependencies on Cloudera Hadoop) or other errors.
+有许多原因会导致 Flink YARN 会话部署失败，如一个错误的 Hadoop 安装配置（HDFS 权限，YARN 配置），版本不兼容（在 Cloudera Hadoop 上，运行带有普通 Hadoop 依赖的 Flink），或是其他原因。
 
-### Log Files
+### 日志文件
 
-In cases where the Flink YARN session fails during the deployment itself, users have to rely on the logging capabilities of Hadoop YARN. The most useful feature for that is the [YARN log aggregation](http://hortonworks.com/blog/simplifying-user-logs-management-and-access-in-yarn/).
-To enable it, users have to set the `yarn.log-aggregation-enable` property to `true` in the `yarn-site.xml` file.
-Once that is enabled, users can use the following command to retrieve all log files of a (failed) YARN session.
+Flink YARN 会话 在部署期间自己挂了的情况下，用户只能依赖 Hadoop YARN 的日志来进行排查。其中最有用的特性是 [YARN 日志聚合](http://hortonworks.com/blog/simplifying-user-logs-management-and-access-in-yarn/)。要启用该功能，用户必须在 `yarn-site.xml` 中设置 `yarn.log-aggregation-enable` 属性为 `true`。一旦被启用了，用户就能通过下面的命令获得一个（失败的）YARN 会话的所有日志。
 
 ~~~
 yarn logs -applicationId <application ID>
 ~~~
 
-Note that it takes a few seconds after the session has finished until the logs show up.
+注意在会话结束后到日志展现之间需要等一段时间。
 
-### YARN Client console & Webinterfaces
+### YARN 客户端控制台 & Web 界面
 
-The Flink YARN client also prints error messages in the terminal if errors occur during runtime (for example if a TaskManager stops working after some time).
+如果 Flink YARN 客户端在运行时遇到了错误（例如一个 TaskManager 在一段时间后停止工作了），那么它也会在终端打印出错误信息。
 
-In addition to that, there is the YARN Resource Manager webinterface (by default on port 8088). The port of the Resource Manager web interface is determined by the `yarn.resourcemanager.webapp.address` configuration value.
+除此之外，在 YARN 资源管理 Web 界面（默认端口在 8088）也能看到错误信息。资源管理 Web 界面的端口由 `yarn.resourcemanager.webapp.address` 配置项决定。
 
-It allows to access log files for running YARN applications and shows diagnostics for failed apps.
+它允许访问运行中的 YARN 应用程序的日志文件，并且能展示失败应用的诊断信息。
 
-## Build YARN client for a specific Hadoop version
+## 为特定的 Hadoop 版本构建 YARN 客户端
 
-Users using Hadoop distributions from companies like Hortonworks, Cloudera or MapR might have to build Flink against their specific versions of Hadoop (HDFS) and YARN. Please read the [build instructions](building.html) for more details.
+用户使用来自像 Hortonworks, Cloudera 和 MapR 等公司的 Hadoop 发行版，这也许需要针对特定的 Hadoop（HDFS）和 YARN 版本构建 Flink。请阅读 [构建指南](building.html) 了解更多。
 
-## Running Flink on YARN behind Firewalls
+## 在防火墙背后运行 Flink on YARN
 
-Some YARN clusters use firewalls for controlling the network traffic between the cluster and the rest of the network.
-In those setups, Flink jobs can only be submitted to a YARN session from within the cluster's network (behind the firewall).
-If this is not feasible for production use, Flink allows to configure a port range for all relevant services. With these
-ranges configured, users can also submit jobs to Flink crossing the firewall.
+一些 YARN 集群使用防火墙来控制集群和其他网络之间的网络流量。在这些情况下，Flink 任务只能从集群内部网络（防火墙背后）提交到 YARN 会话。如果这对于生产用途不是很可行，Flink 允许为所有相关服务配置端口区间。配置了端口区间之后，用户就可以跨防火墙提交任务到 Flink 了。
 
-Currently, two services are needed to submit a job:
+当前，提交任务需要两个服务：
 
- * The JobManager (ApplicatonMaster in YARN)
- * The BlobServer running within the JobManager.
+ * JobManager (YARN 中的 ApplicatonMaster)
+ * BlobServer （运行在 JobManager 中）。
 
-When submitting a job to Flink, the BlobServer will distribute the jars with the user code to all worker nodes (TaskManagers).
-The JobManager receives the job itself and triggers the execution.
+当提交一个任务给 Flink，BlobServer 会分发带有用户代码的 jar 文件到所有 worker 节点（TaskManager）。JobManager 收到了该任务，然后触发执行过程。
 
-The two configuration parameters for specifying the ports are the following:
+用来指定端口号的这两个配置参数如下：
 
  * `yarn.application-master.port`
  * `blob.server.port`
 
-These two configuration options accept single ports (for example: "50010"), ranges ("50000-50025"), or a combination of
-both ("50010,50011,50020-50025,50050-50075").
+这两个配置选项可以接受单个端口（如："50010"），区间端口（"50000-50025"），或者以上两者的结合（"50010,50011,50020-50025,50050-50075"）。
 
-(Hadoop is using a similar mechanism, there the configuration parameter is called `yarn.app.mapreduce.am.job.client.port-range`.)
+（Hadoop 正在使用一个类似的机制，那个配置参数叫做 `yarn.app.mapreduce.am.job.client.port-range` ）
 
-## Background / Internals
+## 内部实现
 
-This section briefly describes how Flink and YARN interact.
+本章节简要介绍 Flink 是如何与 YARN 进行交互的。
 
 <img src="fig/FlinkOnYarn.svg" class="img-responsive">
 
-The YARN client needs to access the Hadoop configuration to connect to the YARN resource manager and to HDFS. It determines the Hadoop configuration using the following strategy:
+YARN 客户端需要访问 Hadoop 配置，从而连接 YARN 资源管理器和 HDFS。可以使用下面的策略来决定 Hadoop 配置：
 
-* Test if `YARN_CONF_DIR`, `HADOOP_CONF_DIR` or `HADOOP_CONF_PATH` are set (in that order). If one of these variables are set, they are used to read the configuration.
-* If the above strategy fails (this should not be the case in a correct YARN setup), the client is using the `HADOOP_HOME` environment variable. If it is set, the client tries to access `$HADOOP_HOME/etc/hadoop` (Hadoop 2) and `$HADOOP_HOME/conf` (Hadoop 1).
+* 测试 `YARN_CONF_DIR`, `HADOOP_CONF_DIR` 或 `HADOOP_CONF_PATH` 环境变量是否设置了（按该顺序测试）。如果它们中有一个被设置了，那么它们就会用来读取配置。
+* 如果上面的策略失败了（如果正确安装了 YARN 的话，这不应该会发生），客户端会使用 `HADOOP_HOME` 环境变量。如果该变量设置了，客户端会尝试访问 `$HADOOP_HOME/etc/hadoop` (Hadoop 2) 和 `$HADOOP_HOME/conf` (Hadoop 1)。
 
-When starting a new Flink YARN session, the client first checks if the requested resources (containers and memory) are available. After that, it uploads a jar that contains Flink and the configuration to HDFS (step 1).
+当启动一个新的 Flink YARN 会话，客户端首先会检查所请求的资源（容器和内存）是否可用。之后，它会上传包含了 Flink 和配置的 jar 到 HDFS（步骤 1）。
 
-The next step of the client is to request (step 2) a YARN container to start the *ApplicationMaster* (step 3). Since the client registered the configuration and jar-file as a resource for the container, the NodeManager of YARN running on that particular machine will take care of preparing the container (e.g. downloading the files). Once that has finished, the *ApplicationMaster* (AM) is started.
+客户端的下一步是请求（步骤 2）一个 YARN 容器启动 *ApplicationMaster* （步骤 3）。因为客户端将配置和 jar 文件作为容器的资源注册了，所以运行在特定机器上的 YARN 的 NodeManager 会负责准备容器（例如，下载文件）。一旦这些完成了，*ApplicationMaster* (AM) 就启动了。
 
-The *JobManager* and AM are running in the same container. Once they successfully started, the AM knows the address of the JobManager (its own host). It is generating a new Flink configuration file for the TaskManagers (so that they can connect to the JobManager). The file is also uploaded to HDFS. Additionally, the *AM* container is also serving Flink's web interface. The ports Flink is using for its services are the standard ports configured by the user + the application id as an offset. This allows users to execute multiple Flink YARN sessions in parallel.
+*JobManager* 和 AM 运行在同一个容器中。一旦它们成功地启动了，AM 知道 JobManager 的地址（它自己）。它会为 TaskManager 生成一个新的 Flink 配置文件（这样它们才能连上 JobManager）。该文件也同样会上传到 HDFS。另外，*AM* 容器同时提供了 Flink 的 Web 界面服务。Flink 用来提供服务的端口是由用户 + 应用程序 id 作为偏移配置的。这使得用户能够并行执行多个 Flink YARN 会话。
 
-After that, the AM starts allocating the containers for Flink's TaskManagers, which will download the jar file and the modified configuration from the HDFS. Once these steps are completed, Flink is set up and ready to accept Jobs.
+之后，AM 开始为 Flink 的 TaskManager 分配容器，这会从 HDFS 下载 jar 文件和修改过的配置文件。一旦这些步骤完成了，Flink 就安装完成并准备接受任务了。
