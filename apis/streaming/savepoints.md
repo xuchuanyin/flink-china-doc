@@ -42,7 +42,7 @@ under the License.
 
 ## Configuration
 
-Savepoints 指向周期性的检查点，并按照 [state backend](state_backends.html) 的配置保存位置信息。
+Savepoints 指向周期性的检查点，并按照 [state backend](state_backends.html) 的配置保存位置信息。当前，**jobmanager** 和 **filesystem** 用以支撑后台。savepoint 后台配置对于定期检查后台配置状态是 **independent**  的。检查点数据并不是 savepoint 的 **副本** ，但却指向检查点的后台配置状态。
 
 ### JobManager
 
