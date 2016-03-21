@@ -63,10 +63,11 @@ cd flink-china-doc/docker
 - exactly-once    只处理一次
 - at-least-once   至少处理一次
 - at-most-once    最多处理一次
+- operator        算子
 
 ## 不翻译的术语
 
-DataSet, DataStream, sink, operator, connector。
+DataSet, DataStream, sink, connector。
 
 
 # 写作指南
