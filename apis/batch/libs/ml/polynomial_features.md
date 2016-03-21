@@ -54,14 +54,14 @@ Flink 的实现会将多项式按降次进行排列。
 
 PolynomialFeatures 并不基于输入数据进行训练，因此支持所有类型的输入。
 
-### Transform
+### 转换
 
 PolynomialFeatures 将 `Vector` 或 `LabeledVector` 转换成对应的 DataSet： 
 
 * `transform[T <: Vector]: DataSet[T] => DataSet[T]`
 * `transform: DataSet[LabeledVector] => DataSet[LabeledVector]`
 
-## Parameters
+## 参数列表
 
 多项式特征转换可由以下参数来控制：
 
