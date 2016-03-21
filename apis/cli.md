@@ -25,14 +25,14 @@ under the License.
 
 FlinkÌá¹©ÁËÒ»¸öÃüÁîĞĞ½Ó¿Ú£¨CLI£©ÓÃÀ´ÔËĞĞ´ò³ÉJAR°üµÄ³ÌĞò£¬²¢ÇÒ¿ÉÒÔ¿ØÖÆ³ÌĞòµÄÖ´ĞĞ¡£
 ÃüÁîĞĞ½Ó¿Ú¿ÉÒÔÓÃÓÚ±¾µØµ¥½Úµã»òÊÇ·Ö²¼Ê½µÄ²¿Êğ°²×°£¬ËüÊÇFlink°²×°¹¤¾ßµÄÒ»¸ö×é¼ş¡£
-Õâ¸ö¹¤¾ßÎ»ÓÚ `<flink-home>/bin/flink`
-Ä¬ÈÏÓÃÓÚÁ¬½ÓFlinkÒÑÔËĞĞµÄMaster (JobManager) 
-Õâ¸ömasterµÄÆô¶¯½Å±¾ÓëCLIÔÚÍ¬Ò»°²×°Ä¿Â¼¡£
+Õâ¸ö¹¤¾ßÎ»ÓÚ `<flink-home>/bin/flink`£¬
+Ä¬ÈÏ»áÁ¬½ÓÔËĞĞÖĞµÄ Flink master£¨JobManager£©£¬
+master µÄÆô¶¯½Å±¾Óë CLI ÔÚÍ¬Ò»°²×°Ä¿Â¼ÏÂ¡£
 
 Òò´ËÊ¹ÓÃÃüÁîĞĞ½Ó¿Ú£¨CLI£©µÄÏÈ¾öÌõ¼şÊÇÆô¶¯Ò»¸ömaster (JobManager)
  (Í¨¹ıÃüÁî£º 
 `<flink-home>/bin/start-local.sh` »ò
-`<flink-home>/bin/start-cluster.sh`) »òÊÇÆäËüÀıÈçYARN»·¾³¡£
+`<flink-home>/bin/start-cluster.sh`) »òÊÇÔÚ Flink YARN »·¾³ÖĞ¡£
 
 ÃüÁîĞĞ¿ÉÒÔ±»ÓÃÓÚ
 
@@ -50,37 +50,37 @@ FlinkÌá¹©ÁËÒ»¸öÃüÁîĞĞ½Ó¿Ú£¨CLI£©ÓÃÀ´ÔËĞĞ´ò³ÉJAR°üµÄ³ÌĞò£¬²¢ÇÒ¿ÉÒÔ¿ØÖÆ³ÌĞòµÄÖ´ĞĞ¡
 
         ./bin/flink run ./examples/batch/WordCount.jar
 
--   ÔËĞĞÊ¾Àı³ÌĞò£¬´«µİÊäÈëÊä³öÎÄ¼ş²ÎÊı£º
+-   ÔËĞĞÊ¾Àı³ÌĞò£¬´øÊäÈëÊä³öÎÄ¼ş²ÎÊı£º
 
         ./bin/flink run ./examples/batch/WordCount.jar \
                                file:///home/user/hamlet.txt file:///home/user/wordcount_out
 
--   ÔËĞĞÊ¾Àı³ÌĞò£¬ÉèÖÃ16¸ö²¢·¢¶È£¬²¢ÇÒ´«µİÊäÈëÊä³öÎÄ¼ş²ÎÊı£º
+-   ÔËĞĞÊ¾Àı³ÌĞò£¬ÉèÖÃ16¸ö²¢·¢¶È£¬²¢ÇÒ´øÊäÈëÊä³öÎÄ¼ş²ÎÊı£º
 
         ./bin/flink run -p 16 ./examples/batch/WordCount.jar \
                                 file:///home/user/hamlet.txt file:///home/user/wordcount_out
 
--   ÔËĞĞÊ¾Àı³ÌĞò£¬²¢ÇÒ½ûÓÃFlinkµÄÈÕÖ¾Êä³ö£º
+-   ÔËĞĞÊ¾Àı³ÌĞò£¬²¢½ûÖ¹ Flink ÔÚ±ê×¼Êä³öÊä³öÈÕÖ¾
 
             ./bin/flink run -q ./examples/batch/WordCount.jar
 
--   ÔËĞĞÊ¾Àı³ÌĞò£¬Ê¹ºÍ¶ÀÁ¢Ä£Ê½£º
+-   ÒÔ¶ÀÁ¢£¨detached£©Ä£Ê½ÔËĞĞÊ¾Àı³ÌĞò£º
 
             ./bin/flink run -d ./examples/batch/WordCount.jar
 
--   ÔËĞĞÊ¾Àı³ÌĞò£¬Ö¸¶¨JobManager£º
+-   ÔËĞĞÊ¾Àı³ÌĞò£¬Ö¸¶¨ JobManager£º
 
         ./bin/flink run -m myJMHost:6123 \
                                ./examples/batch/WordCount.jar \
                                file:///home/user/hamlet.txt file:///home/user/wordcount_out
 
--   ÔËĞĞÊ¾Àı³ÌĞò£¬Ö¸¶¨³ÌĞòÈë¿ÚÀàµÄclass£º
+-   ÔËĞĞÊ¾Àı³ÌĞò£¬Ö¸¶¨³ÌĞòÈë¿ÚÀàµÄ class£º
 
         ./bin/flink run -c org.apache.flink.examples.java.wordcount.WordCount \
                                ./examples/batch/WordCount.jar \
                                file:///home/user/hamlet.txt file:///home/user/wordcount_out
 
--   ÔËĞĞÊ¾Àı³ÌĞò£¬Ê¹ÓÃ [per-job YARN ¼¯Èº]({{site.baseurl}}/setup/yarn_setup.html#run-a-single-flink-job-on-hadoop-yarn) Ê¹ÓÃ2¸öTaskManager£º
+-   ÔËĞĞÊ¾Àı³ÌĞò£¬Ê¹ÓÃ [per-job YARN ¼¯Èº]({{site.baseurl}}/setup/yarn_setup.html#run-a-single-flink-job-on-hadoop-yarn) Æô¶¯ 2 ¸öTaskManager£º
 
         ./bin/flink run -m yarn-cluster -yn 2 \
                                ./examples/batch/WordCount.jar \
@@ -115,7 +115,7 @@ FlinkÌá¹©ÁËÒ»¸öÃüÁîĞĞ½Ó¿Ú£¨CLI£©ÓÃÀ´ÔËĞĞ´ò³ÉJAR°üµÄ³ÌĞò£¬²¢ÇÒ¿ÉÒÔ¿ØÖÆ³ÌĞòµÄÖ´ĞĞ¡
 
 [Savepoints]({{site.baseurl}}/apis/streaming/savepoints.html) Í¨¹ıÃüÁîĞĞ¿Í»§¶ËÀ´¿ØÖÆ¡£
 
-#### ´¥·¢Ò»¸ösavepoint
+#### savepoint´¥·¢ÃüÁî
 
 {% highlight bash %}
 ./bin/flink savepoint <jobID>
@@ -129,8 +129,8 @@ FlinkÌá¹©ÁËÒ»¸öÃüÁîĞĞ½Ó¿Ú£¨CLI£©ÓÃÀ´ÔËĞĞ´ò³ÉJAR°üµÄ³ÌĞò£¬²¢ÇÒ¿ÉÒÔ¿ØÖÆ³ÌĞòµÄÖ´ĞĞ¡
 ./bin/flink run -s <savepointPath> ...
 {% endhighlight %}
 
-ÔËĞĞÕâ¸öÃüÁîÒÔºó»á¸øjob·¢ËÍÒ»¸ösavepoint±ê¼Ç, ³ÌĞò»á´ÓsavepointµÄ×´Ì¬ÖĞ»Ö¸´¡£
-savepointÂ·¾¶ÊÇÍ¨¹ı´¥·¢savepointÃüÁîµÃµ½µÄ¡£
+Õâ¸ö run ÃüÁîÌá½» job Ê±´øÓĞÒ»¸ö savepoint ±ê¼Ç£¬ÕâÊ¹µÃ³ÌĞò¿ÉÒÔ´Ó savepoint ±£´æµÄ×´Ì¬ÖĞ»Ö¸´¡£
+savepointÂ·¾¶ÊÇÍ¨¹ısavepoint´¥·¢ÃüÁîµÃµ½µÄ¡£
 
 #### **Ïú»ÙÒ»¸ösavepoint**:
 
@@ -139,7 +139,7 @@ savepointÂ·¾¶ÊÇÍ¨¹ı´¥·¢savepointÃüÁîµÃµ½µÄ¡£
 {% endhighlight %}
 
 Ïú»ÙÒ»¸ösavepointÍ¬ÑùĞèÒªÒ»¸öÂ·¾¶¡£
-Õâ¸ösavepointÂ·¾¶ÊÇÍ¨¹ı´¥·¢savepointÃüÁîµÃµ½µÄ¡£
+Õâ¸ösavepointÂ·¾¶ÊÇÍ¨¹ısavepoint´¥·¢ÃüÁîµÃµ½µÄ¡£
 
 ## ÓÃ·¨
 
@@ -150,18 +150,18 @@ savepointÂ·¾¶ÊÇÍ¨¹ı´¥·¢savepointÃüÁîµÃµ½µÄ¡£
 
 ÏÂÃæÁĞ¾ÙÒ»Ğ©¿ÉÓÃµÄactions:
 
-Action "run" ±àÒë²¢ÇÒÔËĞĞÒ»¸ö³ÌĞò.
+Ö¸Áî "run" ±àÒë²¢ÇÒÔËĞĞÒ»¸ö³ÌĞò.
 
   Óï·¨: run [OPTIONS] <jar-file> <arguments>
   "run" action Ñ¡Ïî:
-     -c,--class <classname>               ³ÌĞòµÄÈë¿ÚÀà("main" ·½·¨»ò "getPlan()" ·½·¨¡£
-                                          Èç¹ûJAR°ü²»°üº¬Ö¸¶¨classµÄmanifestÔòĞèÒª¡£
-     -C,--classpath <url>                 ¸øÓÃ»§µÄÀà²ÎÔØÆ÷Ìí¼ÓclasspathÔÚ¼¯ÈºÄ£Ê½
+     -c,--class <classname>               ³ÌĞòµÄÈë¿ÚÀà("main" ·½·¨»ò "getPlan()" ·½·¨¡££©
+                                          Ö»ÓĞµ± JAR ÎÄ¼şÃ»ÓĞÔÚ mainifest ÖĞÖ¸¶¨Èë¿ÚÀàÊ±²ÅĞèÒª¡£
+     -C,--classpath <url>                 ÔÚ¼¯ÈºÖĞµÄÃ¿¸ö½ÚµãÉÏÎªÃ¿¸öÓÃ»§´úÂëÀà¼ÓÔØÆ÷Ìí¼ÓÒ»¸ö URL ×ÊÔ´¡£
                                           ÏÂ»áÓ°ÏìËùÓĞ½Úµã. Â·¾¶±ØĞë´øÉÏĞ­ÒéĞÅÏ¢
                                            (Èç file://) ²¢ÇÒËùÓĞ½áµã¶¼¿ÉÒÔ·ÃÎÊ
-                                           (ÀıÈçNFS¹²ÏíÎÄ¼ş). Äã¿ÉÒÔ¶à´ÎÊ¹ÓÃÕâ¸öÑ¡Ïî
-                                           À´Ìí¼Ó¶à¸ö×ÊÔ´. Ğ­Òé±ØĞë±»Ö§³Ö {@link
-                                          java.net.URLClassLoader}¡£
+                                           (ÀıÈçNFS¹²ÏíÎÄ¼ş)¡£ Äã¿ÉÒÔ¶à´ÎÊ¹ÓÃÕâ¸öÑ¡Ïî
+                                           À´Ìí¼Ó¶à¸ö×ÊÔ´. Ğ­Òé±ØĞë±»{@link
+                                          java.net.URLClassLoader}Ö§³Ö¡£
      -d,--detached                        Èç¹û¼ÓÉÏÕâ¸öÑ¡Ïî£¬½«ÔÚ¶ÀÁ¢Ä£Ê½ÔËĞĞ¡£
      -m,--jobmanager <host:port>          Á¬½ÓJobManager (master) µÄµØÖ·¡£¿ÉÒÔÖ¸¶¨
                                           'yarn-cluster' ×÷ÎªJobManagerÏòYARN¼¯ÈºÌá
@@ -170,32 +170,31 @@ Action "run" ±àÒë²¢ÇÒÔËĞĞÒ»¸ö³ÌĞò.
      -p,--parallelism <parallelism>       ³ÌĞòÔËĞĞµÄ²¢ĞĞ¶È. Õâ¸öÑ¡Ïî¿ÉÒÔÌæ»»ÅäÖÃÖĞÖ¸
                                           ¶¨µÄ²¢ĞĞ¶È¡£
      -q,--sysoutLogging                   ¼ÓÉÏÕâ¸öÑ¡ÏîÔò²»»áÏò±ê×¼Êä³öÊä³öÈÕÖ¾¡£
-     -s,--fromSavepoint <savepointPath>   ÓÃÀ´»¹Ô­Ò»¸ösavepoint(Ê¾Àı£º
+     -s,--fromSavepoint <savepointPath>   ÓÃÀ´»Ö¸´Ò»¸ösavepoint(Ê¾Àı£º
                                           file:///flink/savepoint-1537).
-  ¶îÍâµÄ²ÎÊı£¬Èç¹ûÉèÖÃÁË -m yarn-cluster£º
+  Èç¹ûÉèÖÃÁË -m yarn-cluster£¬¿ÉÒÔ¶îÍâÊ¹ÓÃÒÔÏÂ²ÎÊı£º
      -yD <arg>                            ¶¯Ì¬ÅäÖÃ
-     -yd,--yarndetached                   ¿ªÊ¼·ÖÀë
+     -yd,--yarndetached                   ÒÔ¶ÀÁ¢£¨detached£©Ä£Ê½ÔËĞĞ
      -yj,--yarnjar <arg>                  Flink jarÎÄ¼şµÄÂ·¾¶
-     -yjm,--yarnjobManagerMemory <arg>    Ê¹ÓÃµÄÄÚ´æ´óĞ¡¶ÔÓÚJobManagerÈİÆ÷ [ÓÃMB±íÊ¾]
-     -yn,--yarncontainer <arg>            YARN ÈİÆ÷³õÊ¼»¯ÊıÁ¿
+     -yjm,--yarnjobManagerMemory <arg>    JobManager ÈİÆ÷µÄÄÚ´æ´óĞ¡ [µ¥Î» MB]
+     -yn,--yarncontainer <arg>            YARN ÈİÆ÷·ÖÅäµÄÊıÁ¿
                                           (=Task ManagersµÄÊıÁ¿)
-     -ynm,--yarnname <arg>                ×Ô¶¨ÒåµÄÓ¦ÓÃ³ÌĞòÃû¶ÔÓÚYARN
+     -ynm,--yarnname <arg>                ÔÚYARNÖĞÉèÖÃ×Ô¶¨ÒåµÄÓ¦ÓÃ³ÌĞòÃû
      -yq,--yarnquery                      ÁĞ³ö¿ÉÓÃµÄYARN×ÊÔ´
-                                          (ÄÚ´æ, cores)
+                                          (ÄÚ´æ, ºËÊı)
      -yqu,--yarnqueue <arg>               ÉèÖÃYARNµÄÁĞ¶Ó.
      -ys,--yarnslots <arg>                Ã¿¸öTaskManagerµÄslotÊıÁ¿
-     -yst,--yarnstreaming                 Æô¶¯FlinkÊ¹ÓÃÁ÷Ê½¼ÆËãÄ£Ê½
-     -yt,--yarnship <arg>                 Ship files in the specified directory
-                                          (t for transfer)
-     -ytm,--yarntaskManagerMemory <arg>   Ã¿¸öTaskManagerÈİÆ÷Ê¹ÓÃµÄÄÚ´æÊı [ÓÃMB±íÊ¾]
+     -yst,--yarnstreaming                 ÒÔÁ÷Ä£Ê½Æô¶¯ Flink
+     -yt,--yarnship <arg>                 ÓÃÀ´´«ÊäÎÄ¼şµÄÄ¿Â¼£¨t ±íÊ¾ transfer£©
+     -ytm,--yarntaskManagerMemory <arg>   TaskManager ÈİÆ÷µÄÄÚ´æ´óĞ¡ [µ¥Î» MB]
 
 
-Action "info" ÓÃÀ´ÏÔÊ¾ÓÅ»¯ºóµÄ³ÌĞòÖ´ĞĞ¼Æ»® (JSON).
+Ö¸Áî "info" ÓÃÀ´ÏÔÊ¾ÓÅ»¯ºóµÄ³ÌĞòÖ´ĞĞ¼Æ»® (JSON).
 
   Óï·¨: info [OPTIONS] <jar-file> <arguments>
   "info" action Ñ¡Ïî:
-     -c,--class <classname>           ³ÌĞòµÄÈë¿ÚÀà("main" ·½·¨»ò "getPlan()" ·½·¨¡£
-                                      Èç¹ûJAR°ü²»°üº¬Ö¸¶¨classµÄmanifestÔòĞèÒª¡£
+     -c,--class <classname>           ³ÌĞòµÄÈë¿ÚÀà("main" ·½·¨»ò "getPlan()" ·½·¨¡££©
+                                      Ö»ÓĞµ± JAR ÎÄ¼şÃ»ÓĞÔÚ mainifest ÖĞÖ¸¶¨Èë¿ÚÀàÊ±²ÅĞèÒª¡£
      -m,--jobmanager <host:port>      Á¬½ÓJobManager (master) µÄµØÖ·¡£¿ÉÒÔÖ¸¶¨
                                       'yarn-cluster' ×÷ÎªJobManagerÏòYARN¼¯Èº
                                       Ìá½»job. Ê¹ÓÃÕâ¸öÑ¡ÏîÓÃÀ´Á¬½Ó²»Í¬µÄJobManager
@@ -204,7 +203,7 @@ Action "info" ÓÃÀ´ÏÔÊ¾ÓÅ»¯ºóµÄ³ÌĞòÖ´ĞĞ¼Æ»® (JSON).
                                       ¶¨µÄ²¢ĞĞ¶È¡£
 
 
-Action "list" ÁĞ¾Ù³öÔËĞĞÖĞ»òÕßÊÇÒÑ¾­µ÷¶ÈµÄ³ÌĞò.
+Ö¸Áî "list" ÁĞ¾Ù³öÔËĞĞÖĞ»òÕßÊÇÒÑ¾­µ÷¶ÈµÄ³ÌĞò.
 
   Óï·¨: list [OPTIONS]
   "list" action Ñ¡Ïî:
@@ -216,7 +215,7 @@ Action "list" ÁĞ¾Ù³öÔËĞĞÖĞ»òÕßÊÇÒÑ¾­µ÷¶ÈµÄ³ÌĞò.
      -s,--scheduled                Ö»ÏÔÊ¾ÒÑµ÷¶È¹ıµÄ³ÌĞòºÍËûÃÇµÄJobID¡£
 
 
-Action "cancel" È¡ÏûÒ»¸öÔËĞĞÖĞµÄ³ÌĞò.
+Ö¸Áî "cancel" È¡ÏûÒ»¸öÔËĞĞÖĞµÄ³ÌĞò.
 
   Óï·¨: cancel [OPTIONS] <Job ID>
   "cancel" action Ñ¡Ïî:
@@ -226,7 +225,7 @@ Action "cancel" È¡ÏûÒ»¸öÔËĞĞÖĞµÄ³ÌĞò.
                                    ÒÔÌæ»»ÅäÖÃÖĞÖ¸¶¨µÄJobManager¡£
 
 
-Action "stop" Í£Ö¹Ò»¸öÔËĞĞÖĞµÄ³ÌĞò (Ö»ÄÜÓÃÓÚstreaming jobs). ¶ÔÓÚÍ£Ö¹Ò»¸öÈÎÎñ£¬²¢Ã»ÓĞÇ¿Ò»ÖÂĞÔµÄ±£Ö¤¡£
+Ö¸Áî "stop" Í£Ö¹Ò»¸öÔËĞĞÖĞµÄ³ÌĞò (Ö»ÄÜÓÃÓÚstreaming jobs). ¶ÔÓÚÍ£Ö¹Ò»¸öÈÎÎñ£¬²¢Ã»ÓĞÇ¿Ò»ÖÂĞÔµÄ±£Ö¤¡£
 
   Óï·¨: stop [OPTIONS] <Job ID>
   "stop" action Ñ¡Ïî:
@@ -236,11 +235,11 @@ Action "stop" Í£Ö¹Ò»¸öÔËĞĞÖĞµÄ³ÌĞò (Ö»ÄÜÓÃÓÚstreaming jobs). ¶ÔÓÚÍ£Ö¹Ò»¸öÈÎÎñ£¬²
                                    ÒÔÌæ»»ÅäÖÃÖĞÖ¸¶¨µÄJobManager¡£
 
 
-Action "savepoint" ¶ÔÒ»¸öÔËĞĞÖĞµÄjob´¥·¢savepoint»òÊÇÏú»ÙÒ»¸ösavepoint¡£
+Ö¸Áî "savepoint" ¶ÔÒ»¸öÔËĞĞÖĞµÄjob´¥·¢savepoint»òÊÇÏú»ÙÒ»¸ösavepoint¡£
 
   Óï·¨: savepoint [OPTIONS] <Job ID>
   "savepoint" action Ñ¡Ïî:
-     -d,--dispose <savepointPath>   Ïú»Ù´æÔÚµÄsavepoint.
+     -d,--dispose <savepointPath>   Ïú»ÙÒ»¸öÏÖ´æµÄ savepoint¡£
      -m,--jobmanager <host:port>    Á¬½ÓJobManager (master) µÄµØÖ·¡£¿ÉÒÔÖ¸¶¨
                                     'yarn-cluster' ×÷ÎªJobManagerÏòYARN¼¯Èº
                                     Ìá½»job. Ê¹ÓÃÕâ¸öÑ¡ÏîÓÃÀ´Á¬½Ó²»Í¬µÄJobManager
