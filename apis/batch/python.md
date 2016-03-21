@@ -29,10 +29,10 @@ under the License.
 
 
 Flink 程序是在数据集上实现类似filtering, mapping, joining, grouping这种转换的普通程序。
-初始数据集从一些source（比如文件或collection）中创建出来。
+初始数据集是从特定的数据源（例如文件或集合）中创建出来的。
 通过sink来返回结果， 它有可能把结果写到（分布式）文件或标准输出（比如命令行终端）。
 Flink运行在各种context中， 比如standalone， 或嵌入到其他程序中。
-可以在本地jvm或多机器的集群上运行flink 程序。
+可以在本地 JVM 或集群上运行 Flink 程序。
 
 
 建议从[program skeleton](#program-skeleton) 开始学习编写flink程序，并逐步增加自己的[transformations](#transformations)操作。
@@ -77,7 +77,7 @@ Program Skeleton
 
 
 像例子中所示， flink 程序看起来像普通的python程序。
-每一个flink程序含有相同的基本部分：
+每个 Flink 程序包含以下几个基本的部分：
 
 1. 获得一个`Environment`
 2. 加载或创建初始数据
@@ -85,19 +85,16 @@ Program Skeleton
 4. 设定计算结果存储到哪里
 5. 执行程序
 
-这里先概述这些步骤，然后更多细节请参考各自的章节
+这里仅给出步骤的一个概述，请参见对应章节了解更多细节
 
 
-The `Environment` is the basis for all Flink programs. You can
-obtain one using these static methods on class `Environment`:
-
-`Environment` 是flink程序的基本元素， 用户可以通过类`Environment`的静态函数来获取它：
+`Environment` 是 Flink 程序的基础，用户可以通过`Environment`类的静态函数来获取它：
 
 {% highlight python %}
 get_environment()
 {% endhighlight %}
 
-执行环境有几种方式去读取文件。
+执行环境有多种方式去读取文件。
 如果仅仅按行读取文件， 可以类似下面：
 
 {% highlight python %}
