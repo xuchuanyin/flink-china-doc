@@ -1,5 +1,5 @@
 ---
-title:  "Local Execution"
+title:  "本地执行"
 # Top-level navigation
 top-nav-group: apis
 top-nav-pos: 7
@@ -23,21 +23,20 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Flink 可以单机运行，也可以是一台Java虚拟机。
-这使得用户可以在本地debug。
+Flink 不但可以单机运行，即使是单个 Java 虚拟机也可以。
+这使得用户可以在本地调试。
 本节主要讲述本地模式的运行机制。
 
-本地的JVM运行环境或者是带JVM运行环境的程序都可以运行Flink程序。
-大部分示例程序，你只需简单的地点击你IDE上的运行按钮就可以运行。
+Flink 可以运行在本地 Java 虚拟机中，或者带 JVM 环境的程序中。
+对于大部分示例程序而言，你只需简单的地点击你IDE上的运行按钮就可以运行。
 
 Flink在本地模式下支持两种运行方式。
-1.`LocalExecutionEnvironment` 这个环境包含了所有 Flink 的运行环境，不但包括 JobManager 和一个 TaskManager。
-还包含内存管理和所有在集群模式下的内部算法。
+1.`LocalExecutionEnvironment`  启动了完整的 Flink 运行环境，包括了一个 JobManager 和一个 TaskManager。
+还包含了内存管理和所有在集群模式下的内部算法。
 
 2.`CollectionEnvironment` 这个环境使用Java集合来执行Flink程序。
-这个模式不会启动一个完全的Flink运行环境。
-因此他会非常低开销、轻量地来执行。
-例如 `DataSet.map()`-转换操作，执行机制将是对JAVA list里的所有元素进行`map()` 函数的操作。
+这个模式不会启动一个完全的 Flink 运行环境，因此会开销非常低并且很轻量。
+例如 `DataSet.map()`-转换操作，执行机制将是对Java list里的所有元素进行`map()` 函数的操作。
 
 * TOC
 {:toc}
@@ -46,9 +45,11 @@ Flink在本地模式下支持两种运行方式。
 ## 调试
 
 如果你本地运行Flink程序，你可以像普通的Java程序一样调试Flink程序。
-你既可以用`System.out.println()` 打印一些内部变量，也可以使用其它的调试器。
-你还可以在`map()`, `reduce()` 或者其它方法上下断点。
-详细请看 [调试部分](programming_guide.html#debugging) 里的 Java API 测试与本地调试工具API指南文档。
+你既可以用`System.out.println()` 打印一些内部变量，也可以使用 IDE 提供的调试工具。
+你还可以在`map()`, `reduce()` 或者其他方法中打断点。
+请参见 [Batch 调试指南]({{ site.baseurl }}/apis/batch/debugging) 和 
+[Streaming 调试指南]({{ site.baseurl }}/apis/streaming/#debugging) 
+了解更多关于如何测试以及 API 中提供的本地调试工具。
 
 ## Maven 依赖
 
@@ -64,17 +65,17 @@ Flink在本地模式下支持两种运行方式。
 
 ## 本地环境
 
-本地环境 `LocalEnvironment` 来处理一个本地的 Flink 执行程序.
-用来在本地的JVM里来运行程序 - 独立模式或嵌入到其它程序中。
+ `LocalEnvironment` 是用来本地执行 Flink 程序的句柄。
+可以用它在本地的 JVM （standalone 或嵌入其他程序）里运行程序。
 
 本地环境通过调用方法`ExecutionEnvironment.createLocalEnvironment()`来获得。
-默认情况下，他根据你的CPU核数（硬件环境）来在本地开启同样多的线程。
+默认情况下，Flink 会根据你的CPU核数（硬件环境）来在本地开启同样多的线程。
 你可以指定你需要的并行度。
 本模式的日志可以通过`enableLogging()`/`disableLogging()`来设置是否向标准输出输出。
 
-大多数情况，调用`ExecutionEnvironment.getExecutionEnvironment()` 来获得Flink运行环境是一个好方式。
-这个方法在程序在本运行的时候（在CLI范围外）会返回一个`LocalEnvironment` 类，
-通过[命令行接口（CLI）](cli.html)来调用这个类的话，就已经预先配置好了以集群模式的执行。 
+在大多数情况下，更推荐使用`ExecutionEnvironment.getExecutionEnvironment()` 来获得 Flink 的运行环境。
+当程序是在本地（未使用命令行接口）启动时，该方法会返回`LocalEnvironment` ，
+当程序是通过命令行接口[命令行接口（CLI）](cli.html)提交时，则该方法会返回集群的执行环境。
 
 ~~~java
 public static void main(String[] args) throws Exception {
@@ -109,10 +110,9 @@ final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(con
 ## 集合环境
 
 集合环境使用`CollectionEnvironment` 类，这个类执行Flink程序时使用了一些低开销的方法。
-通过这个模式是用来进行自动化测试、调试、代码重用等这些场景来使用的。
+这种模式通常用于自动化测试、调试、代码重用等场景。
 
-在互动性强的场景下，用户可以使用批处理的实现算法。
-稍微改动下Flink程序就可以将其变成用于处理请求的Java应用服务器。
+用户可以将实现于批处理的算法用于更具交互性的场景中，一个Flink程序稍加修改即可用于处理请求的Java应用服务器。
 
 **基于集合环境的执行框架**
 
@@ -125,7 +125,7 @@ public static void main(String[] args) throws Exception {
 
     /* 数据集转换 ... */
 
-    // 在ArrayList中查询 Tuple2 元素。
+    // 将转换后的 Tuple2 结果元素导入到 ArrayList 中。
     Collection<...> result = new ArrayList<...>();
     resultDataSet.output(new LocalCollectionOutputFormat<...>(result));
 
@@ -139,7 +139,7 @@ public static void main(String[] args) throws Exception {
 }
 ~~~
 
-所有的示例在`flink-examples-batch` 模块的 `CollectionExecutionExample` 中.
+在`flink-examples-batch` 模块中有完整的示例，叫 `CollectionExecutionExample` .
 
-值得注意的是，基于集合环境的 Flink 程序只适用于小数据，和JVM的堆大小相匹配。
+值得注意的是，基于集合环境的 Flink 程序只适用于小数据， 不能超过 JVM 的堆内存大小
 集合模式只的执行器只使用了单线程，而非多线程。
