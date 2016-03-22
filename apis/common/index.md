@@ -43,6 +43,8 @@ Flink 程序是在分布式集合上实现转换（比如 filtering, mapping, up
 * This will be replaced by the TOC
 {:toc}
 
+<a id="linking-with-flink"></a>
+
 关联 Flink
 ------------------
 
@@ -295,6 +297,8 @@ print()
 延迟计算的机制可以让你能构建复杂的程序，而 Flink 仍会视为一个整体计划执行。
 
 {% top %}
+
+<a id="specifying-keys"></a>
 
 指定 Keys
 ---------------

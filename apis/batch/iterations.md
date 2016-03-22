@@ -24,6 +24,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 
+>本文暂未校对
 
 迭代算法在数据分析很多领域都会出现， 比如*machine learning* or *graph analysis*。 在实现从大数据中抽取出有用的信息， 这种算法非常关键。 随着对这种超大型数据的算法的兴趣不断提高， 有必要用一种大规模并行方式来运行这些迭代。
 

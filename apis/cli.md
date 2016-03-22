@@ -115,7 +115,7 @@ master 的启动脚本与 CLI 在同一安装目录下。
 
 [Savepoints]({{site.baseurl}}/apis/streaming/savepoints.html) 通过命令行客户端来控制。
 
-#### savepoint触发命令
+#### **触发一个 savepoint**:
 
 {% highlight bash %}
 ./bin/flink savepoint <jobID>
@@ -123,7 +123,7 @@ master 的启动脚本与 CLI 在同一安装目录下。
 
 返回一个已经创建的savepoint的路径。你需要通过这个路径来恢复或销毁savepoints。
 
-#### **恢复一个savepoint**:
+#### **恢复一个 savepoint**:
 
 {% highlight bash %}
 ./bin/flink run -s <savepointPath> ...
@@ -132,7 +132,7 @@ master 的启动脚本与 CLI 在同一安装目录下。
 这个 run 命令提交 job 时带有一个 savepoint 标记，这使得程序可以从 savepoint 保存的状态中恢复。
 savepoint路径是通过savepoint触发命令得到的。
 
-#### **销毁一个savepoint**:
+#### **销毁一个 savepoint**:
 
 {% highlight bash %}
 ./bin/flink savepoint -d <savepointPath>

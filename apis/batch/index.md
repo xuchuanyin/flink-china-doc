@@ -1,14 +1,14 @@
 ---
-title: "Flink DataSet API Programming Guide"
+title: "Flink DataSet API 编程指南"
 
 # Top-level navigation
 top-nav-group: apis
 top-nav-pos: 3
-top-nav-title: <strong>Batch Guide</strong> (DataSet API)
+top-nav-title: <strong>Batch 指南</strong> (DataSet API)
 
 # Sub-level navigation
 sub-nav-group: batch
-sub-nav-group-title: Batch Guide
+sub-nav-group-title: Batch 指南
 sub-nav-id: dataset_api
 sub-nav-pos: 1
 sub-nav-title: DataSet API
@@ -33,18 +33,22 @@ under the License.
 -->
 
 
-DataSet 程序是flink中常用程序，这些程序一般会对数据集执行转换操作，比如filtering／mapping／joining／grouping。 这些数据集一般从特定的source（文件或本地collection集合）中创建出来，通过sink输出结果，比如写数据到（分布式）文件中，或标准输出。 flink运行在各种context下，standalone或嵌入到其他程序中。可能在本地jvm中或多个机器的集群中执行。
+DataSet 程序是 Flink 实现了数据集上的转换操作（如 filtering, mapping, joining, grouping 等）的普通程序。初始数据集是从特定的数据源（例如文件或集合）中创建出来的。
+通过sink来返回结果，它有可能把结果写到（分布式）文件或标准输出（比如命令行终端）。
+Flink 可以运行在各种环境中， 比如 standalone，或嵌入到其他程序中。可以在本地 JVM 或集群上运行 Flink 程序。
 
-如果想要学习DataSet,建议从[basic concepts]({{ site.baseurl }}/apis/common/index.html)和[anatomy of a Flink Program]({{ site.baseurl }}/apis/common/index.html#anatomy-of-a-flink-program)开始入手，并逐步增加自己的[transformations](#dataset-transformations)操作。其他章节讲介绍额外的操作或高级特性。
+如果想要学习DataSet,建议从[基本概念]({{ site.baseurl }}/apis/common/index.html)和[剖析 Flink 程序]({{ site.baseurl }}/apis/common/index.html#anatomy-of-a-flink-program)开始入手，并逐步增加自己的[转换操作](#dataset-transformations)。其他章节将介绍额外的操作或高级特性。
 
 * This will be replaced by the TOC
 {:toc}
 
-Example Program
+<a id="example-program"></a>
+
+示例程序
 ---------------
 
+下面的程序是一个完整的、可运行的 WordCount 示例。你可以复制 &amp; 粘贴下方代码并在本地运行。你只需要引入正确的 Flink 依赖到项目中（参见 [关联 Flink]({{ site.baseurl }}/apis/common/#linking-with-flink)）并指定具体的 imports。之后你就可以出发了！
 
-下面是一个完整的wordcount例子。 只需要把flink library加入到项目中即可（参考[Linking with Flink](#linking-with-flink)）
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -106,17 +110,17 @@ object WordCount {
 
 {% top %}
 
-DataSet Transformations
+<a id="dataset-transformations"></a>
+
+DataSet 转换（Transformations）
 -----------------------
 
+转换（Transformations) 是将一个或多个 DataSet 转化为一个新的 DataSet。程序可以结合多个转换构建出一个复杂的拓扑。
 
-Transformations 是将一个或多个DataSet转化为一个新的DataSet。 程序将巧妙的把多个transformations打包在一起。 这里给一个简单的介绍，详情可以参考[transformations
-documentation](dataset_transformations.html)， 那里会有详细介绍并给出example.
+本节将简要介绍可用的转换。[转换文档](dataset_transformations.html)有对所有转换的完整介绍，并附带了例子。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
-
-<br />
 
 <table class="table table-bordered">
   <thead>
@@ -130,7 +134,7 @@ documentation](dataset_transformations.html)， 那里会有详细介绍并给�
     <tr>
       <td><strong>Map</strong></td>
       <td>
-        <p>Takes one element and produces one element.</p>
+        <p>输入一个元素，生成一个元素。</p>
 {% highlight java %}
 data.map(new MapFunction<String, Integer>() {
   public Integer map(String value) { return Integer.parseInt(value); }
@@ -142,7 +146,7 @@ data.map(new MapFunction<String, Integer>() {
     <tr>
       <td><strong>FlatMap</strong></td>
       <td>
-        <p>Takes one element and produces zero, one, or more elements. </p>
+        <p>输入一个元素，生成零个、一个、或多个元素。</p>
 {% highlight java %}
 data.flatMap(new FlatMapFunction<String, String>() {
   public void flatMap(String value, Collector<String> out) {
@@ -158,9 +162,8 @@ data.flatMap(new FlatMapFunction<String, String>() {
     <tr>
       <td><strong>MapPartition</strong></td>
       <td>
-        <p>在一个函数内对一个分区进行transform。Transforms a parallel partition in a single function call. The function get the partition
-        as an `Iterable` stream and can produce an arbitrary number of result values. The number of
-        elements in each partition depends on the degree-of-parallelism and previous operations.</p>
+      <p>在一个函数中对一个并行的分区进行转换。该函数将分区以 <code>Iterable</code> 流的形式传入，然后生成任意数量的结果值。每个分区中的元素数量取决于上一个操作的并行度。
+      </p>
 {% highlight java %}
 data.mapPartition(new MapPartitionFunction<String, Long>() {
   public void mapPartition(Iterable<String> values, Collector<Long> out) {
@@ -178,11 +181,9 @@ data.mapPartition(new MapPartitionFunction<String, Long>() {
     <tr>
       <td><strong>Filter</strong></td>
       <td>
-        <p>执行过滤操作， 对每个元素进行判断， 函数返回为true的元素会加入到新的DataSet中。Evaluates a boolean function for each element and retains those for which the function
-        returns true.<br/>
+        <p>执行过滤操作，对每个元素进行判断，只保留函数返回为 true 的元素。<br/>
 
-        <strong>IMPORTANT:</strong> The system assumes that the function does not modify the elements on which the predicate is applied. Violating this assumption
-        can lead to incorrect results.
+        <strong>重要:</strong> 系统假定该方法不会修改元素。违反该假定的话可能会导致错误的结果。
         </p>
 {% highlight java %}
 data.filter(new FilterFunction<Integer>() {
@@ -195,8 +196,8 @@ data.filter(new FilterFunction<Integer>() {
     <tr>
       <td><strong>Reduce</strong></td>
       <td>
-        <p>将一组元素合并为一个单个元素，通过不断重复执行合并2个元素到一个元素的操作。Combines a group of elements into a single element by repeatedly combining two elements
-        into one. Reduce may be applied on a full data set, or on a grouped data set.</p>
+        <p>通过不断重复合并两个元素到一个元素的操作，将一组元素合并为一个元素。Reduce 可以应用在一个完整的数据集上，或者已分组的数据集上。
+        </p>
 {% highlight java %}
 data.reduce(new ReduceFunction<Integer> {
   public Integer reduce(Integer a, Integer b) { return a + b; }
@@ -208,8 +209,8 @@ data.reduce(new ReduceFunction<Integer> {
     <tr>
       <td><strong>ReduceGroup</strong></td>
       <td>
-        <p>将一组元素合并为一个或多个元素。Combines a group of elements into one or more elements. ReduceGroup may be applied on a
-        full data set, or on a grouped data set.</p>
+        <p>将一组元素合并为一个或多个元素。ReduceGroup 可以应用在一个完整的数据集上，或者已分组的数据集上。
+        </p>
 {% highlight java %}
 data.reduceGroup(new GroupReduceFunction<Integer, Integer> {
   public void reduce(Iterable<Integer> values, Collector<Integer> out) {
@@ -227,14 +228,13 @@ data.reduceGroup(new GroupReduceFunction<Integer, Integer> {
     <tr>
       <td><strong>Aggregate</strong></td>
       <td>
-        <p>将一组值合并为一个值中。Aggregates a group of values into a single value. Aggregation functions can be thought of
-        as built-in reduce functions. Aggregate may be applied on a full data set, or on a grouped
-        data set.</p>
+        <p>将一组值聚合到一个值中。Aggregation 函数可以认为是内建的 reduce 函数。Aggregate 可以应用在一个完整的数据集上，或者已分组的数据集上。
+        </p>
 {% highlight java %}
 Dataset<Tuple3<Integer, String, Double>> input = // [...]
 DataSet<Tuple3<Integer, String, Double>> output = input.aggregate(SUM, 0).and(MIN, 2);
 {% endhighlight %}
-	<p>You can also use short-hand syntax for minimum, maximum, and sum aggregations.</p>
+	<p>同时，对于 minimum, maximum, 和 sum 聚合，你也可以使用简写语法。</p>
 	{% highlight java %}
 	Dataset<Tuple3<Integer, String, Double>> input = // [...]
 DataSet<Tuple3<Integer, String, Double>> output = input.sum(0).andMin(2);
@@ -245,8 +245,8 @@ DataSet<Tuple3<Integer, String, Double>> output = input.sum(0).andMin(2);
     <tr>
       <td><strong>Distinct</strong></td>
       <td>
-        <p>对一个DataSet 去掉重复元素。Returns the distinct elements of a data set. It removes the duplicate entries
-        from the input DataSet, with respect to all fields of the elements, or a subset of fields.</p>
+        <p>返回数据集中不重复的元素。去除了输入数据集中在全字段（或字段子集）上重复的元素。
+        </p>
     {% highlight java %}
         data.distinct();
     {% endhighlight %}
@@ -256,36 +256,30 @@ DataSet<Tuple3<Integer, String, Double>> output = input.sum(0).andMin(2);
     <tr>
       <td><strong>Join</strong></td>
       <td>
-        对2个data set进行join， 基于相同key生成pairs。Joins two data sets by creating all pairs of elements that are equal on their keys.
-        Optionally uses a JoinFunction to turn the pair of elements into a single element, or a
-        FlatJoinFunction to turn the pair of elements into arbitrarily many (including none)
-        elements. See the <a href="#specifying-keys">keys section</a> to learn how to define join keys.
+        Join 两个数据集，生成所有 key 相同的元素对。
+        可选地，可以使用 JoinFunction 转换元素对为单个元素，或者使用 FlatJoinFunction 转换元素对为任意多（包括无）的元素。参见 <a href="{{ site.baseurl}}/apis/common/#specifying-keys">key 章节</a> 了解如何定义 join 的 key。
+        
 {% highlight java %}
 result = input1.join(input2)
                .where(0)       // key of the first input (tuple field 0)
                .equalTo(1);    // key of the second input (tuple field 1)
 {% endhighlight %}
-        You can specify the way that the runtime executes the join via <i>Join Hints</i>. The hints
-        describe whether the join happens through partitioning or broadcasting, and whether it uses
-        a sort-based or a hash-based algorithm. Please refer to the
-        <a href="dataset_transformations.html#join-algorithm-hints">Transformations Guide</a> for
-        a list of possible hints and an example.</br>
-        If no hint is specified, the system will try to make an estimate of the input sizes and
-        pick a the best strategy according to those estimates.
+        你可以通过 <i>Join Hints</i> 指定 join 执行的方式。Hint 描述了 join 是否会有分区或广播的发生，以及是否使用了基于排序或基于哈希的算法。请参考 <a href="dataset_transformations.html#join-algorithm-hints">转换指南</a> 了解可用的 hint 列表以及示例。</br>
+        如果没有指定 hint，系统会尝试对输入数据进行估算并根据估算结果选择一个最佳策略。
 {% highlight java %}
 // This executes a join by broadcasting the first data set
 // using a hash table for the broadcasted data
 result = input1.join(input2, JoinHint.BROADCAST_HASH_FIRST)
                .where(0).equalTo(1);
 {% endhighlight %}
-        Note that the join transformation works only for equi-joins. Other join types need to be expressed using OuterJoin or CoGroup.
+        注意 join 转换仅能处理 equi-joins。其他 join 类型需要使用 OuterJoin 或 CoGroup。
       </td>
     </tr>
 
     <tr>
       <td><strong>OuterJoin</strong></td>
       <td>
-        对2个data set进行left／right／full－outer join， 类似join函数（inner join），基于相同key生成pairs。Performs a left, right, or full outer join on two data sets. Outer joins are similar to regular (inner) joins and create all pairs of elements that are equal on their keys. In addition, records of the "outer" side (left, right, or both in case of full) are preserved if no matching key is found in the other side. Matching pairs of elements (or one element and a `null` value for the other input) are given to a JoinFunction to turn the pair of elements into a single element, or to a FlatJoinFunction to turn the pair of elements into arbitrarily many (including none)         elements. See the <a href="#specifying-keys">keys section</a> to learn how to define join keys.
+      在两个数据集上执行 left/right/full-outer join。Outer join 类似普通的（inner）join，会生成相同 key 的所有元素对。额外的，对于 "outer" （left 或 right 或 full）那一面的记录而言，如果在另一面没有找到匹配的 key，则这些记录都会被保留。匹配的元素对（或一个元素和另一边的一个 <code>null</code> 值）传入到 JoinFunction 中被转成了单个的元素，或传入到 FlatJoinFunction 中被转成了任意多（包括无）的元素。参见 <a href="{{ site.baseurl}}/apis/common/#specifying-keys">key 章节</a> 了解如何定义 join 的 key。
 {% highlight java %}
 input1.leftOuterJoin(input2) // rightOuterJoin or fullOuterJoin for right or full outer joins
       .where(0)              // key of the first input (tuple field 0)
@@ -305,9 +299,8 @@ input1.leftOuterJoin(input2) // rightOuterJoin or fullOuterJoin for right or ful
     <tr>
       <td><strong>CoGroup</strong></td>
       <td>
-        <p>对两维数据进行reduce操作， 对一个或多个filed进行group操作，然后进行join这些group。The two-dimensional variant of the reduce operation. Groups each input on one or more
-        fields and then joins the groups. The transformation function is called per pair of groups.
-        See the <a href="#specifying-keys">keys section</a> to learn how to define coGroup keys.</p>
+        <p>对两维数据进行reduce操作， 对一个或多个字段进行分组操作，然后进行join这些分组。每一对分组都会调用该转换函数。参见 <a href="{{ site.baseurl}}/apis/common/#specifying-keys">key 章节</a> 了解如何定义 join 的 key。
+        </p>
 {% highlight java %}
 data1.coGroup(data2)
      .where(0)
@@ -324,22 +317,22 @@ data1.coGroup(data2)
     <tr>
       <td><strong>Cross</strong></td>
       <td>
-        <p>对2个输入进行cros操作，创建元素的所有pair。Builds the Cartesian product (cross product) of two inputs, creating all pairs of
-        elements. Optionally uses a CrossFunction to turn the pair of elements into a single
-        element</p>
+        <p>对两个输入进行笛卡尔积（cross product），生成所有的元素对。可选地，可以使用 CrossFunction 将元素对转换成单个元素。
+        </p>
 {% highlight java %}
 DataSet<Integer> data1 = // [...]
 DataSet<String> data2 = // [...]
 DataSet<Tuple2<Integer, String>> result = data1.cross(data2);
 {% endhighlight %}
-      <p>Note: Cross is potentially a <b>very</b> compute-intensive operation which can challenge even large compute clusters! It is adviced to hint the system with the DataSet sizes by using <i>crossWithTiny()</i> and <i>crossWithHuge()</i>.</p>
+      <p>注意：Cross 是一个潜在的计算量非常大的操作。建议通过使用 <i>crossWithTiny()</i> 和 <i>crossWithHuge()</i> 告诉系统该数据集的大小。
+      </p>
       </td>
     </tr>
     <tr>
       <td><strong>Union</strong></td>
       <td>
-        <p>当一个dataset不能满足数据需求时，需要加入其他data set的数据。Produces the union of two data sets. This operation happens implicitly if more than one
-        data set is used for a specific function input.</p>
+        <p>生成两个数据集的并集。如果多于一个数据集被用作函数的输入，该操作会被隐式地调用。
+        </p>
 {% highlight java %}
 DataSet<String> data1 = // [...]
 DataSet<String> data2 = // [...]
@@ -350,7 +343,8 @@ DataSet<String> result = data1.union(data2);
     <tr>
       <td><strong>Rebalance</strong></td>
       <td>
-        <p>主要是解决在多分区情况下，数据倾斜问题。Evenly rebalances the parallel partitions of a data set to eliminate data skew. Only Map-like transformations may follow a rebalance transformation.</p>
+        <p>
+        主要是解决在多分区情况下，数据倾斜问题。将一个数据集均匀地分布到多个并行分区中。只有类似 map 的转换操作会跟在 rebalance 转换之后。</p>
 {% highlight java %}
 DataSet<String> in = // [...]
 DataSet<String> result = in.rebalance()
@@ -361,7 +355,8 @@ DataSet<String> result = in.rebalance()
     <tr>
       <td><strong>Hash-Partition</strong></td>
       <td>
-        <p>在某个key上执行hash partitions。Hash-partitions a data set on a given key. Keys can be specified as position keys, expression keys, and key selector functions.</p>
+        <p>在某个key上执行哈希分区。Key 可以是 position key，也可以是 expression key，或是 selector 函数。
+        </p>
 {% highlight java %}
 DataSet<Tuple2<String,Integer>> in = // [...]
 DataSet<Integer> result = in.partitionByHash(0)
@@ -372,7 +367,8 @@ DataSet<Integer> result = in.partitionByHash(0)
     <tr>
       <td><strong>Range-Partition</strong></td>
       <td>
-        <p>在某个key上range partition。 Range-partitions a data set on a given key. Keys can be specified as position keys, expression keys, and key selector functions.</p>
+        <p>在某个key上 Range-Partition。Key 可以是 position key，也可以是 expression key，或是 selector 函数。
+        </p>
 {% highlight java %}
 DataSet<Tuple2<String,Integer>> in = // [...]
 DataSet<Integer> result = in.partitionByRange(0)
@@ -383,9 +379,9 @@ DataSet<Integer> result = in.partitionByRange(0)
     <tr>
       <td><strong>Custom Partitioning</strong></td>
       <td>
-        <p>自定义parition操作。Manually specify a partitioning over the data.
+        <p>自定义分区操作。在数据上手工指定一个分区函数。
           <br/>
-          <i>Note</i>: This method works only on single field keys.</p>
+          <i>注意</i>: 该方法仅在单字段 key 上有效。</p>
 {% highlight java %}
 DataSet<Tuple2<String,Integer>> in = // [...]
 DataSet<Integer> result = in.partitionCustom(Partitioner<K> partitioner, key)
@@ -395,9 +391,9 @@ DataSet<Integer> result = in.partitionCustom(Partitioner<K> partitioner, key)
     <tr>
       <td><strong>Sort Partition</strong></td>
       <td>
-        <p>在某个字段上本地sort 所有分区的数据。Locally sorts all partitions of a data set on a specified field in a specified order.
-          Fields can be specified as tuple positions or field expressions.
-          Sorting on multiple fields is done by chaining sortPartition() calls.</p>
+        <p>在某个字段上本地排序所有分区的数据。字段可以指定为 tuple 下标，或字段表达式。
+        在多字段上排序可以通过 chaining 上 sortPartition()。
+         </p>
 {% highlight java %}
 DataSet<Tuple2<String,Integer>> in = // [...]
 DataSet<Integer> result = in.sortPartition(1, Order.ASCENDING)
@@ -408,7 +404,8 @@ DataSet<Integer> result = in.sortPartition(1, Order.ASCENDING)
     <tr>
       <td><strong>First-n</strong></td>
       <td>
-        <p>返回一个data set的前n个元素。 Returns the first n (arbitrary) elements of a data set. First-n can be applied on a regular data set, a grouped data set, or a grouped-sorted data set. Grouping keys can be specified as key-selector functions or field position keys.</p>
+        <p>返回一个数据集中的的前 n（任意）个元素。First-n 可以应用在普通的数据集上，或是分组的数据集上，或是分组且排序的数据集上。分组的 key 可以指定为 key-selector 函数，或是 field position。
+         </p>
 {% highlight java %}
 DataSet<Tuple2<String,Integer>> in = // [...]
 // regular data set
@@ -428,20 +425,21 @@ DataSet<Tuple2<String,Integer>> result3 = in.groupBy(0)
 
 ----------
 
-The following transformations are available on data sets of Tuples:
+以下的转换操作仅可以用在 Tuple 的数据集上：
 
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th class="text-left" style="width: 20%">Transformation</th>
-      <th class="text-center">Description</th>
+      <th class="text-left" style="width: 20%">转换</th>
+      <th class="text-center">描述</th>
     </tr>
   </thead>
   <tbody>
    <tr>
       <td><strong>Project</strong></td>
       <td>
-        <p>选择tuple field子集组成新的data set。Selects a subset of fields from the tuples</p>
+        <p>从 tuples 中选择一部分字段子集。
+        </p>
 {% highlight java %}
 DataSet<Tuple3<Integer, Double, String>> in = // [...]
 DataSet<Tuple2<String, Integer>> out = in.project(2,0);
@@ -467,7 +465,7 @@ DataSet<Tuple2<String, Integer>> out = in.project(2,0);
     <tr>
       <td><strong>Map</strong></td>
       <td>
-        <p>输入一个元素输出一个元素。 Takes one element and produces one element.</p>
+        <p>输入一个元素，生成一个元素。</p>
 {% highlight scala %}
 data.map { x => x.toInt }
 {% endhighlight %}
@@ -477,7 +475,7 @@ data.map { x => x.toInt }
     <tr>
       <td><strong>FlatMap</strong></td>
       <td>
-        <p>输入一个元素，产生0个或1个或多个元素。Takes one element and produces zero, one, or more elements. </p>
+        <p>输入一个元素，生成零个、一个、或多个元素。</p>
 {% highlight scala %}
 data.flatMap { str => str.split(" ") }
 {% endhighlight %}
@@ -487,9 +485,7 @@ data.flatMap { str => str.split(" ") }
     <tr>
       <td><strong>MapPartition</strong></td>
       <td>
-        <p>在一个函数内对一个分区进行transform。Transforms a parallel partition in a single function call. The function get the partition
-        as an `Iterator` and can produce an arbitrary number of result values. The number of
-        elements in each partition depends on the degree-of-parallelism and previous operations.</p>
+        <p>在一个函数中对一个并行的分区进行转换。该函数将分区以 <code>Iterable</code> 流的形式传入，然后生成任意数量的结果值。每个分区中的元素数量取决于上一个操作的并行度。</p>
 {% highlight scala %}
 data.mapPartition { in => in map { (_, 1) } }
 {% endhighlight %}
@@ -499,10 +495,9 @@ data.mapPartition { in => in map { (_, 1) } }
     <tr>
       <td><strong>Filter</strong></td>
       <td>
-        <p>执行过滤操作， 对每个元素进行判断， 函数返回为true的元素会加入到新的DataSet中。Evaluates a boolean function for each element and retains those for which the function
-        returns true.<br/>
-        <strong>IMPORTANT:</strong> The system assumes that the function does not modify the element on which the predicate is applied.
-        Violating this assumption can lead to incorrect results.</p>
+        <p>执行过滤操作，对每个元素进行判断，只保留函数返回为 true 的元素。
+          <strong>重要:</strong> 系统假定该方法不会修改元素。违反该假定的话可能会导致错误的结果。
+        </p>
 {% highlight scala %}
 data.filter { _ > 1000 }
 {% endhighlight %}
@@ -512,8 +507,7 @@ data.filter { _ > 1000 }
     <tr>
       <td><strong>Reduce</strong></td>
       <td>
-        <p>将一组元素合并为一个单个元素，通过不断重复执行合并2个元素到一个元素的操作。Combines a group of elements into a single element by repeatedly combining two elements
-        into one. Reduce may be applied on a full data set, or on a grouped data set.</p>
+        <p>通过不断重复合并两个元素到一个元素的操作，将一组元素合并为一个元素。Reduce 可以应用在一个完整的数据集上，或者已分组的数据集上。</p>
 {% highlight scala %}
 data.reduce { _ + _ }
 {% endhighlight %}
@@ -523,8 +517,7 @@ data.reduce { _ + _ }
     <tr>
       <td><strong>ReduceGroup</strong></td>
       <td>
-        <p>将一组元素合并为一个或多个元素。Combines a group of elements into one or more elements. ReduceGroup may be applied on a
-        full data set, or on a grouped data set.</p>
+        <p>将一组元素合并为一个或多个元素。ReduceGroup 可以应用在一个完整的数据集上，或者已分组的数据集上。</p>
 {% highlight scala %}
 data.reduceGroup { elements => elements.sum }
 {% endhighlight %}
@@ -534,14 +527,12 @@ data.reduceGroup { elements => elements.sum }
     <tr>
       <td><strong>Aggregate</strong></td>
       <td>
-        <p>将一组值合并为一个值中。Aggregates a group of values into a single value. Aggregation functions can be thought of
-        as built-in reduce functions. Aggregate may be applied on a full data set, or on a grouped
-        data set.</p>
+        <p>将一组值聚合到一个值中。Aggregation 函数可以认为是内建的 reduce 函数。Aggregate 可以应用在一个完整的数据集上，或者已分组的数据集上。</p>
 {% highlight scala %}
 val input: DataSet[(Int, String, Double)] = // [...]
 val output: DataSet[(Int, String, Doublr)] = input.aggregate(SUM, 0).aggregate(MIN, 2);
 {% endhighlight %}
-  <p>You can also use short-hand syntax for minimum, maximum, and sum aggregations.</p>
+  <p>同时，对于 minimum, maximum, 和 sum 聚合，你也可以使用简写语法。</p>
 {% highlight scala %}
 val input: DataSet[(Int, String, Double)] = // [...]
 val output: DataSet[(Int, String, Doublr)] = input.sum(0).min(2)
@@ -552,33 +543,24 @@ val output: DataSet[(Int, String, Doublr)] = input.sum(0).min(2)
     <tr>
       <td><strong>Distinct</strong></td>
       <td>
-        <p>对一个DataSet 去掉重复元素。Returns the distinct elements of a data set. It removes the duplicate entries
-        from the input DataSet, with respect to all fields of the elements, or a subset of fields.</p>
-      {% highlight scala %}
-         data.distinct()
-      {% endhighlight %}
+        <p>返回数据集中不重复的元素。去除了输入数据集中在全字段（或字段子集）上重复的元素。</p>
+{% highlight scala %}
+   data.distinct()
+{% endhighlight %}
       </td>
     </tr>
 
     </tr>
       <td><strong>Join</strong></td>
       <td>
-        对2个data set进行join， 基于相同key生成pairs。Joins two data sets by creating all pairs of elements that are equal on their keys.
-        Optionally uses a JoinFunction to turn the pair of elements into a single element, or a
-        FlatJoinFunction to turn the pair of elements into arbitrarily many (including none)
-        elements. See the <a href="#specifying-keys">keys section</a> to learn how to define join keys.
+      Join 两个数据集，生成所有 key 相同的元素对。 可选地，可以使用 JoinFunction 转换元素对为单个元素，或者使用 FlatJoinFunction 转换元素对为任意多（包括无）的元素。参见 <a href="{{ site.baseurl}}/apis/common/#specifying-keys">key 章节</a> 了解如何定义 join 的 key。
 {% highlight scala %}
 // In this case tuple fields are used as keys. "0" is the join field on the first tuple
 // "1" is the join field on the second tuple.
 val result = input1.join(input2).where(0).equalTo(1)
 {% endhighlight %}
-        You can specify the way that the runtime executes the join via <i>Join Hints</i>. The hints
-        describe whether the join happens through partitioning or broadcasting, and whether it uses
-        a sort-based or a hash-based algorithm. Please refer to the
-        <a href="dataset_transformations.html#join-algorithm-hints">Transformations Guide</a> for
-        a list of possible hints and an example.</br>
-        If no hint is specified, the system will try to make an estimate of the input sizes and
-        pick a the best strategy according to those estimates.
+  你可以通过 <i>Join Hints</i> 指定 join 执行的方式。Hint 描述了 join 是否会有分区或广播的发生，以及是否使用了基于排序或基于哈希的算法。请参考 <a href="dataset_transformations.html#join-algorithm-hints">转换指南</a> 了解可用的 hint 列表以及示例。 <br>
+  如果没有指定 hint，系统会尝试对输入数据进行估算并根据估算结果选择一个最佳策略。
 {% highlight scala %}
 // This executes a join by broadcasting the first data set
 // using a hash table for the broadcasted data
@@ -592,7 +574,7 @@ val result = input1.join(input2, JoinHint.BROADCAST_HASH_FIRST)
     <tr>
       <td><strong>OuterJoin</strong></td>
       <td>
-        对2个data set进行left／right／full－outer join， 类似join（inner），基于相同key生成pairs。Performs a left, right, or full outer join on two data sets. Outer joins are similar to regular (inner) joins and create all pairs of elements that are equal on their keys. In addition, records of the "outer" side (left, right, or both in case of full) are preserved if no matching key is found in the other side. Matching pairs of elements (or one element and a `null` value for the other input) are given to a JoinFunction to turn the pair of elements into a single element, or to a FlatJoinFunction to turn the pair of elements into arbitrarily many (including none)         elements. See the <a href="#specifying-keys">keys section</a> to learn how to define join keys.
+      在两个数据集上执行 left/right/full-outer join。Outer join 类似普通的（inner）join，会生成相同 key 的所有元素对。额外的，对于 "outer" （left 或 right 或 full）那一面的记录而言，如果在另一面没有找到匹配的 key，则这些记录都会被保留。匹配的元素对（或一个元素和另一边的一个 null 值）传入到 JoinFunction 中被转成了单个的元素，或传入到 FlatJoinFunction 中被转成了任意多（包括无）的元素。参见 <a href="{{ site.baseurl}}/apis/common/#specifying-keys">key 章节</a> 了解如何定义 join 的 key。
 {% highlight scala %}
 val joined = left.leftOuterJoin(right).where(0).equalTo(1) {
    (left, right) =>
@@ -606,9 +588,7 @@ val joined = left.leftOuterJoin(right).where(0).equalTo(1) {
     <tr>
       <td><strong>CoGroup</strong></td>
       <td>
-        <p>对两维数据进行reduce操作， 对一个或多个filed进行group操作，然后进行join这些group。The two-dimensional variant of the reduce operation. Groups each input on one or more
-        fields and then joins the groups. The transformation function is called per pair of groups.
-        See the <a href="#specifying-keys">keys section</a> to learn how to define coGroup keys.</p>
+        <p>对两维数据进行reduce操作， 对一个或多个字段进行分组操作，然后进行join这些分组。每一对分组都会调用该转换函数。参见 <a href="{{ site.baseurl}}/apis/common/#specifying-keys">key 章节</a> 了解如何定义 join 的 key。</p>
 {% highlight scala %}
 data1.coGroup(data2).where(0).equalTo(1)
 {% endhighlight %}
@@ -618,21 +598,19 @@ data1.coGroup(data2).where(0).equalTo(1)
     <tr>
       <td><strong>Cross</strong></td>
       <td>
-        <p>基于两个输入做cross操作。Builds the Cartesian product (cross product) of two inputs, creating all pairs of
-        elements. Optionally uses a CrossFunction to turn the pair of elements into a single
-        element</p>
+        <p>对两个输入进行笛卡尔积（cross product），生成所有的元素对。可选地，可以使用 CrossFunction 将元素对转换成单个元素。</p>
 {% highlight scala %}
 val data1: DataSet[Int] = // [...]
 val data2: DataSet[String] = // [...]
 val result: DataSet[(Int, String)] = data1.cross(data2)
 {% endhighlight %}
-        <p>Note: Cross is potentially a <b>very</b> compute-intensive operation which can challenge even large compute clusters! It is adviced to hint the system with the DataSet sizes by using <i>crossWithTiny()</i> and <i>crossWithHuge()</i>.</p>
+  <p>注意：Cross 是一个潜在的计算量非常大的操作。建议通过使用 <i>crossWithTiny()</i> 和 <i>crossWithHuge()</i> 告诉系统该数据集的大小。</p>
       </td>
     </tr>
     <tr>
       <td><strong>Union</strong></td>
       <td>
-        <p>合并2个data set。Produces the union of two data sets.</p>
+        <p>生成两个数据集的并集。如果多于一个数据集被用作函数的输入，该操作会被隐式地调用。</p>
 {% highlight scala %}
 data.union(data2)
 {% endhighlight %}
@@ -641,7 +619,7 @@ data.union(data2)
     <tr>
       <td><strong>Rebalance</strong></td>
       <td>
-        <p>主要是解决在多分区情况下，数据倾斜问题。Evenly rebalances the parallel partitions of a data set to eliminate data skew. Only Map-like transformations may follow a rebalance transformation.</p>
+        <p>主要是解决在多分区情况下，数据倾斜问题。将一个数据集均匀地分布到多个并行分区中。只有类似 map 的转换操作会跟在 rebalance 转换之后。</p>
 {% highlight scala %}
 val data1: DataSet[Int] = // [...]
 val result: DataSet[(Int, String)] = data1.rebalance().map(...)
@@ -651,7 +629,7 @@ val result: DataSet[(Int, String)] = data1.rebalance().map(...)
     <tr>
       <td><strong>Hash-Partition</strong></td>
       <td>
-        <p>在某个key上执行hash partitions。Hash-partitions a data set on a given key. Keys can be specified as position keys, expression keys, and key selector functions.</p>
+        <p>在某个key上执行哈希分区。Key 可以是 position key，也可以是 expression key，或是 selector 函数。</p>
 {% highlight scala %}
 val in: DataSet[(Int, String)] = // [...]
 val result = in.partitionByHash(0).mapPartition { ... }
@@ -661,7 +639,7 @@ val result = in.partitionByHash(0).mapPartition { ... }
     <tr>
       <td><strong>Range-Partition</strong></td>
       <td>
-        <p>在一个指定的key上作range parition。Range-partitions a data set on a given key. Keys can be specified as position keys, expression keys, and key selector functions.</p>
+        <p>在某个key上 Range-Partition。Key 可以是 position key，也可以是 expression key，或是 selector 函数。</p>
 {% highlight scala %}
 val in: DataSet[(Int, String)] = // [...]
 val result = in.partitionByRange(0).mapPartition { ... }
@@ -672,9 +650,9 @@ val result = in.partitionByRange(0).mapPartition { ... }
     <tr>
       <td><strong>Custom Partitioning</strong></td>
       <td>
-        <p>自定义partition。Manually specify a partitioning over the data.
+        <p>自定义分区操作。在数据上手工指定一个分区函数。 
           <br/>
-          <i>Note</i>: This method works only on single field keys.</p>
+          <i>注意</i>: 该方法仅在单字段 key 上有效。</p>
 {% highlight scala %}
 val in: DataSet[(Int, String)] = // [...]
 val result = in
@@ -685,9 +663,7 @@ val result = in
     <tr>
       <td><strong>Sort Partition</strong></td>
       <td>
-        <p>在某个字段上本地sort 所有分区的数据。Locally sorts all partitions of a data set on a specified field in a specified order.
-          Fields can be specified as tuple positions or field expressions.
-          Sorting on multiple fields is done by chaining sortPartition() calls.</p>
+        <p>在某个字段上本地排序所有分区的数据。字段可以指定为 tuple 下标，或字段表达式。 在多字段上排序可以通过 chaining 上 sortPartition()。</p>
 {% highlight scala %}
 val in: DataSet[(Int, String)] = // [...]
 val result = in.sortPartition(1, Order.ASCENDING).mapPartition { ... }
@@ -697,8 +673,7 @@ val result = in.sortPartition(1, Order.ASCENDING).mapPartition { ... }
     <tr>
       <td><strong>First-n</strong></td>
       <td>
-        <p>返回一个data set的first n个元素。Returns the first n (arbitrary) elements of a data set. First-n can be applied on a regular data set, a grouped data set, or a grouped-sorted data set. Grouping keys can be specified as key-selector functions,
-        tuple positions or case class fields.</p>
+        <p>返回一个数据集中的的前 n（任意）个元素。First-n 可以应用在普通的数据集上，或是分组的数据集上，或是分组且排序的数据集上。分组的 key 可以指定为 key-selector 函数，或是 field position。</p>
 {% highlight scala %}
 val in: DataSet[(Int, String)] = // [...]
 // regular data set
@@ -717,9 +692,9 @@ val result3 = in.groupBy(0).sortGroup(1, Order.ASCENDING).first(3)
 </div>
 
 
-当对一个transformation自定义一个名字时， 可以通过`setParallelism(int)`来设置transformation的[parallelism](#parallel-execution), 这种方式可以帮组debug。 DataSource/DataSinks 都可以使用。
+当对一个转换自定义一个名字时，可以通过`setParallelism(int)`来设置转换的[并行度](#parallel-execution), 这种方式可以帮助调试。这对于 DataSource 和 DataSinks 都是通用的。
 
-传递给`withParameters(Configuration)`的configuration对象， 可以在用户函数内的open函数中被访问。
+传递给`withParameters(Configuration)`的 Configuration 对象，可以在用户函数内的 `open()` 函数中被访问。
 
 {% top %}
 
@@ -730,13 +705,11 @@ Data Sources
 <div data-lang="java" markdown="1">
 
 
-Data sources 从文件或java collection中创建初始的data set。 背后的机制请参考{% gh_link /flink-core/src/main/java/org/apache/flink/api/common/io/InputFormat.java "InputFormat"%}.
-
-Flink 内建了常见文件格式。 可以从*ExecutionEnvironment*函数直接使用。
+Data sources 从文件或 Java 集合中创建了初始的数据集。背后的机制请参考{% gh_link /flink-core/src/main/java/org/apache/flink/api/common/io/InputFormat.java "InputFormat"%}。Flink 内建了多种常见格式以方便从常用文件中创建数据集。它们中的大多数都可以通过 *ExecutionEnvironment* 的函数直接使用。
 
 File-based:
 
-- `readTextFile(path)` / `TextInputFormat` - 按行读取文件并返回strings. Reads files line wise and returns them as Strings.
+- `readTextFile(path)` / `TextInputFormat` - Reads files line wise and returns them as Strings.
 
 - `readTextFileWithValue(path)` / `TextValueInputFormat` - Reads files line wise and returns them as
   StringValues. StringValues are mutable strings.
@@ -840,7 +813,7 @@ DataSet<Tuple2<String, Integer> dbData =
 
 #### Configuring CSV Parsing
 
-Flink 提供一些csv解析的配置:
+Flink 提供一些 CSV 解析的配置:
 
 - `types(Class ... types)` specifies the types of the fields to parse. **It is mandatory to configure the types of the parsed fields.**
   In case of the type class Boolean.class, "True" (case-insensitive), "False" (case-insensitive), "1" and "0" are treated as booleans.
@@ -862,8 +835,7 @@ Flink 提供一些csv解析的配置:
 
 #### Recursive Traversal of the Input Path Directory
 
-
-遍历一个目录。对于基于文件的输入， 如果输入的是一个目录， 默认不会遍历子目录的文件。默认，只会读取第一层目录的文件， 而忽略子目录的文件。 可以通过设置`recursive.file.enumeration`来打开遍历子目录的设置。
+遍历一个目录。对于基于文件的输入，如果输入的是一个目录，默认不会遍历子目录的文件。而是只会读取第一层目录的文件，忽略子目录的文件。可以通过设置`recursive.file.enumeration`来开启遍历子目录的设置。如下示例所示：
 
 
 {% highlight java %}
@@ -884,10 +856,7 @@ DataSet<String> logs = env.readTextFile("file:///path/with.nested/files")
 </div>
 <div data-lang="scala" markdown="1">
 
-
-Data sources 从文件或java collection中创建初始的data set。 背后的机制请参考{% gh_link /flink-core/src/main/java/org/apache/flink/api/common/io/InputFormat.java "InputFormat"%}.
-
-Flink 内建了常见文件格式。 可以从*ExecutionEnvironment*函数直接使用。
+Data sources 从文件或 Java 集合中创建了初始的数据集。背后的机制请参考{% gh_link /flink-core/src/main/java/org/apache/flink/api/common/io/InputFormat.java "InputFormat"%}。Flink 内建了多种常见格式以方便从常用文件中创建数据集。它们中的大多数都可以通过 *ExecutionEnvironment* 的函数直接使用。
 
 File-based:
 
@@ -981,7 +950,7 @@ val tuples = env.readSequenceFile(classOf[IntWritable], classOf[Text],
 #### Configuring CSV Parsing
 
 
-Flink 提供一些csv 解析的配置参数：
+Flink 提供一些 CSV 解析的配置参数：
 
 
 - `lineDelimiter: String` specifies the delimiter of individual records. The default line delimiter is the new-line character `'\n'`.
@@ -1002,8 +971,7 @@ Flink 提供一些csv 解析的配置参数：
 
 #### Recursive Traversal of the Input Path Directory
 
-
-遍历一个目录。对于基于文件的输入， 如果输入的是一个目录， 默认不会遍历子目录的文件。默认，只会读取第一层目录的文件， 而忽略子目录的文件。 可以通过设置`recursive.file.enumeration`来打开遍历子目录的设置。
+遍历一个目录。对于基于文件的输入，如果输入的是一个目录，默认不会遍历子目录的文件。而是只会读取第一层目录的文件，忽略子目录的文件。可以通过设置`recursive.file.enumeration`来开启遍历子目录的设置。如下示例所示：
 
 {% highlight scala %}
 // enable recursive enumeration of nested input files
@@ -1024,17 +992,15 @@ env.readTextFile("file:///path/with.nested/files").withParameters(parameters)
 
 ### Read Compressed Files
 
+Flink 对于一些扩展名确定的压缩文件能自动解压。也就是说不需要配置 input format 和 `FileInputFormat`来做压缩。注意，并不能并行来读取压缩文件，这样会影响scalability。
 
-flink对于一些扩展名确定的压缩文件自动解压。 也就是说不需要配置input format和 `FileInputFormat`来做压缩。 注意， 并不能并行来读取压缩文件，这样会影响scalability。
-
-<br />
 
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th class="text-left" style="width: 20%">Compression method</th>
-      <th class="text-left">File extensions</th>
-      <th class="text-left" style="width: 20%">Parallelizable</th>
+      <th class="text-left" style="width: 20%">压缩方法</th>
+      <th class="text-left">文件后缀</th>
+      <th class="text-left" style="width: 20%">可并行化</th>
     </tr>
   </thead>
 
@@ -1062,8 +1028,7 @@ Data Sinks
 <div data-lang="java" markdown="1">
 
 
-Data sinks 消费DataSets, 存储并返回他们。Data sink的操作可以用{% gh_link /flink-core/src/main/java/org/apache/flink/api/common/io/OutputFormat.java "OutputFormat" %}来描叙。 
-flink 内建了一些output format：
+Data sinks 消费 DataSets，用来存储或返回它们。Data sink 的操作可以用{% gh_link /flink-core/src/main/java/org/apache/flink/api/common/io/OutputFormat.java "OutputFormat" %}来描述。Flink 在 DataSet 中内建了一些 output format：
 
 
 - `writeAsText()` / `TextOuputFormat` - Writes elements line-wise as Strings. The Strings are
@@ -1081,12 +1046,11 @@ greater than 1, the output will also be prepended with the identifier of the tas
 - `output()`/ `OutputFormat` - Most generic output method, for data sinks that are not file based
   (such as storing the result in a database).
 
-
-一个Dataset可以输出多个操作， 程序可以写或打印一个data set，并同时运行transform。
+一个 DataSet 可以输入到多个操作中。程序在数据集上运行其他转换的同时，还可以写或打印数据集。
 
 **Examples**
 
-标准data sink 函数：
+标准的 data sink 函数：
 
 {% highlight java %}
 // text data
@@ -1117,7 +1081,7 @@ values.writeAsFormattedText("file:///path/to/the/result/file",
     });
 {% endhighlight %}
 
-使用一个自定义的output format
+使用一个自定义的 output format：
 
 {% highlight java %}
 DataSet<Tuple3<String, Integer, Double>> myResult = [...]
@@ -1135,9 +1099,9 @@ myResult.output(
 
 #### Locally Sorted Output
 
+data sink 的输出可以在某些字段上基于某个顺序做本地排序，可以使用[tuple field positions](#define-keys-for-tuples) 或 [field expressions](#define-keys-using-field-expressions)来指定 key。这对任何 output format 都有效。
 
-data sink的output 能够在某些field 上基于某个顺序做本地sort， 通过[tuple field positions](#define-keys-for-tuples)
- or [field expressions](#define-keys-using-field-expressions)。
+下方例子展示了如何使用这一特性：
 
 {% highlight java %}
 
@@ -1162,14 +1126,12 @@ sData.sortPartition("*", Order.DESCENDING).writeAsText(...);
 
 {% endhighlight %}
 
-然而还不支持全局sort output。
+目前还不支持全局的排序输出。
 
 </div>
 <div data-lang="scala" markdown="1">
 
-Data sinks 消费DataSets, 存储并返回他们。Data sink的操作可以用
-{% gh_link /flink-core/src/main/java/org/apache/flink/api/common/io/OutputFormat.java "OutputFormat" %}来描叙。 
-flink 内建了一些output format：
+Data sinks 消费 DataSets，用来存储或返回它们。Data sink 的操作可以用{% gh_link /flink-core/src/main/java/org/apache/flink/api/common/io/OutputFormat.java "OutputFormat" %}来描述。Flink 在 DataSet 中内建了一些 output format：
 
 - `writeAsText()` / `TextOuputFormat` - Writes elements line-wise as Strings. The Strings are
   obtained by calling the *toString()* method of each element.
@@ -1182,12 +1144,11 @@ flink 内建了一些output format：
 - `output()`/ `OutputFormat` - Most generic output method, for data sinks that are not file based
   (such as storing the result in a database).
 
-A DataSet can be input to multiple operations. Programs can write or print a data set and at the
-same time run additional transformations on them.
+一个 DataSet 可以输入到多个操作中。程序在数据集上运行其他转换的同时，还可以写或打印数据集。
 
 **Examples**
 
-标准data sink 函数：
+标准的 data sink 函数：
 
 {% highlight scala %}
 // text data
@@ -1217,8 +1178,7 @@ values map { tuple => tuple._1 + " - " + tuple._2 }
 
 #### Locally Sorted Output
 
-data sink的output 能够在某些field 上基于某个顺序做本地sort， 通过[tuple field positions](#define-keys-for-tuples)
- or [field expressions](#define-keys-using-field-expressions)。
+data sink 的输出可以在某些字段上基于某个顺序做本地排序，可以使用[tuple field positions](#define-keys-for-tuples) 或 [field expressions](#define-keys-using-field-expressions)来指定 key。这对任何 output format 都有效。
 
 {% highlight scala %}
 
@@ -1243,7 +1203,7 @@ sData.sortPartition("_", Order.DESCENDING).writeAsText(...);
 
 {% endhighlight %}
 
-Globally sorted output is not supported yet.
+目前还不支持全局的排序输出。
 
 </div>
 </div>
@@ -1254,18 +1214,9 @@ Globally sorted output is not supported yet.
 Iteration Operators
 -------------------
 
-Iterations implement loops in Flink programs. The iteration operators encapsulate a part of the
-program and execute it repeatedly, feeding back the result of one iteration (the partial solution)
-into the next iteration. There are two types of iterations in Flink: **BulkIteration** and
-**DeltaIteration**.
+迭代实现了 Flink 程序中的循环。迭代算子封装部分程序，并重复执行，将一次迭代的结果返回到下一次迭代中。 Flink 中有两种迭代：**BulkIteration** 和 **DeltaIteration**
 
-This section provides quick examples on how to use both operators. Check out the [Introduction to
-Iterations](iterations.html) page for a more detailed introduction.
-
-迭代实现flink程序里面的循环。 迭代操作封装部分程序，并重复执行， 将依次迭代的结果输入到下一次迭代中。 
-flink中有2种迭代**BulkIteration** 和**DeltaIteration**
-
-本章提供这2种迭代的example， 详情可以参考Check out the [Introduction toIterations](iterations.html) 
+本节给出了如何快速使用这两种迭代的示例。请参见 [迭代介绍](iterations.html) 了解更详细的说明。
 
 
 <div class="codetabs" markdown="1">
@@ -1273,14 +1224,12 @@ flink中有2种迭代**BulkIteration** 和**DeltaIteration**
 
 #### Bulk Iterations
 
-可以通过dataset的`iterate(int)`来创建一个BulkIteration, 它会返回`IterativeDataSet`， 这个`IterativeDataSet` 
-可以用来执行常见的transformation。 唯一的参数表示执行迭代的最大次数。
+可以通过 DataSet 的 `iterate(int)` 方法来创建一个 BulkIteration, 它会返回`IterativeDataSet`， 这个`IterativeDataSet` 可以用来执行常见的转换。 该方法的参数表示执行迭代的最大次数。
 
-在`IterativeDataSet`上调用`closeWith(DataSet)`来设定迭代的结束， 并会确定哪个transformation会反馈给下一次迭代。
-有一种可选方式是通过`closeWith(DataSet, DataSet)`， 当第一个dataset 为空时，它会结束迭代并evaluate 第二个dataset
-如果结束条件没有触发， 迭代会执行最大次数后再结束。
+在`IterativeDataSet`上调用`closeWith(DataSet)`来设定迭代的结束，并确定哪个转换会反馈给下一次迭代。
+有一种可选方式是通过`closeWith(DataSet, DataSet)`，当该 DataSet 为空时，它会计算第二个 DataSet 并结束迭代。如果没有指定终止条件，迭代会执行给定的最大次数后再结束。
 
-下例展示了如何计算pi. 
+下例展示了如何计算 Pi。目标是统计落在单位圆中随机点的个数。在每次迭代中，会随机算则一个随机点。如果该点落在的单位圆中，我们会增加 count。Pi 就是通过最终的 count 除上乘以 4 的迭代次数。
 
 {% highlight java %}
 final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
@@ -1311,27 +1260,22 @@ count.map(new MapFunction<Integer, Double>() {
 env.execute("Iterative Pi Example");
 {% endhighlight %}
 
-可以checkout 
-{% gh_link /flink-examples/flink-examples-batch/src/main/java/org/apache/flink/examples/java/clustering/KMeans.java "K-Means example" %},
-来查看更多BulkIteration操作
+你可以查看 {% gh_link /flink-examples/flink-examples-batch/src/main/java/org/apache/flink/examples/java/clustering/KMeans.java "K-Means example" %}, 该示例使用了 BulkIteration 来对未标记的点进行聚类。
 
 
 #### Delta Iterations
 
-
-
-delta 迭代解决了这种场景， 每一次迭代并不是改变数据的每一点。
+Delta 迭代解决了这种场景， 每一次迭代并不是改变数据的每一点。
 
 在每一次迭代中，返回部分方案(称为workset)， delta 迭代维护跨迭代的状态(称为solution set), 这些状态通过deltas来更新。
-迭代计算的结果就是最后迭代后的结果。 如果想了解delta 迭代的基本原则，请参考[Introduction to Iterations](iterations.html)。
+迭代计算的结果就是最后迭代后的结果。 如果想了解delta 迭代的基本原则，请参考[迭代介绍](iterations.html)。
 
-定义DeltaIteration方式和定义BulkIteration 很类似。 对于delta迭代， 2个data set（workset和solution set）组成了
-每一次迭代的输入， 新的workset和新的soution set做为每次迭代的输出。
+定义 DeltaIteration 的方式和定义 BulkIteration 很类似。对于 delta 迭代，两个数据集（workset和solution set）组成了每一次迭代的输入，新的 workset 和新的 soution set 做为每次迭代的输出。
 
-调用`iterateDelta(DataSet, int, int)` 或 `iterateDelta(DataSet, int, int[])` 来创建一个DeltaIteration。
-在最开始的solution set上调用这个函数。 参数是起始data set， 最大迭代次数和key的position。 返回`DeltaIteration`， 
-可以通过`iteration.getWorkset()` and `iteration.getSolutionSet()` 来拿到workset和solution set。
+调用`iterateDelta(DataSet, int, int)` 或 `iterateDelta(DataSet, int, int[])` 来创建一个DeltaIteration。该方法需要在初始 solution set 上调用。参数分别是初始数据集，最大迭代次数和key下标。返回的`DeltaIteration`对象， 
+可以通过`iteration.getWorkset()` and `iteration.getSolutionSet()` 方法来访问 workset 和 solution set。
 
+下方是 delta 迭代的一个示例：
 
 {% highlight java %}
 // read the initial data sets
@@ -1364,16 +1308,15 @@ iteration.closeWith(deltas, nextWorkset)
 
 </div>
 <div data-lang="scala" markdown="1">
+
 #### Bulk Iterations
 
-可以通过dataset的`iterate(int)`来创建一个BulkIteration, 它会返回`IterativeDataSet`， 这个`IterativeDataSet` 
-可以用来执行常见的transformation。 唯一的参数表示执行迭代的最大次数。
+可以通过 DataSet 的 `iterate(int)` 方法来创建一个 BulkIteration, 它会返回`IterativeDataSet`， 这个`IterativeDataSet` 可以用来执行常见的转换。 该方法的参数表示执行迭代的最大次数。
 
-在`IterativeDataSet`上调用`closeWith(DataSet)`来设定迭代的结束， 并会确定哪个transformation会反馈给下一次迭代。
-有一种可选方式是通过`closeWith(DataSet, DataSet)`， 当第一个dataset 为空时，它会结束迭代并evaluate 第二个dataset
-如果结束条件没有触发， 迭代会执行最大次数后再结束。
+在`IterativeDataSet`上调用`closeWith(DataSet)`来设定迭代的结束，并确定哪个转换会反馈给下一次迭代。
+有一种可选方式是通过`closeWith(DataSet, DataSet)`，当该 DataSet 为空时，它会计算第二个 DataSet 并结束迭代。如果没有指定终止条件，迭代会执行给定的最大次数后再结束。
 
-下例展示了如何计算pi. 
+下例展示了如何计算 Pi。目标是统计落在单位圆中随机点的个数。在每次迭代中，会随机算则一个随机点。如果该点落在的单位圆中，我们会增加 count。Pi 就是通过最终的 count 除上乘以 4 的迭代次数。
 
 {% highlight scala %}
 val env = ExecutionEnvironment.getExecutionEnvironment()
@@ -1404,17 +1347,16 @@ env.execute("Iterative Pi Example");
 
 #### Delta Iterations
 
-delta 迭代解决了这种场景， 每一次迭代并不是改变数据的每一点。
+Delta 迭代解决了这种场景：每一次迭代并不是改变数据的每一点。
 
 在每一次迭代中，返回部分方案(称为workset)， delta 迭代维护跨迭代的状态(称为solution set), 这些状态通过deltas来更新。
-迭代计算的结果就是最后迭代后的结果。 如果想了解delta 迭代的基本原则，请参考[Introduction to Iterations](iterations.html)。
+迭代计算的结果就是最后迭代后的结果。 如果想了解delta 迭代的基本原则，请参考[迭代介绍](iterations.html)。
 
-定义DeltaIteration方式和定义BulkIteration 很类似。 对于delta迭代， 2个data set（workset和solution set）组成了
-每一次迭代的输入， 新的workset和新的soution set做为每次迭代的输出。
+定义 DeltaIteration 的方式和定义 BulkIteration 很类似。对于 delta 迭代，两个数据集（workset和solution set）组成了每一次迭代的输入，新的 workset 和新的 soution set 做为每次迭代的输出。
 
-调用`iterateDelta(DataSet, int, int)` 或 `iterateDelta(DataSet, int, int[])` 来创建一个DeltaIteration。
-在最开始的solution set上调用这个函数。 参数是起始data set， 最大迭代次数和key的position。 返回`DeltaIteration`， 
-可以通过`iteration.getWorkset()` and `iteration.getSolutionSet()` 来拿到workset和solution set。
+要创建一个 DeltaIteration，需要在初始 solution set 上调用 `iterateDelta(initialWorkset, maxIterations, key)`。迭代步骤函数需要两个参数：(solutionSet, workset)，并且必须返回两个值：(solutionSetDelta, newWorkset)。
+
+下方是 delta 迭代的一个示例：
 
 {% highlight scala %}
 // read the initial data sets
@@ -1444,6 +1386,8 @@ env.execute()
 </div>
 
 {% top %}
+
+>下方暂未校对
 
 Operating on data objects in functions
 --------------------------------------

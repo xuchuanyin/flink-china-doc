@@ -28,24 +28,21 @@ under the License.
 -->
 
 
-Flink 程序是在数据集上实现类似filtering, mapping, joining, grouping这种转换的普通程序。
+Flink 程序是在数据集上实现转换（如 filtering, mapping, joining, grouping 等）的普通程序。
 初始数据集是从特定的数据源（例如文件或集合）中创建出来的。
 通过sink来返回结果， 它有可能把结果写到（分布式）文件或标准输出（比如命令行终端）。
-Flink运行在各种context中， 比如standalone， 或嵌入到其他程序中。
-可以在本地 JVM 或集群上运行 Flink 程序。
+Flink 可以运行在各种环境中， 比如 standalone，或嵌入到其他程序中。可以在本地 JVM 或集群上运行 Flink 程序。
 
 
-建议从[program skeleton](#program-skeleton) 开始学习编写flink程序，并逐步增加自己的[transformations](#transformations)操作。
-本章剩下的部分会介绍额外的操作和高级特性。
+建议从[程序框架](#program-skeleton)开始学习编写 Flink 程序，并逐步增加自己的 [转换](#transformations) 操作。本章剩下的部分会介绍额外的操作和高级特性。
 
 * This will be replaced by the TOC
 {:toc}
 
-Example Program
+示例程序
 ---------------
 
-The following program is a complete, working example of WordCount. You can copy &amp; paste the code
-to run it locally.
+下面的程序是一个完整的、可运行的 WordCount 示例。你可以复制 &amp; 粘贴下方代码并在本地运行。
 
 {% highlight python %}
 from flink.plan.Environment import get_environment
@@ -72,11 +69,12 @@ env.execute(local=True)
 
 {% top %}
 
-Program Skeleton
+<a id="program-skeleton"></a>
+
+程序框架
 ----------------
 
-
-像例子中所示， flink 程序看起来像普通的python程序。
+如例子中所示， Flink 程序看起来像普通的 python 程序。
 每个 Flink 程序包含以下几个基本的部分：
 
 1. 获得一个`Environment`

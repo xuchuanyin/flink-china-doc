@@ -51,7 +51,7 @@ FlinkML currently supports the following algorithms:
 
 ### Data Preprocessing
 
-* [Polynomial Features](polynomial_features.html)
+* [多项式特征转换](polynomial_features.html)
 * [Standard Scaler](standard_scaler.html)
 * [MinMax 标准化](min_max_scaler.html)
 

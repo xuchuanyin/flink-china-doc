@@ -27,6 +27,8 @@ under the License.
 * TOC
 {:toc}
 
+>本文暂未校对
+
 ## Reading from file systems
 
 Flink 内建支持如下的文件系统:
