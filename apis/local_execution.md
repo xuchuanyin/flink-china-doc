@@ -31,12 +31,9 @@ Flink 可以运行在本地 Java 虚拟机中，或者带 JVM 环境的程序中
 对于大部分示例程序而言，你只需简单的地点击你IDE上的运行按钮就可以运行。
 
 Flink在本地模式下支持两种运行方式。
-1.`LocalExecutionEnvironment`  启动了完整的 Flink 运行环境，包括了一个 JobManager 和一个 TaskManager。
-还包含了内存管理和所有在集群模式下的内部算法。
 
-2.`CollectionEnvironment` 这个环境使用Java集合来执行Flink程序。
-这个模式不会启动一个完全的 Flink 运行环境，因此会开销非常低并且很轻量。
-例如 `DataSet.map()`-转换操作，执行机制将是对Java list里的所有元素进行`map()` 函数的操作。
+1. `LocalExecutionEnvironment`  启动了完整的 Flink 运行环境，包括了一个 JobManager 和一个 TaskManager。还包含了内存管理和所有在集群模式下的内部算法。
+2. `CollectionEnvironment` 这个环境使用Java集合来执行Flink程序。这个模式不会启动一个完全的 Flink 运行环境，因此会开销非常低并且很轻量。例如 `DataSet.map()`-转换操作，执行机制将是对Java list里的所有元素进行`map()` 函数的操作。
 
 * TOC
 {:toc}
@@ -105,7 +102,7 @@ conf.setFloat(ConfigConstants.TASK_MANAGER_MEMORY_FRACTION_KEY, 0.5f);
 final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
 ~~~
 
-*Note:* The local execution environments do not start any web frontend to monitor the execution.
+*注意：*本地执行环境不会启动任何 web 前端来监控执行过程。
 
 ## 集合环境
 

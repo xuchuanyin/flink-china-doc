@@ -24,7 +24,7 @@ under the License.
 -->
 
 使用 [Data Stream API](index.html) 的程序经常需要保存各种状态：
-* 在触发窗口滑动之前，窗口需要保存窗口数据或其聚合值
+* 在触发窗口动作之前，窗口需要保存窗口数据或其聚合值
 * 转换操作可能使用 Key/Value 状态接口来保存状态
 * 转换操作可能通过实现 `Checkpointed` 接口以保证本地变量的容错性
 
@@ -53,6 +53,7 @@ Flink 内置了以下状态后端，可以直接使用：
 在做 checkpoint 的时候，状态后端会对状态做快照，然后将其作为 checkpoint 确认消息的一部分发送到 master 的 JobManager，JobManager也会将其保存在堆内存中。
  
 MemoryStateBackend的限制：
+
   * 每个状态的大小默认被限制为5MB，该值可以在 MemoryStateBackend 的构造函数中进行调整
   * 无论配置的最大状态是多少，最终都不能超过 akka 的 最大frame 大小（见[Configuration]({{ site.baseurl }}/setup/config.html）
   * 聚合后的状态必须能够放进 JobManager 的内存中
@@ -100,8 +101,7 @@ JobManager 的内存中仍然保存了少量的元数据（在高可用模式下
 {% endhighlight %}
 
 RocksDBStateBackend 目前并没有被包含在 Flink 的二进制分发包中，
-[这里]({{ site.baseurl}}/apis/cluster_execution.html#linking-with-modules-not-contained-in-the-binary-distribution)
-有相关的说明以及如何将它包含进来并在集群中使用的步骤。
+参见[这里]({{ site.baseurl}}/apis/cluster_execution.html#linking-with-modules-not-contained-in-the-binary-distribution)了解如何引入 RocksDBStateBackend 并在集群中使用它。
 
 ## 配置状态后端
 
