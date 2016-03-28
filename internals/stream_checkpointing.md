@@ -47,22 +47,22 @@ Apache Flink 提供一种容错的机制来保证Data Streaming应用在恢复�
 
 ## 检查点机制（Checkpointing）
 
-Flink的错误容忍机制最核心的部分就是把数据流和计算节点的状态一起生成一致性的快照。
+Flink的容错机制最核心的部分就是把数据流和计算节点的状态一起生成一致性的快照。
 这些快照组成一个个的检查点(checkpoint)，使得系统在失败的时候能够恢复到备份时的状态。Flink的快照生成算法在以下这篇论文中有详细描述 "[Lightweight Asynchronous Snapshots for Distributed Dataflows](http://arxiv.org/abs/1506.08603)". 这个算法是受到Chandy-Lamport算法的启发 [Chandy-Lamport algorithm](http://research.microsoft.com/en-us/um/people/lamport/pubs/chandy.pdf) 并且针对 Flink 的运行模型进行了一些简化。
 
 
 
 ### 数据栅栏（Barriers）
 
-Flink的分布式快照算法的核心概念被称为 *数据栅栏*。 这些栅栏数据被注入到数据流中，和普通的数据一起组成数据流。栅栏数据不会干扰正常的数据，正常数据会按照原先的顺序流动。栅栏数据把正常的数据流切割成多个的数据块，每个数据块都会被打进一个快照中。每个栅栏数据会都会带上一个快照ID，表明该快照数据是该栅栏前面的数据流数据组成数据块。栅栏数据不会干扰正常的数据流，而且非常轻量。多个属于不同快照的栅栏可以同时出现在数据流中，这也就是说多个快照动作有可能会同时发生。
+Flink的分布式快照算法的核心概念之一被称为 *数据栅栏*。 这些栅栏数据被注入到数据流中，和普通的数据一起组成数据流。栅栏数据不会干扰正常的数据，正常数据会按照原先的顺序流动。栅栏数据把正常的数据流切割成多个的数据块，每个数据块都会被打进一个快照中。每个栅栏数据会都会带上一个快照ID，表明该快照数据是该栅栏前面的数据流数据组成数据块。栅栏数据不会干扰正常的数据流，而且非常轻量。多个属于不同快照的栅栏可以同时出现在数据流中，这也就是说多个快照动作有可能会同时发生。
 
 <div style="text-align: center">
   <img src="{{ site.baseurl }}/internals/fig/stream_barriers.svg" alt="Checkpoint barriers in data streams" style="width:60%; padding-top:10px; padding-bottom:10px;" />
 </div>
 
-当snapshot n的barrers被注入后，系统会记录当前snapshot数据的位置值 *n* (用<i>S<sub>n</sub></i>表示)。例如，在 Apache Kafka 中,这个变量表示数据某个分组(partition)中最后一条数据的偏移量。这个位置值 <i>S<sub>n</sub></i> 会被报告到一个称为 *checkpoint仲裁者* 的模块去。(在Flink中，这个模块叫做 JobManager).
+数据栅栏在数据源端被注入到数据流当中，当snapshot n的barrers被注入后，系统会记录当前snapshot数据的位置值 *n* (用<i>S<sub>n</sub></i>表示)。例如，在 Apache Kafka 中,这个变量表示数据某个分组(partition)中最后一条数据的偏移量。这个位置值 <i>S<sub>n</sub></i> 会被报告到一个称为 *checkpoint仲裁者* 的模块去。(在Flink中，这个模块叫做 JobManager).
 
-这些栅栏数据随着数据流动。当一个中间计算节点从它所有的输入流中收到快照点 *n* 的栅栏数据，并且计算完成后，也会发送一个*n*的栅栏数据到它所有的输出数据流中。当最后的计算节点(即 DAG 图中的终点)从它所有的输入流中收到*n* 的栅栏数据后，会发一个*n*的确认消息给checkpoint仲裁模块(即 JobManager)。当所有的终点都发出了确认消息，那么这个数据点就会被认为已经完成并且从源端删除。
+这些栅栏数据随着数据流动。当一个中间计算节点从它所有的输入流中收到快照点 *n* 的栅栏数据，并且计算完成后，也会发送一个*n*的栅栏数据到它所有的输出数据流中。当最后的计算节点(即 DAG 图中的终点)从它所有的输入流中收到*n* 的栅栏数据后，会发一个*n*的确认消息给checkpoint仲裁模块(即 JobManager)。当所有的终点都发出了确认消息，那么这个checkpoint就会被认为已经完成并且从配置的状态备份器(Job Manager或者其他外部存储)中删除。
 
 当快照 *n* 已经完成后，可以确定，从源节点开始，所有<i>S<sub>n</sub></i>前面的数据都已经不再需要了，因为这些数据都已经经过了拓扑计算图中的节点处理完了。
 
@@ -105,7 +105,7 @@ Flink的分布式快照算法的核心概念被称为 *数据栅栏*。 这些�
 对齐功能被取消后，即使节点遇到某个checkpoint *n* 的栅栏数据，它也会继续处理所有的输入流，而不会再等待所有的栅栏*n*到齐。这样的情况下，节点有可能先处理某个输入的 *n+1* checkpoint的数据，后处理另外一路输入 *n* checkpoint的数据。
 当该节点从错误中恢复后，部分数据有可能会被重复处理，因为他们包含在 *n* 的checkpoint快照中，并且会作为*n*checkpoint后面的部分而被重放。
 
-*注意*: 流对齐仅出现在节点处理多输入（例如join）和多输出流（输出数据重新分组）的场景下。如果在只有并行操作的场景下（例如`map()`,`flatMap()`, `filter()`, ...等等），即使你使用的是*at least once*模式，任然可以保证达到*exactly once*的效果。
+*注意*: 流对齐仅出现在节点处理多输入（例如join）和多输出流（输出数据重新分组）的场景下。如果在只有并行操作的场景下（例如`map()`,`flatMap()`, `filter()`, ...等等），即使你使用的是*at least once*模式，仍然可以保证达到*exactly once*的效果。
 
 <!--
 
