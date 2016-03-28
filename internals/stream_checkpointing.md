@@ -60,7 +60,7 @@ Flink的分布式快照算法的核心概念之一被称为 *数据栅栏*。 �
   <img src="{{ site.baseurl }}/internals/fig/stream_barriers.svg" alt="Checkpoint barriers in data streams" style="width:60%; padding-top:10px; padding-bottom:10px;" />
 </div>
 
-数据栅栏在数据源端被注入到数据流当中，当snapshot n的barrers被注入后，系统会记录当前snapshot数据的位置值 *n* (用<i>S<sub>n</sub></i>表示)。例如，在 Apache Kafka 中,这个变量表示数据某个分组(partition)中最后一条数据的偏移量。这个位置值 <i>S<sub>n</sub></i> 会被报告到一个称为 *checkpoint仲裁者* 的模块去。(在Flink中，这个模块叫做 JobManager).
+数据栅栏在数据源端被注入到数据流当中，当snapshot n的barriers被注入后，系统会记录当前snapshot数据的位置值 *n* (用<i>S<sub>n</sub></i>表示)。例如，在 Apache Kafka 中,这个变量表示数据某个分组(partition)中最后一条数据的偏移量。这个位置值 <i>S<sub>n</sub></i> 会被报告到一个称为 *checkpoint仲裁者* 的模块去。(在Flink中，这个模块叫做 JobManager).
 
 这些栅栏数据随着数据流动。当一个中间计算节点从它所有的输入流中收到快照点 *n* 的栅栏数据，并且计算完成后，也会发送一个*n*的栅栏数据到它所有的输出数据流中。当最后的计算节点(即 DAG 图中的终点)从它所有的输入流中收到*n* 的栅栏数据后，会发一个*n*的确认消息给checkpoint仲裁模块(即 JobManager)。当所有的终点都发出了确认消息，那么这个checkpoint就会被认为已经完成并且从配置的状态备份器(Job Manager或者其他外部存储)中删除。
 
