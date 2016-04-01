@@ -25,7 +25,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 
->本文暂未校对
+>注：本节未经校验，如有问题欢迎提issue
 
 在一些特定的算法中， 用户可能需要分配一个唯一的id给data set元素。
 本文档展示如何使用{% gh_link /flink-java/src/main/java/org/apache/flink/api/java/utils/DataSetUtils.java "DataSetUtils" %}来达到这个目的

@@ -26,7 +26,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 
->本文暂未校对
+>注：本节未经校验，如有问题欢迎提issue
 
 本文档将进一步介绍DataSets的transformation。 如果想要一个基本了解，可以参考[Programming Guide](index.html)。
 

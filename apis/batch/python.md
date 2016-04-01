@@ -27,6 +27,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 
+>注：本文未完成翻译，欢迎提 PR
 
 Flink 程序是在数据集上实现转换（如 filtering, mapping, joining, grouping 等）的普通程序。
 初始数据集是从特定的数据源（例如文件或集合）中创建出来的。

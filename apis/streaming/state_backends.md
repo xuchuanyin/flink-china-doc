@@ -24,6 +24,7 @@ under the License.
 -->
 
 使用 [Data Stream API](index.html) 的程序经常需要保存各种状态：
+
 * 在触发窗口动作之前，窗口需要保存窗口数据或其聚合值
 * 转换操作可能使用 Key/Value 状态接口来保存状态
 * 转换操作可能通过实现 `Checkpointed` 接口以保证本地变量的容错性
@@ -132,7 +133,7 @@ env.setStateBackend(new FsStateBackend("hdfs://namenode:40010/flink/checkpoints"
 可以在 `flink-conf.yaml` 中使用 `state.backend` 配置项来配置默认的状态后端。
 
 这个配置的值可以是：*jobmanager* （表示使用 MemoryStateBackend）， *filesystem* （使用 FsStateBackend），
-或使用实现了状态后端工厂[FsStateBackendFactory](https://github.com/apache/flink/blob/master/flink-runtime/src/main/java/org/apache/flink/runtime/state/filesystem/FsStateBackendFactory.java)的全限定类名。
+或使用实现了状态后端工厂 [FsStateBackendFactory](https://github.com/apache/flink/blob/master/flink-runtime/src/main/java/org/apache/flink/runtime/state/filesystem/FsStateBackendFactory.java) 的全限定类名。
 
 当默认的状态后端被设置为 *filesystem* 时，配置项 `state.backend.fs.checkpointdir` 指定了 checkpoint 数据的存储目录。
 

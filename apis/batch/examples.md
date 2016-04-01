@@ -25,7 +25,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 
->本文暂未校对
+>注：本节未经校验，如有问题欢迎提issue
 
 本页介绍的example展示不同的flink应用， 从简单的wordcount到图算法。 展示了如何使用[Flink's API](index.html)。
 

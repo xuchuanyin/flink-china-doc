@@ -24,7 +24,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 
->本文暂未校对
+>注：本节未经校验，如有问题欢迎提issue
 
 flink 的容错机制保障出错时恢复程序并继续执行。 这些错误包括机器硬件错误，网络错误，程序错误等。
 

@@ -24,7 +24,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 
->本文暂未校对
+>注：本节未经校验，如有问题欢迎提issue
 
 flink 兼容hadoop mapreduce的接口， 因此可以允许使用基于mapreduce的代码。
 

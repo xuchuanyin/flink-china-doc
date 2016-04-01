@@ -1,5 +1,5 @@
 ---
-title:  "Google Compute Engine Setup"
+title:  "Google Compute Engine 安装"
 top-nav-group: deployment
 top-nav-title: Google Compute Engine
 top-nav-pos: 4
@@ -24,7 +24,7 @@ under the License.
 -->
 
 
-本文介绍了如何在  [Google Compute Engine](https://cloud.google.com/compute/) 集群上基于 Hadoop 1 或者 Hadoop 2 自动部署 Flink 。Google's [bdutil](https://cloud.google.com/hadoop/bdutil) 工具可以启动一个集群并基于 Hadoop 部署 Flink 。根据下列步骤开始吧。
+本文介绍了如何在  [Google Compute Engine](https://cloud.google.com/compute/) 集群上基于 Hadoop 1 或者 Hadoop 2 自动部署 Flink 。借助 Google 的 [bdutil](https://cloud.google.com/hadoop/bdutil) 工具可以启动一个集群并基于 Hadoop 部署 Flink 。根据下列步骤开始吧。
 
 * This will be replaced by the TOC
 {:toc}
@@ -33,7 +33,7 @@ under the License.
 
 ## 安装 Google Cloud SDK
 
-请根据下列教程开始使用 [Google Cloud SDK](https://cloud.google.com/sdk/)。 需要特别注意的是使用下列命令确保 Google Cloud 验证成功：
+请根据该指南了解如何安装 [Google Cloud SDK](https://cloud.google.com/sdk/)。 需要特别注意的是使用下列命令确保 Google Cloud 验证成功：
 
     gcloud auth login
 
@@ -69,7 +69,7 @@ under the License.
 
 ## 适配 Flink 配置
 
-bdutil 的 Flink 扩展为你处理好 Flink 配置。你可以在 `extensions/flink/flink_env.sh` 中添加配置参数。如果想进一步了解配置参数，请见 [configuring Flink](config.html) 。在修改配置之后需要使用`bin/stop-cluster` 和 `bin/start-cluster`重启Flink。
+bdutil 的 Flink 扩展已经为你处理好配置了。你可以在 `extensions/flink/flink_env.sh` 中添加配置参数。如果想进一步了解配置参数，请见 [Flink 配置](config.html) 。在修改配置之后需要使用`bin/stop-cluster` 和 `bin/start-cluster`重启Flink。
 
 ## 启动一个 Flink 集群
 

@@ -1387,7 +1387,7 @@ env.execute()
 
 {% top %}
 
->下方暂未校对
+>注：本文剩余部分未经校验，如有问题欢迎提issue
 
 Operating on data objects in functions
 --------------------------------------

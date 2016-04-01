@@ -27,7 +27,7 @@ under the License.
 * TOC
 {:toc}
 
->本文暂未校对
+>注：本节未经校验，如有问题欢迎提issue
 
 ## Reading from file systems
 
