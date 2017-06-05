@@ -16,4 +16,4 @@
 # under the License.
 
 # We unset the baseurl for local testing
-baseurl: ""
+baseurl: "/1.1.0"

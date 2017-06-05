@@ -51,6 +51,14 @@ under the License.
     <![endif]-->
   </head>
   <body>
+    {% if site.is_stable %}
+    {% unless site.is_latest %}
+    <div style="position:fixed; bottom:0; left:0; z-index:99999; width:100%; text-align:center; padding:15px; border-top:1px dashed #CE4B65; background:#f6f0e3; font-weight:bold">
+       本文档适用于 Apache Flink 的旧版本，建议使用 <a href="https://doc.flink.org/latest/">最新版本的文档</a> 。
+    </div>
+    {% endunless %}
+    {% endif %}
+
     {% comment %} Includes are found in the _includes directory. {% endcomment %}
     {% include navbar.html %}
 

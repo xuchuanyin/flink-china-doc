@@ -1329,7 +1329,7 @@ DataStream<Integer> output = iterationBody.filter(/* some other part of the stre
 
 默认情况下，反馈流的分区将被自动设定为与迭代头部的输入相同的分区。用户可以在 `closeWith` 方法中设置一个可选的布尔 flag 来覆盖这种默认行为。
 
-例如，下面这段程序就是对一串数字不断地做减 1 操作，知道它们都为 0 了为止。
+例如，下面这段程序就是对一串数字不断地做减 1 操作，直到它们都为 0 了为止。
 
 {% highlight java %}
 DataStream<Long> someIntegers = env.generateSequence(0, 1000);

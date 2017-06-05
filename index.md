@@ -39,7 +39,7 @@ Apache Flink 是一个开源的分布式流处理和批处理系统。Flink 的�
 这是 Flink 技术栈的一个总览。点击任意一个组件可以查看相应的文档页面。
 
 <center>
-  <img src="../fig/stack.png" width="700px" alt="Apache Flink: Stack" usemap="#overview-stack">
+  <img src="{{ site.baseurl }}/fig/stack.png" width="700px" alt="Apache Flink: Stack" usemap="#overview-stack">
 </center>
 
 <map name="overview-stack">

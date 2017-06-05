@@ -24,9 +24,10 @@ echo "Copying files from public folder..."
 cp -r target/* .deploy_git/
 echo "Deploying..."
 cd .deploy_git
+rm README.md README_EN.md CNAME
 DATE="$(date +'%Y-%m-%d %H:%M')"
 git init
 git add -A
 git commit -m "Site updated: $DATE"
-git push -u git@github.com:flink-china/flink-china-doc.git HEAD:gh-pages --force
+git push -u git@github.com:flink-china/1.1.0.git HEAD:gh-pages --force
 echo "Deploy successfully!"
