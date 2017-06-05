@@ -38,6 +38,8 @@ scala_version_suffix: "_2.10"
 is_latest: false
 is_stable: true
 
+repo_edit_url: "https://github.com/flink-china/flink-china-doc/edit/1.1.0"
+
 # Some commonly linked pages (this was more important to have as a variable
 # during incubator; by now it should also be fine to hardcode these.)
 website_url: "http://flink.apache.org"
