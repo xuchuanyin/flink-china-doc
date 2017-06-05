@@ -4,14 +4,13 @@
 
 # 环境需求
 
-我们使用 Markdown 来写作，以及 Jekyll 将文档转成静态HTML。Markdown处理需要用到 Kramdown，而语义高亮需要用到基于python的 Pygments。如果要用Ruby运行Javascript代码，你需要安装一个javascript引擎（例如 `therubyracer`）。你可以通过下面的命令安装所以需要的软件：
+我们使用 Markdown 来写作，以及 Jekyll 将文档转成静态HTML。使用下面的命令一键安装所需软件：
+
+Markdown处理需要用到 Kramdown，而语义高亮需要用到基于python的 Pygments。如果要用Ruby运行Javascript代码，你需要安装一个javascript引擎（例如 `therubyracer`）。你可以通过下面的命令安装所以需要的软件：
 
 ```bash
-gem install jekyll -v 2.5.3
-gem install kramdown -v 1.9.0
-gem install pygments.rb -v 0.6.3
-gem install therubyracer -v 0.12.2
-sudo easy_install Pygments
+gem install bundler
+bundle install
 ```
 
 注意在 Ubuntu系统上，有可能需要先通过 apt 安装`ruby-dev`和`python-setuptools`包。
@@ -36,7 +35,7 @@ cd flink-china-doc/docker
 
 # 翻译
 
-我们非常欢迎有兴趣的同学参与一起翻译和优化中文文档。欢迎**译者**与**校对**的加入。我们会在[感谢页面](http://doc.flink-china.org/about/#thanks)感谢所有参与了贡献的人。
+我们非常欢迎有兴趣的同学参与一起翻译和优化中文文档。欢迎**译者**与**校对**的加入。我们会在[感谢页面](http://doc.flink-china.org/about/#thanks)感谢所有参与了贡献的人。**如有遗漏，请联系我们！**
 
 **如果你想要翻译一篇文章，请先在 [issue](https://github.com/flink-china/flink-china-doc/issues) 页面中查看是否已经有人在翻译这篇文档。如果没有，你可以发布一个 issue 或者回复某个模块的 issue，说明你要认领的文档。**
 

@@ -53,7 +53,7 @@ ul.nav li.dropdown ul.dropdown-menu li.dropdown-submenu ul.dropdown-menu {
  * That looks weird. Changed the colors to active - blue, inactive - black, and
  * no color change on hover.
  */
-.nav-tabs > .active > a, .nav-tabs > .active > a:hover {
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover {
   color: #08c !important;
 }
 
@@ -62,5 +62,5 @@ ul.nav li.dropdown ul.dropdown-menu li.dropdown-submenu ul.dropdown-menu {
 }
 
 .nav.nav-tabs {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }

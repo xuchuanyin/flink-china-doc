@@ -1,5 +1,8 @@
 ---
-title: "概览"
+title: "Apache Flink 中文文档"
+nav-pos: 0
+nav-title: '<i class="fa fa-home title" aria-hidden="true"></i> 首页'
+nav-parent_id: root
 ---
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
@@ -20,39 +23,21 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-本文档是针对 Apache Flink {{ site.version }} 版本的。
+本文档是针对 Apache Flink {{ site.version }} 的，本页面的编译时间: {% build_time %}。
 
-Apache Flink 是一个开源的分布式流处理和批处理系统。Flink 的核心是在数据流上提供了数据分发、通信、具备容错的分布式计算。同时，Flink 在流处理引擎上构建了批处理引擎，原生支持了迭代计算、内存管理和程序优化。
+Apache Flink 是一个开源的分布式流处理和批处理系统。Flink 的核心是在数据流上提供数据分发、通信、具备容错的分布式计算。同时，Flink 在流处理引擎上构建了批处理引擎，原生支持了迭代计算、内存管理和程序优化。
 
 ## 第一步
 
-- **快速起步**: 在你的本地机器上 [运行一个实例](quickstart/setup_quickstart.html) 或者 [编写一个实例](quickstart/run_example_quickstart.html)。
+- **概念**: 从 Flink 的[数据流编程模型](concepts/programming-model.html)和[分布式运行环境](concepts/runtime.html)的基本概念开始。 这将有助于您充分了解其他部分的文档，包括安装以及编程指南。强烈推荐先阅读这部分的文档。
 
-- **安装**: [本地]({{ site.baseurl }}/setup/local_setup.html), [集群](setup/cluster_setup.html), 和 [谷歌云](setup/gce_setup.html) 安装指南为你展示了如何部署 Flink。
+- **快速起步**: 在你的本地机器上[运行一个实例](quickstart/setup_quickstart.html) 或者 [编写一个简单的程序](quickstart/run_example_quickstart.html) 来操作 Wikipedia 的编辑日志。
 
-- **编程指南**: 你可以查阅 [基础概念](apis/common/index.html) 和 [DataStream API 指南](apis/streaming/index.html) 或者 [DataSet API 指南](apis/batch/index.html) 学习如何编写第一个 Flink 程序。
+- **编程指南**: 你可以在本指南里面找到一些 [基本概念](dev/api_concepts.html) 和 [DataStream API](dev/datastream_api.html) 或者 [DataSet API](dev/batch/index.html) 学习如何编写第一个 Flink 程序。
 
-- **迁移指南**: 如果你要从 Flink 0.10.x 升级到 1.0 ，请查阅 [0.10 到 1.0 迁移指南](https://cwiki.apache.org/confluence/display/FLINK/Migration+Guide%3A+0.10.x+to+1.0.x)。
+## 迁移指南
 
-## 栈
+对于那些使用比较早期版本的 Apache Flink 用户，我们推荐你阅读 [API 迁移指南](dev/migration.html)。
+虽然 API 中标记为 public 和 stable 的所有部分仍然被支持 (标记为 public 的 API 是向后兼容的)，我们仍然建议将应用程序迁移到较新接口。
 
-这是 Flink 技术栈的一个总览。点击任意一个组件可以查看相应的文档页面。
-
-<center>
-  <img src="{{ site.baseurl }}/fig/stack.png" width="700px" alt="Apache Flink: Stack" usemap="#overview-stack">
-</center>
-
-<map name="overview-stack">
-<area id="lib-datastream-cep" title="CEP: Complex Event Processing" href="{{ site.baseurl }}/apis/streaming/libs/cep.html" shape="rect" coords="63,0,143,177" />
-<area id="lib-datastream-table" title="Table: Relational DataStreams" href="{{ site.baseurl }}/apis/batch/libs/table.html" shape="rect" coords="143,0,223,177" />
-<area id="lib-dataset-ml" title="FlinkML: Machine Learning" href="{{ site.baseurl }}/apis/batch/libs/ml/index.html" shape="rect" coords="382,2,462,176" />
-<area id="lib-dataset-gelly" title="Gelly: Graph Processing" href="{{ site.baseurl }}/apis/batch/libs/gelly.html" shape="rect" coords="461,0,541,177" />
-<area id="lib-dataset-table" title="Table: Relational DataSets" href="{{ site.baseurl }}/apis/batch/libs/table.html" shape="rect" coords="544,0,624,177" />
-<area id="datastream" title="DataStream API" href="{{ site.baseurl }}/apis/streaming/index.html" shape="rect" coords="64,177,379,255" />
-<area id="dataset" title="DataSet API" href="{{ site.baseurl }}/apis/batch/index.html" shape="rect" coords="382,177,697,255" />
-<area id="runtime" title="Runtime" href="{{ site.baseurl }}/internals/general_arch.html" shape="rect" coords="63,257,700,335" />
-<area id="local" title="Local" href="{{ site.baseurl }}/setup/local_setup.html" shape="rect" coords="62,337,275,414" />
-<area id="cluster" title="Cluster" href="{{ site.baseurl }}/setup/cluster_setup.html" shape="rect" coords="273,336,486,413" />
-<area id="cloud" title="Cloud" href="{{ site.baseurl }}/setup/gce_setup.html" shape="rect" coords="485,336,700,414" />
-</map>
-
+对于计划在生产环境中升级 Flink 的用户，我们推荐你阅读[升级 Apache Flink](ops/upgrading.html)指南。

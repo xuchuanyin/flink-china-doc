@@ -1,9 +1,8 @@
 ---
-title: "快速起步: 监控维基百科编辑流"
-# Top navigation
-top-nav-group: quickstart
-top-nav-pos: 2
-top-nav-title: "例子: 维基百科编辑流"
+title: "Monitoring the Wikipedia Edit Stream"
+nav-title: Monitoring Wikipedia Edits
+nav-parent_id: examples
+nav-pos: 10
 ---
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
@@ -27,28 +26,28 @@ under the License.
 * This will be replaced by the TOC
 {:toc}
 
-在这篇指南中，我们将从零开始创建一个Flink项目，然后在一个Flink集群上运行一个流分析程序。
+在本章指南中，我们会从头开始学习如何创建一个Flink工程，以及如何在Flink集群上运行一个流计算程序。  
 
-维基百科提供了一个记录了所有词条编辑历史的IRC通道。我们将这个通道读取到Flink中，统计在一个窗口时间内每个用户编辑的字节数。这个程序很容易，以至于在几分钟之内就可以利用Flink实现。但是这个简单的程序却可以给我们建立更加复杂的数据分析程序打下一个很好的基础。
+维基百科提供了一个 IRC 频道，它记录了所有在 Wiki 上的编辑日志。我们要做的工作是将该频道的数据读入Flink，并计算每个用户在一个给定时间窗口内编辑的字节数。虽然对于Flink来说这是一个很容易就能够实现的场景，但是在你自己动手构建复杂的分析程序之前，学习这个过程能够为你打下良好的基础。  
 
-## 创建一个Maven工程
+## 创建Maven工程
 
-我们使用Maven命令创建我们的项目。更加详细的步骤请查看[Java API Quickstart]({{ site.baseurl }}/quickstart/java_api_quickstart.html)页面。执行下列命令行可以达到我们的目的：
+我们将使用一个Flink Maven 原型来创建工程结构。如果你想了解更多这方面的内容，请参考 [Java API Quickstart]({{ site.baseurl }}/quickstart/java_api_quickstart.html) 。可以运行下面的命令来创建Maven工程：  
 
 {% highlight bash %}
-$ mvn archetype:generate\
-    -DarchetypeGroupId=org.apache.flink\
-    -DarchetypeArtifactId=flink-quickstart-java\
-    -DarchetypeVersion=1.0.0\
-    -DgroupId=wiki-edits\
-    -DartifactId=wiki-edits\
-    -Dversion=0.1\
-    -Dpackage=wikiedits\
-    -DinteractiveMode=false\
+$ mvn archetype:generate \
+    -DarchetypeGroupId=org.apache.flink \
+    -DarchetypeArtifactId=flink-quickstart-java \{% unless site.is_stable %}
+    -DarchetypeCatalog=https://repository.apache.org/content/repositories/snapshots/ \{% endunless %}
+    -DarchetypeVersion={{ site.version }} \
+    -DgroupId=wiki-edits \
+    -DartifactId=wiki-edits \
+    -Dversion=0.1 \
+    -Dpackage=wikiedits \
+    -DinteractiveMode=false
 {% endhighlight %}
 
-如果你喜欢，可以修改参数`groupId`, `artifactId` 和 `package`。使用上面命令行中的参数，Maven会创建一个结构如下的项目：
-
+你可以根据需要修改 `groupId`，`artifactId` 和`package` 参数。使用上面的命令和参数，Maven 将会创建出一个工程框架，其结构如下所示：   
 
 {% highlight bash %}
 $ tree wiki-edits
@@ -58,22 +57,21 @@ wiki-edits/
     └── main
         ├── java
         │   └── wikiedits
-        │       ├── Job.java
+        │       ├── BatchJob.java
         │       ├── SocketTextStreamWordCount.java
+        │       ├── StreamingJob.java
         │       └── WordCount.java
         └── resources
             └── log4j.properties
 {% endhighlight %}
 
-
-在根目录下有一个`pom.xml`文件，文件中包含了Flink依赖。同时在文件夹`src/main/java`下有几个Flink示例程序。因为我们是从零开始创建项目，可以删除这些示例程序。
+在根目录下，你会看到有一个已添加了 Flink 依赖的`pom.xml` 文件，在`src/main/java`路径下，你会找到几个 Flink 示例程序文件。既然是从头开始学习，我们可以暂时先把这些示例程序删除：  
 
 {% highlight bash %}
 $ rm wiki-edits/src/main/java/wikiedits/*.java
 {% endhighlight %}
 
-
-最后，项目中用到了Flink Wikipedia connector，我们需要把它作为依赖添加进来到项目总。编辑`pom.xml`文件的`dependencies` 模块，结果如下：
+最后，我们需要添加 Flink Wikipedia 连接器依赖以便于我们在程序中使用。编辑`pom.xml`文件的`dependencies`部分，修改完成后应该像下面一样：  
 
 {% highlight xml %}
 <dependencies>
@@ -84,28 +82,27 @@ $ rm wiki-edits/src/main/java/wikiedits/*.java
     </dependency>
     <dependency>
         <groupId>org.apache.flink</groupId>
-        <artifactId>flink-streaming-java_2.10</artifactId>
+        <artifactId>flink-streaming-java_2.11</artifactId>
         <version>${flink.version}</version>
     </dependency>
     <dependency>
         <groupId>org.apache.flink</groupId>
-        <artifactId>flink-clients_2.10</artifactId>
+        <artifactId>flink-clients_2.11</artifactId>
         <version>${flink.version}</version>
     </dependency>
     <dependency>
         <groupId>org.apache.flink</groupId>
-        <artifactId>flink-connector-wikiedits_2.10</artifactId>
+        <artifactId>flink-connector-wikiedits_2.11</artifactId>
         <version>${flink.version}</version>
     </dependency>
 </dependencies>
 {% endhighlight %}
 
-注意`flink-connector-wikiedits_2.10`依赖也添加了进来。（此例子和Wikipedia connector受到了Apache Samza
-示例*Hello Samza*的启发）
+我们可以看到 pom.xml 文件中已经加入了`flink-connector-wikiedits_2.11`依赖。（本示例及Wikipedia 连接器的灵感来自于 Apache Samza *Hello Samza* 示例）  
 
-## 编写Flink程序
+## 编写 Flink 程序  
 
-是时候着手写代码了。打开你最喜欢的IDE并导入这个Maven项目，或者打开文字编辑，然后创建文件`src/main/java/wikiedits/WikipediaAnalysis.java`:
+现在，打开你最喜欢的 IDE，我们要开始写代码了。导入 Maven 工程后，创建 `src/main/java/wikiedits/WikipediaAnalysis.java` 文件：  
 
 {% highlight java %}
 package wikiedits;
@@ -118,21 +115,21 @@ public class WikipediaAnalysis {
 }
 {% endhighlight %}
 
-目前为止，我们只有一个空框架，随着接下来我们将一步步填充这个框架。注意，因为IDEs能够自动的添加import声明，所以我就不再提供。如果你想跳过这些步骤，直接在编辑器中输入代码，在这个章节的最后，我会展示带有import声明的完整代码。
+这个程序现在看起来非常简单，我们会逐步完善它。注意在这里我们不需要手写 import 声明， 因为 IDE 会自动添加。在本小结的结束，我会展示包含 import 声明的完整代码，如果你想跳过前面的部分，也可以直接将完整的代码拷贝到你的 IDE 编辑器中。
 
-在一个Flink程序中的第一步是创建一个`StreamExecutionEnvironment`（或者`ExecutionEnvironment`，如果你想编写批处理程序）。它可以用来设置执行参数和创建数据源从外部系统读取数据。现在，让我们添加到main方法里：
+在Flink程序中首先需要创建一个`StreamExecutionEnvironment`（如果你在编写的是批处理程序，需要创建`ExecutionEnvironment`），它被用来设置运行参数。当从外部系统读取数据的时候，它也被用来创建源（sources）。所以让我们在 main 函数中添加下面的代码：   
 
 {% highlight java %}
 StreamExecutionEnvironment see = StreamExecutionEnvironment.getExecutionEnvironment();
 {% endhighlight %}
 
-接下来我们将创建一个数据源来从维基百科IRC日志中读取数据
+接下来我们要开始添加读取 Wikipedia IRC 日志的源（sources）了：  
 
 {% highlight java %}
 DataStream<WikipediaEditEvent> edits = see.addSource(new WikipediaEditsSource());
 {% endhighlight %}
 
-这行代码创建一个由 `WikipediaEditEvent` 组成的`DataStream`。在这个例子中，我们感兴趣的是统计在一个窗口时间内每个用户添加和删除词条的字节数，在这我们设定窗口时常为5秒。首先必须指出我们在这把用户名设置成流的键，也就是说在这个流上的操作需要将键考虑进去。在我们这个用例中，需要统计的是每个特定的用户在窗口时间内所编辑的字节数总和。在一个流上设置键，我们需要提供一个`KeySelector`，如下所示：
+它创建了一个包含`WikipediaEditEvent`元素的`DataStream`，也是我们需要进一步处理的对象。在本节的案例中，我们关心的是每个用户在一个特定时间窗口内（比如说5秒钟）增加或者删除内容的字节数。为了实现这个目标，我们需要指定用户名作为数据流的 key 字段，也就是说在这个数据流上的操作应该考虑到用户名。在我们的案例中需要对时间窗口中每个唯一用户的编辑字节数求和。为了使数据流包含 key，我们需要提供一个`KeySelector`， 如下：  
 
 {% highlight java %}
 KeyedStream<WikipediaEditEvent, String> keyedEdits = edits
@@ -144,8 +141,7 @@ KeyedStream<WikipediaEditEvent, String> keyedEdits = edits
     });
 {% endhighlight %}
 
-This gives us a Stream of WikipediaEditEvent that has a String key, the user name.
-上面的代码，让我们得到一个由`WikipediaEditEvent`组成的Stream，这个Stream拥有一个`String`类型的键（用户名）。现在我们可以在这个流上添加窗口，并根据这些窗口计算结果。每个窗口表示流上的一个切割片段，计算就应用在这些切片上。当需要在一个拥有无限数据元素的Stream上执行聚合操作的时候，窗口是必须的。在我们的例子中，我们想计算每5秒钟每个用户的总编辑字节数：
+它创建了一个`WikipediaEditEvent`流，以用户名作为`String`类型的 key。现在我们可以在这个流上指定窗口并且基于这些窗口内的数据计算出结果。一个窗口指定了要执行计算的数据流的一个分片。当需要在一个无边界的数据流上执行聚合计算时，窗口是必不可少的。在我们的案例中，我们想要做的就是每5秒钟一个窗口对编辑字节数做聚合计算：  
 
 {% highlight java %}
 DataStream<Tuple2<String, Long>> result = keyedEdits
@@ -160,23 +156,20 @@ DataStream<Tuple2<String, Long>> result = keyedEdits
     });
 {% endhighlight %}
 
+首先调用的`.timeWindow()`方法指定了我们需要一个大小为5秒钟的滚动窗口（非重叠窗口）。调用的第二个方法指定了对每个窗口分片中每个唯一的key做 Fold transformation 转换。在案例中，我们以初始值`("", 0L)`为基础，将给定时间窗口内特定用户内容编辑字节数做累加。现在我们从每个大小为5秒的窗口中获取了针对每个用户的结果流，该结果流的元素类型为`Tuple2<String, Long>`。
 
-第一个调用语句，`.window()`，表明我们想要一个5s的翻滚窗口(非重叠)。第二个调用表明一个应用于每个独特的键的各个窗口切片之上的*Fold transformation*操作。在我们这个示例中，我们从一个初始化值`("", 0L)` 开始，然后加上一个用户在特定窗口时间内每次撰写的词条字节数。最后得到的是一个由`Tuple2<String, Long>`组成的流，每个`Tuple2<String, Long>`对应一个用户，且每5s为每个用户生成一个新的Tuple。
+现在唯一需要做的就是将结果流在终端输出，并且开始执行计算：   
 
-
-现在唯一剩下的事就是将结果Stream打印到控制台上并开始执行设定的操作：
 {% highlight java %}
 result.print();
 
 see.execute();
 {% endhighlight %}
 
-为了启动Flink任务，最后一行代码是必须要有的。所有的操作，例如 creating sources, transformations 和 sinks
-仅仅是构建了一个由内部操作组成的图。只有当`execute()`调用的时候，这个有内部操作组成的图才会被提交到一个集群，或
-在你的本机上执行。
+最后调用执行的操作对启动 Flink Job 来说是必需的。像前面的创建数据源，转换和 Sinks 操作仅仅是构建了一个内部操作图。只有当`execute()`被调用的时候，这个操作图才会被扔在集群或者在你的本地机器运行。  
 
+到目前为止，完整的代码如下：  
 
-到目前为止，完整的代码如下：
 {% highlight java %}
 package wikiedits;
 
@@ -224,14 +217,14 @@ public class WikipediaAnalysis {
 }
 {% endhighlight %}
 
-你可以用Maven命令在你的IDE中或者命令行中运行这个例子：
+你可以在你的 IDE 或者命令行下使用 Maven 运行示例：  
 
 {% highlight bash %}
 $ mvn clean package
 $ mvn exec:java -Dexec.mainClass=wikiedits.WikipediaAnalysis
 {% endhighlight %}
 
-第一个命令build我们的项目，第二个命令执行Main类。输出应该如下所示：
+其中第一个命令用来构建工程、第二个命令运行 mian 函数。示例的输出应该跟下面的类似：  
 
 {% highlight bash %}
 1> (Fenix down,114)
@@ -246,27 +239,27 @@ $ mvn exec:java -Dexec.mainClass=wikiedits.WikipediaAnalysis
 4> (KasparBot,-245)
 {% endhighlight %}
 
-在每行开始的数字告诉我们这行输出是哪一个并行的实例产生的。
+每行的第一个数字代表打印 Sink 输出所在的并行实例号。  
 
-这些应该已经可以帮助你开始编写自己的Flink程序了。如果你想进一步学习Flink和Kafka，你可以查看我们的关于[基本概念]({{ site.baseurl }}/apis/common/index.html)和[DataStream API]({{ site.baseurl }}/apis/streaming/index.html)的指南。如果你想学习如何搭建在本地搭建一个Flink集群，并将结果写入[Kafka](http://kafka.apache.org)，请继续下面的额外练习。
+通过以上的学习应该可以让你编写自己的 Flink 程序了。你可以通过阅读 [basic concepts]({{ site.baseurl }}/dev/api_concepts.html) 和
+[DataStream API]({{ site.baseurl }}/dev/datastream_api.html) 获取更多知识. 如果你想学习如何自己建立一个 Flink 集群并将结果写入 [Kafka](http://kafka.apache.org)，那需要坚持学习完下面的章节。   
 
+## 额外的练习：集群运行任务和结果写入Kafka   
 
-## 额外练习: 在集群上运行程序并将结果写到Kafka
+在我们开始之前，请分别参考 [setup quickstart](setup_quickstart.html) 和 [Kafka quickstart](https://kafka.apache.org/documentation.html#quickstart) 在你的机器上部署好 Flink 和 Kafka。  
 
-在我们开始之前，请跟着我们[快速起步：安装](setup_quickstart.html)的步骤搭建一个Flink集群，参考[Kafka quickstart]
-(https://kafka.apache.org/documentation.html#quickstart)安装Kafka。
+首先，为了能够使用 Kafka Sink，我们需要添加 Flink Kafka 连接器依赖。将此依赖添加在`pom.xml`文件的 dependencies 部分：
 
-作为第一步，为了使用Kafka sink, 我们必须先将Flink Kafka connector作为一个依赖添加到pop.xml的dependencies section:
 {% highlight xml %}
 <dependency>
     <groupId>org.apache.flink</groupId>
-    <artifactId>flink-connector-kafka-0.8_2.10</artifactId>
+    <artifactId>flink-connector-kafka-0.8_2.11</artifactId>
     <version>${flink.version}</version>
 </dependency>
 {% endhighlight %}
 
+接下来，我们需要修改我们的代码。我们把 `print()` Sink 移除，使用 Kafka Sink 替代。修改后的代码如下所示：
 
-接下来我们需要修改我们的程序。我们将`print()` sink替换成Kafka sink。更新后的代码如下：
 {% highlight java %}
 
 result
@@ -279,41 +272,43 @@ result
     .addSink(new FlinkKafkaProducer08<>("localhost:9092", "wiki-result", new SimpleStringSchema()));
 {% endhighlight %}
 
+同时还需要导入相关的类：  
 
-注意我们是怎样利用一个MapFunction把`Tuple2<String, Long>`流转换成`String`流的。这样做的原因是向Kafka中写入明文
-字符串相对要容易一些。然后我们创建了一个Kafka sink。或许你还需要适应你设置的主机名称和端口。在我们开始运行我们的程序
-之前，我们还需要创建一个名称为`"wiki-result"`的Kafka 流。因为在集群上运行这个程序需要jar包，所以我们用Maven来打包
-这个项目：
+{% highlight java %}
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer08;
+import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
+import org.apache.flink.api.common.functions.MapFunction;
+{% endhighlight %}
 
+需要关注下我们是怎样通过使用 MapFunction 将`Tuple2<String, Long>`流转换为`String`流的。我们之所以做这样的转换是因为将普通字符串格式的数据写入 Kafka 会更容易。然后，我们创建了 Kafka Sink。在代码里，需要将 hostname 和 port 替换成你所安装环境的实际参数。`wiki-result`是 Kafka topic的名字，在运行程序之前，我们需要创建它。通过 Maven 构建该工程，在集群上运行需要该工程编译后的可执行jar包：
 
 {% highlight bash %}
 $ mvn clean package
 {% endhighlight %}
 
-得到的jar文件将会位于子文件夹`target`下：`target/wiki-edits-0.1.jar`。 下面我们将会用到这个文件。
+编译好的 jar 包在 工程的 target 子目录下： target/wiki-edits-0.1.jar。我们稍后会使用它。  
 
-现在我们已经准备好启动一个Flink集群，并在该集群上执行一个向Kafka写数据的程序。到我们安装Flink的目录下，并启动一个
-本地集群：
+现在我们已经准备好启动 Flink 集群，并且运行 写入 Kafka 的任务了。切换到 Flink 的安装目录，启动本地集群：  
 
 {% highlight bash %}
 $ cd my/flink/directory
 $ bin/start-local.sh
 {% endhighlight %}
 
-我们还必须创建一个Kafka主题，这样我们的程序才可以向这个Kafka主题写数据：
+我们还需要创建 Kafka Topic， 我们的程序需要将数据写入里面：  
 
 {% highlight bash %}
 $ cd my/kafka/directory
 $ bin/kafka-topics.sh --create --zookeeper localhost:2181 --topic wiki-results
 {% endhighlight %}
 
-现在我们可以在本地Flink集群上运行我们的jar文件了：
+现在让我们在 Flink 本地集群上运行之前生成的 jar 包：  
 {% highlight bash %}
 $ cd my/flink/directory
 $ bin/flink run -c wikiedits.WikipediaAnalysis path/to/wikiedits-0.1.jar
 {% endhighlight %}
 
-如果一切按照我们的计划顺利进行，这个命令的输出应该类似于这样：
+如果一切正常的话，我们的任务运行输出应该跟下面的内容类似：  
 
 ```
 03/08/2016 15:09:27 Job execution switched to status RUNNING.
@@ -325,21 +320,20 @@ $ bin/flink run -c wikiedits.WikipediaAnalysis path/to/wikiedits-0.1.jar
 03/08/2016 15:09:27 Source: Custom Source(1/1) switched to RUNNING
 ```
 
-你可以看到各个独立的操作是怎样开始运行的。在这里只有两个，因为处于性能方面的考虑窗口后的这些操作被合并成一个操作了。在Flink中，你可以把它叫做*chaining*。
+从上面的输出中你能看到 operators 是如何启动执行的。在该案例中只有两个 operator，因为由于性能的原因，windows 操作之后的 operator 合并成了一个。在 Flink 中我们把它叫做*chaining*。  
 
-你可以通过Kafka 控制台消费者检查Kafka主题，进而检查程序的输出。
+你可以通过 Kafka console consumer，在之前创建的 topic 中观察程序的输出：  
 
 {% highlight bash %}
 bin/kafka-console-consumer.sh  --zookeeper localhost:2181 --topic wiki-result
 {% endhighlight %}
 
-
-你也可以检查运行在[http://localhost:8081](http://localhost:8081)的Flink 仪表盘。从那你可以获得
-你的集群资源和正在运行的任务的总体概述：
+你也可以通过  [http://localhost:8081](http://localhost:8081) 链接查看 Flink 的控制页面。在上面可以看到 Flink 集群资源和运行任务的概览：  
 
 <a href="{{ site.baseurl }}/page/img/quickstart-example/jobmanager-overview.png" ><img class="img-responsive" src="{{ site.baseurl }}/page/img/quickstart-example/jobmanager-overview.png" alt="JobManager Overview"/></a>
 
-如果你单击正在运行的任务，你将会得到一个可以检查各个独立操作的详细情况的视图。比如，查看已经处理的单位数据总数的视图：
+如果你点击了正在运行的任务，会链接到一个页面，在上面你能够查看每个单独的 operator 情况，例如：查询到已经处理的数据条数等信息。  
+
 <a href="{{ site.baseurl }}/page/img/quickstart-example/jobmanager-job.png" ><img class="img-responsive" src="{{ site.baseurl }}/page/img/quickstart-example/jobmanager-job.png" alt="Example Job View"/></a>
 
-这些仅仅包含了我们学习Flink的一点心得。 如果你有任何疑问，咨询我们的 [Mailing Lists](http://flink.apache.org/community.html#mailing-lists)。我们很高兴可以提供帮助。
+至此我们结束了Flink的小小旅程。 如果还有其他的问题，欢迎你在 [Mailing Lists](http://flink.apache.org/community.html#mailing-lists) 中进行咨询。

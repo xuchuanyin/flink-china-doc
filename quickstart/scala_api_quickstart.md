@@ -1,9 +1,8 @@
 ---
-title: "快速起步: Scala API"
-# Top navigation
-top-nav-group: quickstart
-top-nav-pos: 4
-top-nav-title: Scala API
+title: "使用 Scala API 的样例工程"
+nav-title: Scala 的样例工程
+nav-parent_id: start
+nav-pos: 1
 ---
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
@@ -28,165 +27,200 @@ under the License.
 {:toc}
 
 
-## 构建工具
+## Build Tools
 
-Flink 工程可以用不同的构建工具构建。
-为了让用户快速开始, Flink 为以下构建工具提供了工程模版：
+Flink projects can be built with different build tools.
+In order to get quickly started, Flink provides project templates for the following build tools:
 
 - [SBT](#sbt)
 - [Maven](#maven)
 
-这些模版帮助用户创建工程结构并初始化一些构建文件。
+These templates help you to set up the project structure and to create the initial build files.
 
 ## SBT
 
-### 创建工程
+### Create Project
 
 <ul class="nav nav-tabs" style="border-bottom: none;">
-    <li class="active"><a href="#giter8" data-toggle="tab">使用 <strong>Giter8</strong></a></li>
-    <li><a href="#clone-repository" data-toggle="tab">克隆 <strong>repository</strong></a></li>
-    <li><a href="#quickstart-script-sbt" data-toggle="tab">运行 <strong>quickstart 脚本</strong></a></li>
+    <li class="active"><a href="#giter8" data-toggle="tab">Use <strong>Giter8</strong></a></li>
+    <li><a href="#clone-repository" data-toggle="tab">Clone <strong>repository</strong></a></li>
+    <li><a href="#quickstart-script-sbt" data-toggle="tab">Run the <strong>quickstart script</strong></a></li>
 </ul>
 
 <div class="tab-content">
     <div class="tab-pane active" id="giter8">
-{% highlight bash %}
-$ g8 tillrohrmann/flink-project
-{% endhighlight %}
-    这将在 <strong>指定</strong> 的工程目录下，从 <a href="https://github.com/tillrohrmann/flink-project.g8">flink-project 模版</a> 创建一个 Flink 工程。
-    如果你没有安装 <a href="https://github.com/n8han/giter8">giter8</a>, 请参照此 <a href="https://github.com/n8han/giter8#installation">安装指南</a>。
+    {% highlight bash %}
+    $ g8 tillrohrmann/flink-project
+    {% endhighlight %}
+    This will create a Flink project in the <strong>specified</strong> project directory from the <a href="https://github.com/tillrohrmann/flink-project.g8">flink-project template</a>.
+    If you haven't installed <a href="https://github.com/n8han/giter8">giter8</a>, then please follow this <a href="https://github.com/n8han/giter8#installation">installation guide</a>.
     </div>
     <div class="tab-pane" id="clone-repository">
-{% highlight bash %}
-$ git clone https://github.com/tillrohrmann/flink-project.git
-{% endhighlight %}
-    这将在 <strong>flink-project</strong> 目录下创建 Flink 工程。
+    {% highlight bash %}
+    $ git clone https://github.com/tillrohrmann/flink-project.git
+    {% endhighlight %}
+    This will create the Flink project in the directory <strong>flink-project</strong>.
     </div>
     <div class="tab-pane" id="quickstart-script-sbt">
-{% highlight bash %}
-$ bash <(curl https://flink.apache.org/q/sbt-quickstart.sh)
-{% endhighlight %}
-    这将在 <strong>指定</strong> 的工程目录下创建 Flink 工程
+    {% highlight bash %}
+    $ bash <(curl https://flink.apache.org/q/sbt-quickstart.sh)
+    {% endhighlight %}
+    This will create a Flink project in the <strong>specified</strong> project directory.
     </div>
 </div>
 
-### 构建工程
+### Build Project
 
-为了构建工程， 只需要执行 `sbt clean assembly` 命令。
-这将会在目录 __target/scala_your-major-scala-version/__ 下创建 fat-jar __your-project-name-assembly-0.1-SNAPSHOT.jar__。
+In order to build your project you simply have to issue the `sbt clean assembly` command.
+This will create the fat-jar __your-project-name-assembly-0.1-SNAPSHOT.jar__ in the directory __target/scala_your-major-scala-version/__.
 
-### 运行工程
+### Run Project
 
-如果想要运行你的工程， 输入 `sbt run` 命令。
+In order to run your project you have to issue the `sbt run` command.
 
-作业将会默认运行在 `sbt` 运行的 JVM 上。
-如果你想让作业运行在不同的 JVM 上， 将以下代码加入至 `build.sbt`：
+Per default, this will run your job in the same JVM as `sbt` is running.
+In order to run your job in a distinct JVM, add the following line to `build.sbt`
 
 ~~~scala
 fork in run := true
 ~~~
- 
+
 
 #### IntelliJ
 
-我们推荐使用 [IntelliJ](https://www.jetbrains.com/idea/) 作为你的 Flink job 开发环境。
-首先， 你需要将新创建的工程导入至 IntelliJ。
-你可以通过打开 `File -> New -> Project from Existing Sources...` ， 然后选择你的工程目录来导入工程。
-IntelliJ 会检测到 `build.sbt` 文件并自动导入。
+We recommend using [IntelliJ](https://www.jetbrains.com/idea/) for your Flink job development.
+In order to get started, you have to import your newly created project into IntelliJ.
+You can do this via `File -> New -> Project from Existing Sources...` and then choosing your project's directory.
+IntelliJ will then automatically detect the `build.sbt` file and set everything up.
 
-如果你想要运行 Flink 作业, 建议将 `mainRunner` 模块 作为 __Run/Debug Configuration__ 的 classpath 路径。
-这将保证在执行过程中， 所有标识为"provided"的依赖都可用。
-你可以通过打开 `Run -> Edit Configurations...` 来配置 __Run/Debug Configurations__， 然后从 _Use classpath of module_ 下拉框中选择 `mainRunner`。
+In order to run your Flink job, it is recommended to choose the `mainRunner` module as the classpath of your __Run/Debug Configuration__.
+This will ensure, that all dependencies which are set to _provided_ will be available upon execution.
+You can configure the __Run/Debug Configurations__ via `Run -> Edit Configurations...` and then choose `mainRunner` from the _Use classpath of module_ dropbox.
 
 #### Eclipse
 
-如果你想要将新建的工程导入至 [Eclipse](https://eclipse.org/), 首先你得为它创建 Eclipse 工程文件。
-这些工程文件可以通过 [sbteclipse](https://github.com/typesafehub/sbteclipse) 插件来创建。
-将以下代码加入至 `PROJECT_DIR/project/plugins.sbt` 文件:
+In order to import the newly created project into [Eclipse](https://eclipse.org/), you first have to create Eclipse project files for it.
+These project files can be created via the [sbteclipse](https://github.com/typesafehub/sbteclipse) plugin.
+Add the following line to your `PROJECT_DIR/project/plugins.sbt` file:
 
 ~~~bash
 addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "4.0.0")
 ~~~
 
-在 `sbt` 交互式环境下使用下列命令创建 Eclipse 工程文件：
+In `sbt` use the following command to create the Eclipse project files
 
 ~~~bash
 > eclipse
 ~~~
 
-现在你可以通过打开 `File -> Import... -> Existing Projects into Workspace` 并选择你的工程目录， 将之导入至 Eclipse。
+Now you can import the project into Eclipse via `File -> Import... -> Existing Projects into Workspace` and then select the project directory.
 
 ## Maven
 
-### 要求
+### Requirements
 
-唯一的要求是使用 __Maven 3.0.4__ (或者更高) 和 __Java 7.x__ (或者更高) 版本。
+The only requirements are working __Maven 3.0.4__ (or higher) and __Java 7.x__ (or higher) installations.
 
 
-### 创建工程
+### Create Project
 
-使用下列命令中的一个 __创建工程__:
+Use one of the following commands to __create a project__:
 
 <ul class="nav nav-tabs" style="border-bottom: none;">
-    <li class="active"><a href="#maven-archetype" data-toggle="tab">使用 <strong>Maven archetypes</strong></a></li>
-    <li><a href="#quickstart-script" data-toggle="tab">运行 <strong>quickstart 脚本</strong></a></li>
+    <li class="active"><a href="#maven-archetype" data-toggle="tab">Use <strong>Maven archetypes</strong></a></li>
+    <li><a href="#quickstart-script" data-toggle="tab">Run the <strong>quickstart script</strong></a></li>
 </ul>
 
 <div class="tab-content">
     <div class="tab-pane active" id="maven-archetype">
-{% highlight bash %}
-$ mvn archetype:generate                               \
-  -DarchetypeGroupId=org.apache.flink              \
-  -DarchetypeArtifactId=flink-quickstart-scala     \
-  -DarchetypeVersion={{site.version}}
-{% endhighlight %}
-    这种创建方式允许你 <strong>给新创建的工程命名</strong>。它会提示你输入 groupId、 artifactId， 以及 package name。
+    {% highlight bash %}
+    $ mvn archetype:generate                               \
+      -DarchetypeGroupId=org.apache.flink              \
+      -DarchetypeArtifactId=flink-quickstart-scala     \{% unless site.is_stable %}
+      -DarchetypeCatalog=https://repository.apache.org/content/repositories/snapshots/ \{% endunless %}
+      -DarchetypeVersion={{site.version}}
+    {% endhighlight %}
+    This allows you to <strong>name your newly created project</strong>. It will interactively ask you for the groupId, artifactId, and package name.
     </div>
     <div class="tab-pane" id="quickstart-script">
 {% highlight bash %}
-$ curl https://flink.apache.org/q/quickstart-scala.sh | bash
+{% if site.is_stable %}
+    $ curl https://flink.apache.org/q/quickstart-scala.sh | bash
+{% else %}
+    $ curl https://flink.apache.org/q/quickstart-scala-SNAPSHOT.sh | bash
+{% endif %}
 {% endhighlight %}
     </div>
 </div>
 
 
-### 检查工程
+### Inspect Project
 
-您的工作目录中会出现一个新的目录。如果你使用了 _curl_ 建立工程, 这个目录就是 `quickstart`。 否则， 就以你输入的 artifactId 命名。
+There will be a new directory in your working directory. If you've used
+the _curl_ approach, the directory is called `quickstart`. Otherwise,
+it has the name of your `artifactId`:
 
-这个示例工程是一个包含两个类的  __Maven 工程__。 _Job_ 是一个基本的框架程序， _WordCountJob_ 是一个示例程序。 请注意，这两个类的 _main_ 方法都允许你在开发/测试模式下启动 Flink。
+{% highlight bash %}
+$ tree quickstart/
+quickstart/
+├── pom.xml
+└── src
+    └── main
+        ├── resources
+        │   └── log4j.properties
+        └── scala
+            └── org
+                └── myorg
+                    └── quickstart
+                        ├── BatchJob.scala
+                        ├── SocketTextStreamWordCount.scala
+                        ├── StreamingJob.scala
+                        └── WordCount.scala
+{% endhighlight %}
 
-推荐 __把这个工程导入你的 IDE__ 进行测试和开发。 如果用的是 Eclipse， 你需要从常用的 Eclipse 更新站点上下载并安装以下插件:
+The sample project is a __Maven project__, which contains four classes. _StreamingJob_ and _BatchJob_ are basic skeleton programs, _SocketTextStreamWordCount_ is a working streaming example and _WordCountJob_ is a working batch example. Please note that the _main_ method of all classes allow you to start Flink in a development/testing mode.
+
+We recommend you __import this project into your IDE__. For Eclipse, you need the following plugins, which you can install from the provided Eclipse Update Sites:
 
 * _Eclipse 4.x_
-  * [Scala IDE](http://download.scala-ide.org/sdk/e38/scala210/stable/site)
+  * [Scala IDE](http://download.scala-ide.org/sdk/lithium/e44/scala211/stable/site)
   * [m2eclipse-scala](http://alchim31.free.fr/m2e-scala/update-site)
-  * [Build Helper Maven Plugin](https://repository.sonatype.org/content/repositories/forge-sites/m2e-extras/0.15.0/N/0.15.0.201206251206/)
-* _Eclipse 3.7_
-  * [Scala IDE](http://download.scala-ide.org/sdk/e37/scala210/stable/site)
+  * [Build Helper Maven Plugin](https://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201207090124/)
+* _Eclipse 3.8_
+  * [Scala IDE for Scala 2.11](http://download.scala-ide.org/sdk/helium/e38/scala211/stable/site) or [Scala IDE for Scala 2.10](http://download.scala-ide.org/sdk/helium/e38/scala210/stable/site)
   * [m2eclipse-scala](http://alchim31.free.fr/m2e-scala/update-site)
   * [Build Helper Maven Plugin](https://repository.sonatype.org/content/repositories/forge-sites/m2e-extras/0.14.0/N/0.14.0.201109282148/)
 
-IntelliJ IDE 也支持 Maven 并提供了一个用于 Scala 开发的插件。
+The IntelliJ IDE supports Maven out of the box and offers a plugin for
+Scala development.
 
 
-### 构建工程
+### Build Project
 
-如果想要 __构建你的工程__， 进入工程目录并输入 `mvn clean package -Pbuild-jar` 命令。 你会 __找到一个jar包__: __target/your-artifact-id-1.0-SNAPSHOT.jar__ , 它可以在任意 Flink 集群上运行。还有一个 fat-jar,  __target/your-artifact-id-1.0-SNAPSHOT-flink-fat-jar.jar__， 包含了所有添加到 Maven 工程的依赖。
+If you want to __build your project__, go to your project directory and
+issue the `mvn clean package -Pbuild-jar` command. You will
+__find a jar__ that runs on every Flink cluster with a compatible
+version, __target/original-your-artifact-id-your-version.jar__. There
+is also a fat-jar in  __target/your-artifact-id-your-version.jar__ which,
+additionally, contains all dependencies that were added to the Maven
+project.
 
-## 下一步
+## Next Steps
 
-编写你自己的应用程序！
+Write your application!
 
-Quickstart 工程包含了一个 WordCount 的实现， 也就是大数据处理系统的 “Hello World”。 WordCount 的目标是计算文本中单词出现的频率。 比如： 单词 “the” 或者 “house” 在所有的维基百科文本中出现了多少次。
+The quickstart project contains a `WordCount` implementation, the
+"Hello World" of Big Data processing systems. The goal of `WordCount`
+is to determine the frequencies of words in a text, e.g., how often do
+the terms "the" or "house" occur in all Wikipedia texts.
 
-__示例输入__:
+__Sample Input__:
 
 ~~~bash
 big data is big
 ~~~
 
-__示例输出__:
+__Sample Output__:
 
 ~~~bash
 big 2
@@ -194,7 +228,10 @@ data 1
 is 1
 ~~~
 
-下面的代码就是 Quickstart 工程的 WordCount 实现， 它使用两种操作( FlatMap 和 Reduce )处理了一些文本， 并且在标准输出中打印了单词的计数结果。
+The following code shows the `WordCount` implementation from the
+Quickstart which processes some text lines with two operators (a FlatMap
+and a Reduce operation via aggregating a sum), and prints the resulting
+words and counts to std-out.
 
 ~~~scala
 object WordCountJob {
@@ -213,13 +250,18 @@ object WordCountJob {
       .groupBy(0)
       .sum(1)
 
-    // emit result
+    // emit result and print result
     counts.print()
   }
 }
 ~~~
 
-在 {% gh_link /flink-examples/flink-scala-examples/src/main/scala/org/apache/flink/examples/scala/wordcount/WordCount.scala "GitHub" %} 中查看完整的示例代码。
+{% gh_link flink-examples/flink-examples-batch/src/main/scala/org/apache/flink/examples/scala/wordcount/WordCount.scala "Check GitHub" %} for the full example code.
 
-想要了解完整的 API, 可以查阅  [编程指南]({{ site.baseurl }}/apis/programming_guide.html) 和 [更多的实例]({{ site.baseurl }}/apis/examples.html)。 如果你有任何疑问， 咨询我们的 [Mailing List](http://mail-archives.apache.org/mod_mbox/flink-dev/)， 我们很高兴可以提供帮助。
-
+For a complete overview over our API, have a look at the
+[DataStream API]({{ site.baseurl }}/dev/datastream_api.html),
+[DataSet API]({{ site.baseurl }}/dev/batch/index.html), and
+[Scala API Extensions]({{ site.baseurl }}/dev/scala_api_extensions.html)
+sections. If you have any trouble, ask on our
+[Mailing List](http://mail-archives.apache.org/mod_mbox/flink-dev/).
+We are happy to provide help.

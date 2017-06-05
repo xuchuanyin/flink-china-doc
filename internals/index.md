@@ -1,5 +1,10 @@
 ---
-title: "Internals"
+title: "内部原理"
+nav-id: internals
+nav-pos: 8
+nav-title: '<i class="fa fa-book title dessert" aria-hidden="true"></i> 内部原理'
+nav-parent_id: root
+section-break: true
 ---
 <!--
 Licensed to the Apache Software Foundation (ASF) under one

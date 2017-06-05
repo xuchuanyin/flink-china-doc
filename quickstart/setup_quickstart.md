@@ -1,9 +1,8 @@
 ---
-title: "快速起步: 安装"
-# Top navigation
-top-nav-group: quickstart
-top-nav-pos: 1
-top-nav-title: 安装
+title: "快速起步"
+nav-title: '<i class="fa fa-power-off title appetizer" aria-hidden="true"></i> 快速起步'
+nav-parent_id: root
+nav-pos: 2
 ---
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
@@ -27,62 +26,238 @@ under the License.
 * This will be replaced by the TOC
 {:toc}
 
-只需要简单几步就能把一个 Flink 示例程序跑起来。
+Get a Flink example program up and running in a few simple steps.
 
-## 安装：下载和运行
+## Setup: Download and Start Flink
 
-Flink 可以运行在 **Linux**，**Mac OS X** 和 **Windows** 上，唯一要求是需要安装 **Java 7.x** 或更高版本。 对于 Window 用户，请参考 [Flink on Windows]({{ site.baseurl }}/setup/local_setup.html#flink-on-windows)。
+Flink runs on __Linux, Mac OS X, and Windows__. To be able to run Flink, the only requirement is to have a working __Java 7.x__ (or higher) installation. Windows users, please take a look at the [Flink on Windows]({{ site.baseurl }}/setup/flink_on_windows.html) guide which describes how to run Flink on Windows for local setups.
 
-### 下载
+You can check the correct installation of Java by issuing the following command:
 
-从 [下载页面](http://flink.apache.org/downloads.html) 下载所需的二进制包。你可以选择任何与 Hadoop/Scala 结合的版本。比如 [Flink for Hadoop 2]({{ site.FLINK_DOWNLOAD_URL_HADOOP2_STABLE }})。
+~~~bash
+java -version
+~~~
 
-### 运行一个本地的 Flink 集群
+If you have Java 8, the output will look something like this:
 
-1. 进入下载的目录。
-2. 解压下载的压缩包。
-3. 运行 Flink 。
+~~~bash
+java version "1.8.0_111"
+Java(TM) SE Runtime Environment (build 1.8.0_111-b14)
+Java HotSpot(TM) 64-Bit Server VM (build 25.111-b14, mixed mode)
+~~~
 
+{% if site.is_stable %}
+<div class="codetabs" markdown="1">
 
-```bash
-$ cd ~/Downloads        # 进入下载的目录
-$ tar xzf flink-*.tgz   # 解压下载的压缩包
-$ cd flink-0.10.2
-$ bin/start-local.sh    # 运行 Flink
-```
+<div data-lang="Download and Unpack" markdown="1">
+1. Download a binary from the [downloads page](http://flink.apache.org/downloads.html). You can pick
+   any Hadoop/Scala combination you like. If you plan to just use the local file system, any Hadoop
+   version will work fine.
+2. Go to the download directory.
+3. Unpack the downloaded archive.
 
-打开 Web UI [http://localhost:8081](http://localhost:8081) 检查 Jobmanager 和其他组件是否正常运行。Web 前端应该显示了只有一个可用的 TaskManager 。如果想打开流优化模式，可以调用 `bin/start-local-streaming.sh` 来替换 `bin/start-local.sh`。
+~~~bash
+$ cd ~/Downloads        # Go to download directory
+$ tar xzf flink-*.tgz   # Unpack the downloaded archive
+$ cd flink-{{site.version}}
+~~~
+</div>
+
+<div data-lang="MacOS X" markdown="1">
+For MacOS X users, Flink can be installed through [Homebrew](https://brew.sh/).
+
+~~~bash
+$ brew install apache-flink
+...
+$ flink --version
+Version: 1.2.0, Commit ID: 1c659cf
+~~~
+</div>
+
+</div>
+
+{% else %}
+### Download and Compile
+Clone the source code from one of our [repositories](http://flink.apache.org/community.html#source-code), e.g.:
+
+~~~bash
+$ git clone https://github.com/apache/flink.git
+$ cd flink
+$ mvn clean package -DskipTests # this will take up to 10 minutes
+$ cd build-target               # this is where Flink is installed to
+~~~
+{% endif %}
+
+### Start a Local Flink Cluster
+
+~~~bash
+$ ./bin/start-local.sh  # Start Flink
+~~~
+
+Check the __JobManager's web frontend__ at [http://localhost:8081](http://localhost:8081) and make sure everything is up and running. The web frontend should report a single available TaskManager instance.
 
 <a href="{{ site.baseurl }}/page/img/quickstart-setup/jobmanager-1.png" ><img class="img-responsive" src="{{ site.baseurl }}/page/img/quickstart-setup/jobmanager-1.png" alt="JobManager: Overview"/></a>
 
-## 运行例子
+You can also verify that the system is running by checking the log files in the `logs` directory:
 
+~~~bash
+$ tail log/flink-*-jobmanager-*.log
+INFO ... - Starting JobManager
+INFO ... - Starting JobManager web frontend
+INFO ... - Web frontend listening at 127.0.0.1:8081
+INFO ... - Registered TaskManager at 127.0.0.1 (akka://flink/user/taskmanager)
+~~~
 
-现在我们准备开始运行 [SocketTextStreamWordCount 实例](https://github.com/apache/flink/blob/release-1.0.0/flink-quickstart/flink-quickstart-java/src/main/resources/archetype-resources/src/main/java/SocketTextStreamWordCount.java) 了。我们会从一个 socket 中读取文本然后统计不同单词出现的次数。
+## Read the Code
 
-* 首先，我们使用 **netcat** 来启动本地服务器：
+You can find the complete source code for this SocketWindowWordCount example in [scala](https://github.com/apache/flink/blob/master/flink-examples/flink-examples-streaming/src/main/scala/org/apache/flink/streaming/scala/examples/socket/SocketWindowWordCount.scala) and [java](https://github.com/apache/flink/blob/master/flink-examples/flink-examples-streaming/src/main/java/org/apache/flink/streaming/examples/socket/SocketWindowWordCount.java) on GitHub.
+
+<div class="codetabs" markdown="1">
+<div data-lang="scala" markdown="1">
+{% highlight scala %}
+object SocketWindowWordCount {
+
+    def main(args: Array[String]) : Unit = {
+
+        // the port to connect to
+        val port: Int = try {
+            ParameterTool.fromArgs(args).getInt("port")
+        } catch {
+            case e: Exception => {
+                System.err.println("No port specified. Please run 'SocketWindowWordCount --port <port>'")
+                return
+            }
+        }
+
+        // get the execution environment
+        val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
+
+        // get input data by connecting to the socket
+        val text = env.socketTextStream("localhost", port, '\n')
+
+        // parse the data, group it, window it, and aggregate the counts
+        val windowCounts = text
+            .flatMap { w => w.split("\\s") }
+            .map { w => WordWithCount(w, 1) }
+            .keyBy("word")
+            .timeWindow(Time.seconds(5), Time.seconds(1))
+            .sum("count")
+
+        // print the results with a single thread, rather than in parallel
+        windowCounts.print().setParallelism(1)
+
+        env.execute("Socket Window WordCount")
+    }
+
+    // Data type for words with count
+    case class WordWithCount(word: String, count: Long)
+}
+{% endhighlight %}
+</div>
+<div data-lang="java" markdown="1">
+{% highlight java %}
+public class SocketWindowWordCount {
+
+    public static void main(String[] args) throws Exception {
+
+        // the port to connect to
+        final int port;
+        try {
+            final ParameterTool params = ParameterTool.fromArgs(args);
+            port = params.getInt("port");
+        } catch (Exception e) {
+            System.err.println("No port specified. Please run 'SocketWindowWordCount --port <port>'");
+            return;
+        }
+
+        // get the execution environment
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+
+        // get input data by connecting to the socket
+        DataStream<String> text = env.socketTextStream("localhost", port, "\n");
+
+        // parse the data, group it, window it, and aggregate the counts
+        DataStream<WordWithCount> windowCounts = text
+            .flatMap(new FlatMapFunction<String, WordWithCount>() {
+                @Override
+                public void flatMap(String value, Collector<WordWithCount> out) {
+                    for (String word : value.split("\\s")) {
+                        out.collect(new WordWithCount(word, 1L));
+                    }
+                }
+            })
+            .keyBy("word")
+            .timeWindow(Time.seconds(5), Time.seconds(1))
+            .reduce(new ReduceFunction<WordWithCount>() {
+                @Override
+                public WordWithCount reduce(WordWithCount a, WordWithCount b) {
+                    return new WordWithCount(a.word, a.count + b.count);
+                }
+            });
+
+        // print the results with a single thread, rather than in parallel
+        windowCounts.print().setParallelism(1);
+
+        env.execute("Socket Window WordCount");
+    }
+
+    // Data type for words with count
+    public static class WordWithCount {
+
+        public String word;
+        public long count;
+
+        public WordWithCount() {}
+
+        public WordWithCount(String word, long count) {
+            this.word = word;
+            this.count = count;
+        }
+
+        @Override
+        public String toString() {
+            return word + " : " + count;
+        }
+    }
+}
+{% endhighlight %}
+</div>
+</div>
+
+## Run the Example
+
+Now, we are going to run this Flink application. It will read text from
+a socket and once every 5 seconds print the number of occurrences of
+each distinct word during the previous 5 seconds, i.e. a tumbling
+window of processing time, as long as words are floating in.
+
+* First of all, we use **netcat** to start local server via
 
   ~~~bash
   $ nc -l 9000
-  ~~~ 
-
-* 提交 Flink 程序：
-
-  ~~~bash
-  $ bin/flink run examples/streaming/SocketTextStreamWordCount.jar \
-    --hostname localhost \
-    --port 9000
-  Printing result to stdout. Use --output to specify output path.
-  03/08/2016 17:21:56 Job execution switched to status RUNNING.
-  03/08/2016 17:21:56 Source: Socket Stream -> Flat Map(1/1) switched to SCHEDULED
-  03/08/2016 17:21:56 Source: Socket Stream -> Flat Map(1/1) switched to DEPLOYING
-  03/08/2016 17:21:56 Keyed Aggregation -> Sink: Unnamed(1/1) switched to SCHEDULED
-  03/08/2016 17:21:56 Keyed Aggregation -> Sink: Unnamed(1/1) switched to DEPLOYING
-  03/08/2016 17:21:56 Source: Socket Stream -> Flat Map(1/1) switched to RUNNING
-  03/08/2016 17:21:56 Keyed Aggregation -> Sink: Unnamed(1/1) switched to RUNNING
   ~~~
 
-  程序会去连接 socket 然后等待输入。你可以通过 web 界面验证任务是否如预期正常运行了：
+* Submit the Flink program:
+
+  ~~~bash
+  $ ./bin/flink run examples/streaming/SocketWindowWordCount.jar --port 9000
+
+  Cluster configuration: Standalone cluster with JobManager at /127.0.0.1:6123
+  Using address 127.0.0.1:6123 to connect to JobManager.
+  JobManager web interface address http://127.0.0.1:8081
+  Starting execution of program
+  Submitting job with JobID: 574a10c8debda3dccd0c78a3bde55e1b. Waiting for job completion.
+  Connected to JobManager at Actor[akka.tcp://flink@127.0.0.1:6123/user/jobmanager#297388688]
+  11/04/2016 14:04:50     Job execution switched to status RUNNING.
+  11/04/2016 14:04:50     Source: Socket Stream -> Flat Map(1/1) switched to SCHEDULED
+  11/04/2016 14:04:50     Source: Socket Stream -> Flat Map(1/1) switched to DEPLOYING
+  11/04/2016 14:04:50     Fast TumblingProcessingTimeWindows(5000) of WindowedStream.main(SocketWindowWordCount.java:79) -> Sink: Unnamed(1/1) switched to SCHEDULED
+  11/04/2016 14:04:51     Fast TumblingProcessingTimeWindows(5000) of WindowedStream.main(SocketWindowWordCount.java:79) -> Sink: Unnamed(1/1) switched to DEPLOYING
+  11/04/2016 14:04:51     Fast TumblingProcessingTimeWindows(5000) of WindowedStream.main(SocketWindowWordCount.java:79) -> Sink: Unnamed(1/1) switched to RUNNING
+  11/04/2016 14:04:51     Source: Socket Stream -> Flat Map(1/1) switched to RUNNING
+  ~~~
+
+  The program connects to the socket and waits for input. You can check the web interface to verify that the job is running as expected:
 
   <div class="row">
     <div class="col-sm-6">
@@ -93,7 +268,10 @@ $ bin/start-local.sh    # 运行 Flink
     </div>
   </div>
 
-* 计数会打印到标准输出 `stdout`。监控 JobManager 的输出文件(`.out`文件)，并在 `nc` 中敲入一些单词：
+* Words are counted in time windows of 5 seconds (processing time, tumbling
+  windows) and are printed to `stdout`. Monitor the JobManager's output file
+  and write some text in `nc` (input is sent to Flink line by line after
+  hitting <RETURN>):
 
   ~~~bash
   $ nc -l 9000
@@ -102,83 +280,22 @@ $ bin/start-local.sh    # 运行 Flink
   bye
   ~~~
 
-  `.out` 文件会立即打印出单词的计数：
+  The `.out` file will print the counts at the end of each time window as long
+  as words are floating in, e.g.:
 
   ~~~bash
   $ tail -f log/flink-*-jobmanager-*.out
-  (lorem,1)
-  (ipsum,1)
-  (ipsum,2)
-  (ipsum,3)
-  (ipsum,4)
-  (bye,1)
+  lorem : 1
+  bye : 1
+  ipsum : 4
   ~~~~
-  
-  要**停止** Flink，只需要运行：
+
+  To **stop** Flink when you're done type:
 
   ~~~bash
-  $ bin/stop-local.sh
+  $ ./bin/stop-local.sh
   ~~~
 
-  <a href="{{ site.baseurl }}/page/img/quickstart-setup/setup.gif" ><img class="img-responsive" src="{{ site.baseurl }}/page/img/quickstart-setup/setup.gif" alt="Quickstart: Setup"/></a>
+## Next Steps
 
-## 下一步
-
-想要体验 Flink 编程 API 的初恋感觉可以阅读 [一步步的例子](run_example_quickstart.html)。当你完成了那个，继续阅读 [streaming 指南]({{ site.baseurl }}/apis/streaming/) 吧。
-
-### 集群安装
-
-**在集群上运行 Flink** 是和在本地运行一样简单的。需要先配置好 [SSH 免密码登录]({{ site.baseurl }}/setup/cluster_setup.html#passwordless_ssh) 和保证所有节点的**目录结构是一致的**，这是保证我们的脚本能正确控制任务启停的关键。
-
-1. 在每台节点上，复制解压出来的 **flink** 目录到同样的路径下。
-2. 选择一个 **master 节点** (JobManager) 然后在 `conf/flink-conf.yaml` 中设置 `jobmanager.rpc.address` 配置项为该节点的 IP 或者主机名。确保所有节点有有一样的 `jobmanager.rpc.address` 配置。
-3. 将所有的 **worker 节点** （TaskManager）的 IP 或者主机名（一行一个）填入 `conf/slaves` 文件中。
-
-现在，你可以在 master 节点上**启动集群**：`bin/start-cluster.sh` 。
-
-下面的**例子**阐述了三个节点的集群部署（IP地址从 _10.0.0.1_ 到 _10.0.0.3_，主机名分别为 _master_, _worker1_, _worker2_）。并且展示了配置文件，以及所有机器上一致的可访问的安装路径。
-
-
-<div class="row">
-  <div class="col-md-6 text-center">
-    <img src="{{ site.baseurl }}/page/img/quickstart_cluster.png" style="width: 85%">
-  </div>
-<div class="col-md-6">
-  <div class="row">
-    <p class="lead text-center">
-      /path/to/<strong>flink/conf/<br>flink-conf.yaml</strong>
-    <pre>jobmanager.rpc.address: 10.0.0.1</pre>
-    </p>
-  </div>
-<div class="row" style="margin-top: 1em;">
-  <p class="lead text-center">
-    /path/to/<strong>flink/<br>conf/slaves</strong>
-  <pre>
-10.0.0.2
-10.0.0.3</pre>
-  </p>
-</div>
-</div>
-</div>
-
-
-访问文档的[配置章节]({{ site.baseurl }}/setup/config.html)查看更多可用的配置项。为了使 Flink 更高效的运行，还需要设置一些配置项。
-
-以下都是非常重要的配置项：
-
-- TaskManager 总共能使用的内存大小（`taskmanager.heap.mb`）
-- 每一台机器上能使用的 CPU 个数（`taskmanager.numberOfTaskSlots`）
-- 集群中的总 CPU 个数（`parallelism.default`）
-- 临时目录（`taskmanager.tmp.dirs`）
-
-
-### Flink on YARN
-
-你可以很方便地将 Flink 部署在现有的 **YARN 集群**上：
-
-1. 下载  __Flink Hadoop2 包__: [Flink with Hadoop 2]({{site.FLINK_DOWNLOAD_URL_HADOOP2_STABLE}})
-2. 确保你的 __HADOOP_HOME__ (或 _YARN_CONF_DIR_ 或 _HADOOP_CONF_DIR_) __环境变量__设置成你的 YARN 和 HDFS 配置。
-3. 运行 **YARN 客户端**：`./bin/yarn-session.sh` 。你可以带参数运行客户端 `-n 10 -tm 8192` 表示分配 10 个 TaskManager，每个拥有 8 GB 的内存。
-
-更多详细的操作指南，请查阅编程指南和范例。
-
+Check out some more [examples]({{ site.baseurl }}/examples) to get a better feel for Flink's programming APIs. When you are done with that, go ahead and read the [streaming guide]({{ site.baseurl }}/dev/datastream_api.html).

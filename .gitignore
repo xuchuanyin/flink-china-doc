@@ -1,2 +1,9 @@
 target
 .deploy_git
+content
+api
+.bundle
+.rubydeps
+.bundle
+.rubydeps
+.jekyll-metadata
