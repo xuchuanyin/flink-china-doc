@@ -23,9 +23,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-本文档是针对 Apache Flink {{ site.version }} 的，本页面的编译时间: {% build_time %}。
 
-Apache Flink 是一个开源的分布式流处理和批处理系统。Flink 的核心是在数据流上提供数据分发、通信、具备容错的分布式计算。同时，Flink 在流处理引擎上构建了批处理引擎，原生支持了迭代计算、内存管理和程序优化。
 
 ## 第一步
 
@@ -38,6 +36,6 @@ Apache Flink 是一个开源的分布式流处理和批处理系统。Flink 的�
 ## 迁移指南
 
 对于那些使用比较早期版本的 Apache Flink 用户，我们推荐你阅读 [API 迁移指南](dev/migration.html)。
-虽然 API 中标记为 public 和 stable 的所有部分仍然被支持 (标记为 public 的 API 是向后兼容的)，我们仍然建议将应用程序迁移到较新接口。
+虽然 API 中标记为 public 和 stable 的所有部分仍然被支持 (标记为 public 的 API 是向后兼容的)，我们仍然建议将应用程序迁移到较新的接口。
 
 对于计划在生产环境中升级 Flink 的用户，我们推荐你阅读[升级 Apache Flink](ops/upgrading.html)指南。
