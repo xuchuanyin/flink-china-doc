@@ -23,7 +23,9 @@ specific language governing permissions and limitations
 under the License.
 -->
 
+本文档是针对 Apache Flink {{ site.version }} 的，本页面的编译时间: {% build_time %}。
 
+Apache Flink 是一个开源的分布式流处理和批处理系统。Flink 的核心是在数据流上提供数据分发、通信、具备容错的分布式计算。同时，Flink 在流处理引擎上构建了批处理引擎，原生支持了迭代计算、内存管理和程序优化。
 
 ## 第一步
 
